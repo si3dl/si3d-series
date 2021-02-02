@@ -14,8 +14,8 @@
 SHELL=$!/bin/sh
 
 export FORTRAN_COMPILER=IFORT
-export SI3DDIR=/datos/alicia/SI3D/2009/Codigos/PEGS_nov11
-export GOTMDIR=/datos/alicia/SI3D/2009/Codigos/gotm
+export SI3DDIR=/home/sv/GitHub/si3d
+export GOTMDIR=/home/sv/GitHub/gotm
 export MODDIR=$GOTMDIR/modules
 export INCDIR=$GOTMDIR/include
 export BINDIR=$GOTMDIR/bin
