@@ -98,7 +98,27 @@ SUBROUTINE InitTracerCloud
       ENDDO
     ENDDO
 
-  ENDDO
+ ENDDO
+  
+ ! INTEGER:: itr, i, j, k, l
+
+ ! k1 = 2
+  
+ ! DO itr = 1, ntr
+
+  !  DO l = 1, lm
+  !    i = l2i(l); 
+  !    j = l2j(l);
+  !     IF (i >= 70 .AND. i < 80) THEN
+  !	    IF (j >= 120 .AND. j < 130) THEN
+  !			tracer  (k1,l,itr) = 100
+  !		ENDIF
+  !	ENDIF
+  ! ENDDO
+  ! ENDDO
+
+  
+
 
 END SUBROUTINE InitTracerCloud
 
@@ -479,6 +499,8 @@ SUBROUTINE WQinput
     PRINT*, "iDON = ", iDON, "iNH4 = ", iNH4, "iNO3 = ", iNO3
     PRINT*, "iPOP = ", iPOP, "iDOP = ", iDOP, "iALG = ", iALG
   END IF 
+  
+  CALL WQinit !ACortes 09/24/2021
 
 END SUBROUTINE WQinput
 
@@ -640,6 +662,7 @@ SUBROUTINE srcsnkWQ
 
   ! reset soursesink = 0
   sourcesink = 0;
+  
 
   DO l = 1, lm; 
 
@@ -649,44 +672,56 @@ SUBROUTINE srcsnkWQ
     ! ... Retrieve top & bottom wet sal-pts .................
     kms = kmz(i,j)
     k1s = k1z(i,j)
- 
+
     DO k = k1s, kms;
 
       IF (iARB == 1) THEN
         CALL sourceARB(k,l)
+		 !IF (idbg == 1) PRINT *, " sourceARB "
       END IF
       IF (iDO == 1) THEN
         CALL sourceDO(k,l)
+		!IF (idbg == 1) PRINT *, " sourceDO "
       END IF
-      IF (iPON == 1) THEN
+      IF (iPON == 1) THEN	  
         CALL sourcePON(k,l)
+		!IF (idbg == 1) PRINT *, " sourcePON "
       END IF
       IF (iDON == 1) THEN
         CALL sourceDON(k,l)
+		!IF (idbg == 1) PRINT *, " sourceDON "
       END IF
       IF (iNH4 == 1) THEN
         CALL sourceNH4(k,l)
+		!IF (idbg == 1) PRINT *, " sourceNH4 "
       END IF 
       IF (iNO3 == 1) THEN
         CALL sourceNO3(k,l)
+		!IF (idbg == 1) PRINT *, " sourceNO3 "
       END IF
       IF (iPOP == 1) THEN
         CALL sourcePOP(k,l)
+		!IF (idbg == 1) PRINT *, " sourcePOP "
       END IF
       IF (iDOP == 1) THEN
         CALL sourceDOP(k,l)
+		!IF (idbg == 1) PRINT *, " sourceDOP "
       END IF
       IF (iPO4 == 1) THEN
         CALL sourcePO4(k,l)
+		!IF (idbg == 1) PRINT *, " sourcePO4 "
       END IF
       IF (iALG == 1) THEN
         CALL sourceALG(k,l)
+		!IF (idbg == 1) PRINT *, " sourceALG "
       END IF
       IF (iDOM == 1) THEN
         CALL sourceDOM(k,l)
+		!IF (idbg == 1) PRINT *, " sourceDOM "
       END IF
       IF (iPOM == 1) THEN
         CALL sourcePOM(k,l)
+		!IF (idbg == 1) PRINT *, " sourcePOM "
       END IF
       
     END DO
@@ -813,6 +848,11 @@ SUBROUTINE sourcePON(kwq,lwq)
   !... Local variables
   REAL:: hydrol
 
+!IF (idbg == 1) PRINT *, " in sourcePON 1" 
+!IF (idbg == 1) PRINT *, " salp(kwq,lwq) = ", salp(kwq,lwq), "tracerpp(kwq,lwq)", tracerpp(kwq,lwq)
+!IF (idbg == 1) PRINT *, " kwq = ", kwq, "lwq = ", lwq
+!IF (idbg == 1) PRINT *, " salp(kwq,lwq) = ", salp(kwq,lwq)
+!IF (idbg == 1) PRINT *, " tracerpp(kwq,lwq,LPON) = ", tracerpp(kwq,lwq,LPON)
 
   !. Calculate hydrolysis
   hydrol = k_hn *theta_hn**(salp(kwq,lwq) - 20) * tracerpp(kwq,lwq,LPON)
@@ -822,10 +862,12 @@ SUBROUTINE sourcePON(kwq,lwq)
   &                          k_rs * tracerpp(kwq,lwq,LPON)			! resusupension
 						! + mortality	- only if IALG = 1; calcualted in sourceALG
 
+
   ! Add contribution of mineralization to DON concentration
   IF (IDON == 1) THEN
     sourcesink(kwq,lwq,LDON) = sourcesink(kwq,lwq,LDON)	+  hydrol
   END IF
+
 
 END SUBROUTINE sourcePON
 

@@ -236,7 +236,7 @@ SUBROUTINE input
         CALL trcinput 
      CASE (1) ! Water quality routines
         PRINT *, 'Water Quality Model activated'
-        CALL wqinput
+        CALL WQinput
      CASE (2) ! Size Structure distribution
         PRINT *, 'Size Structure Model activated'
         CALL szinput
@@ -865,15 +865,15 @@ SUBROUTINE fd
        niter    >  0 .AND. &
        lastiter == 1      ) THEN
        IF      (ecomod <  0) THEN
-         CALL srcsnk00         
+         CALL srcsnk00;       
        ELSE IF (ecomod == 0) THEN 
-         CALL srcsnk00 
+         CALL srcsnk00;
        ELSE IF (ecomod == 1) THEN
-         CALL srcsnkWQ
+         CALL srcsnkWQ;
        ELSE IF (ecomod == 2) THEN
-         CALL srcsnkSZ
+         CALL srcsnkSZ;
        ELSE IF (ecomod == 3) THEN
-         CALL srcsnkSD
+         CALL srcsnkSD;
        ENDIF
        DO itr = 1, ntr
          IF (ecomod < 0 .AND. ( trct0(itr) > n .OR. trctn(itr) < n ) ) CYCLE
@@ -4084,7 +4084,7 @@ SUBROUTINE init
 
    ! ... Initialize variables used in Point Source-Sint models
    IF (iopss > 0) THEN
-   Qpss = 0.0E0
+     Qpss = 0.0E0
 	 Tpss = 0.0E0
 	 Rpss = 0.0E0
    ENDIF 
@@ -6254,8 +6254,8 @@ SUBROUTINE outz
              out_array(k_out,1) = FLOAT(i)
              out_array(k_out,2) = FLOAT(j) 
              out_array(k_out,3) = FLOAT(k)
-             out_array(k_out,4) = tracer(k,l,k_t) * h(k,l)
-             out_array(k_out,5) = tracer(k,l,k_t) ! Trazador ACC
+             out_array(k_out,4) = sourcesink(k,l,k_t) * h(k,l) ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
+             out_array(k_out,5) = sourcesink(k,l,k_t) ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
              END DO; 
         END DO; END DO
         ! ... Id # for plane file
@@ -6290,8 +6290,8 @@ SUBROUTINE outz
              l = ij2l(i,j)
              DO k = k1, kmz(i,j)
              k_out = k_out + 1
-             out_array(k_out,1) = tracer(k,l,k_t) * h(k,l)
-             out_array(k_out,2) = tracer(k,l,k_t)  ! Trazador ACC
+             out_array(k_out,1) = sourcesink(k,l,k_t) * h(k,l) ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
+             out_array(k_out,2) = sourcesink(k,l,k_t)  ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
              END DO; 
         END DO; END DO
         ! ... Id # for plane file
