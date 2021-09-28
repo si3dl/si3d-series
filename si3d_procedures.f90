@@ -6216,6 +6216,8 @@ SUBROUTINE outz
         ENDDO
      ENDDO
  
+     
+ 
      DO j = 1, ntr
        n_frames = nts/MAX(iotr,1)
        tracer_id = tracer_id0 + j
@@ -6230,6 +6232,14 @@ SUBROUTINE outz
        WRITE(tracer_id) ipoints
      END DO
 
+     !IF (idbg == 1) PRINT *, "tracer file defined" !ACortes 09/27/2021
+     !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
+	 !IF (idbg == 1) PRINT *, "tracer_file = ", tracer_file !ACortes 09/27/2021
+	 !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
+	 !IF (idbg == 1) PRINT *, "n_frames = ", n_frames !ACortes 09/27/2021
+	 !IF (idbg == 1) PRINT *, "iotr = ", iotr !ACortes 09/27/2021
+	 !IF (idbg == 1) PRINT *, "ntr = ", ntr !ACortes 09/27/2021
+	 
      ! ... Time stamp
      year_out = iyr
      mon_out  = imon
@@ -6254,8 +6264,8 @@ SUBROUTINE outz
              out_array(k_out,1) = FLOAT(i)
              out_array(k_out,2) = FLOAT(j) 
              out_array(k_out,3) = FLOAT(k)
-             out_array(k_out,4) = sourcesink(k,l,k_t) * h(k,l) ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
-             out_array(k_out,5) = sourcesink(k,l,k_t) ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
+             out_array(k_out,4) = tracer(k,l,k_t) * h(k,l) 
+             out_array(k_out,5) = tracer(k,l,k_t) ! concentration
              END DO; 
         END DO; END DO
         ! ... Id # for plane file
@@ -6263,11 +6273,19 @@ SUBROUTINE outz
         ! ... Print time stamp followed by the records
         WRITE(tracer_id) n,year_out,mon_out, day_out,hour_out,  &
        &            ((out_array(m1,m2),m2=1,5),m1=1,ipoints)
+	   		
      END DO
+	   !IF (idbg == 1) PRINT *, "tracer file initialized, n = 0" !ACortes 09/27/2021
+	   !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
+	   !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
+	   !IF (idbg == 1) PRINT *, "k_out = ", k_out !ACortes 09/27/2021
+	 
      DEALLOCATE (out_array)
 
    ELSE
-
+   
+   !IF (idbg == 1) PRINT *, "Time step in outz, n = ", n !ACortes 09/27/2021
+   
      ! ... Time stamp
      year_out = iyr
      mon_out  = imon
@@ -6275,14 +6293,19 @@ SUBROUTINE outz
      hour_out = ihr
 
      ! ... Allocate space
-     ALLOCATE( out_array ( ipoints, 1 ), STAT=istat )
+     ALLOCATE( out_array ( ipoints, 2), STAT=istat )
      IF (istat /= 0) THEN;
        PRINT *, 'ERROR allocating space in output_tracer'
        STOP
      ENDIF
   
+  	   !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
+	   !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
+	   !IF (idbg == 1) PRINT *, "k_out = ", k_out !ACortes 09/27/2021
+     
      ! ... Output tracer concentrations
      DO k_t = 1, ntr
+	 
         k_out = 0
         ! ... Assign values to the output array 
         DO j = j1, jm; DO i = i1, im; 
@@ -6290,8 +6313,8 @@ SUBROUTINE outz
              l = ij2l(i,j)
              DO k = k1, kmz(i,j)
              k_out = k_out + 1
-             out_array(k_out,1) = sourcesink(k,l,k_t) * h(k,l) ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
-             out_array(k_out,2) = sourcesink(k,l,k_t)  ! Replace tracer with sourcesink (WQ), ACortes 09/24/2021
+             out_array(k_out,1) = tracer(k,l,k_t) * h(k,l) 
+             out_array(k_out,2) = tracer(k,l,k_t)  ! Concentration
              END DO; 
         END DO; END DO
         ! ... Id # for plane file
@@ -6300,6 +6323,7 @@ SUBROUTINE outz
         WRITE(tracer_id) n,year_out,mon_out, day_out,hour_out,   &
         &            ((out_array(m1,2)),m1=1,ipoints)
      END DO
+	 
      DEALLOCATE (out_array)
 
    END IF

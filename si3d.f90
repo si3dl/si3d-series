@@ -131,6 +131,7 @@
       IF (idbg == 1) PRINT *, " After entry to SUB outh"
       IF((iop    > 0) .AND. (MOD(n,MAX(iop,  1)) == 0)) CALL outw
       IF (idbg == 1) PRINT *, " After entry to SUB outw"
+	  !IF (idbg == 1) PRINT *, " Before entry to SUB outz" ! ACortes 09/27/2021
       IF((iotr   > 0) .AND. (MOD(n,MAX(iotr, 1)) == 0)) CALL outz
       IF (idbg == 1) PRINT *, " After entry to SUB outz"
       IF((ipxml  > 0) .AND. (MOD(n,MAX(ipxml,1)) == 0)) CALL outs
