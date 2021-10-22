@@ -3696,7 +3696,7 @@ SUBROUTINE imsal
 END SUBROUTINE imsal
 
 !***********************************************************************
-PURE FUNCTION densty_s ( temperature, salinity )
+PURE FUNCTION densty_s ( temperature, salinity, elevation )
 !***********************************************************************
 !
 !  Purpose: To compute density (in kg/m**3) from active scalars
@@ -3717,15 +3717,64 @@ PURE FUNCTION densty_s ( temperature, salinity )
 !-----------------------------------------------------------------------
 
     ! ... Io variables
-	REAL, INTENT(IN) :: temperature, salinity
-	REAL             :: densty_s
-	
-    densty_s =999.842594                &
-      +6.793952e-2*temperature          &
-      -9.095290e-3*temperature**2.      & 
-      +1.001685e-4*temperature**3.      &
-      -1.120083e-6*temperature**4.      &
-      +6.536332e-9*temperature**5.
+  REAL, INTENT(IN) :: temperature, salinity, elevation
+  REAL             :: densty_s, rhoguess,rhomin,rhomax,delta, densw,   &
+                      pressureh, pressure, densws, kw, k, maxiter,     &
+                      iter, of, ofmin, pressuremin, kmin
+    ! Fixed Method root finding for density equation with Pressure. SV
+    rhoguess = 999
+    delta = 1
+    iter = 0
+    maxiter = 500
+    DO WHILE (delta > 1e-5 .AND. iter < maxiter)
+      pressureh = rhoguess*9.806*elevation
+      pressure = 1e-5*pressureh
+
+      densw = 999.842594                    &
+            + 6.793952e-2*temperature       &
+            - 9.095290e-3*temperature**2    &
+            + 1.001685e-4*temperature**3    &
+            - 1.120083e-6*temperature**4    &
+            + 6.536332e-9*temperature**5
+
+      densws = densw + salinity*(0.824493 - 4.0899e-3*temperature   &
+              + 7.6438e-5*temperature**2                            &
+              - 8.2467e-7*temperature**3                            &
+              +5.3875e-9*temperature**4)                            &
+              + salinity**(3/2)*(-5.72466e-3                        &
+              + 1.0227e-4*temperature                               &
+              - 1.6546e-6*temperature**2) + 4.8314e-4*salinity**2
+
+      kw = 19652.21 + 148.4206*temperature                          &
+          - 2.327105*temperature**2                                 &
+          + 1.360477e-2*temperature**3                              &
+          - 5.155288e-5*temperature**4;
+
+      k = kw + salinity*(54.6746 - 0.603459*temperature             &
+          + 1.09987e-2*temperature**2                               &
+          - 6.1670e-5*temperature**3)                               &
+          + salinity**(3/2)*(7.944e-2                               &
+          + 1.6483e-2*temperature                                   &
+          - 5.3009e-4*temperature**2)
+
+      k = k + pressure*(3.239908                                    &
+          + 1.43713e-3*temperature + 1.16092e-4*temperature**2      &
+          - 5.77905e-7*temperature**3)                              &
+          + pressure*salinity*(2.2838e-3                            &
+          - 1.0981e-5*temperature                                   &
+          - 1.6078e-6*temperature**2)                               &
+          + 1.91075e-4*pressure*salinity**(3/2)                     &
+          + pressure**2*(8.50935e-5                                 &
+          - 6.12293e-6*temperature                                  &
+          + 5.2787e-8*temperature**2)                               &
+          + pressure**2*salinity*(-9.9348e-7                        &
+          + 2.0816e-8*temperature + 9.1697e-10*temperature**2)
+
+      densty_s = densws/(1-pressure/k)
+      delta = abs(densty_s - rhoguess)
+      rhoguess = densty_s
+      iter = iter + 1
+    END DO
   
 END FUNCTION densty_s
 
@@ -4370,10 +4419,22 @@ SUBROUTINE InitializeScalarFields
    END SELECT
 
    ! ... Initialize density field at time n-1 & n
-   DO l = 1, lm1; DO k = k1, km1; 
-      rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
-   END DO; END DO
-
+   !DO l = 1, lm1; DO k = k1, km1; 
+   !   rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
+   !END DO; END DO
+   
+   DO l = 1, lm1;
+     DO k = k1, km1;
+       IF (zlevel(k) == -100) THEN
+         z = 0.5*hp(k,l)
+       ELSE
+         z = zlevel(k) + 0.5 * hp(k,l)
+       ENDIF
+       rhop(k,l) = densty_s ( salp(k,l), 0.0 ,z) - 1000.
+       ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
+     END DO
+   END DO
+   
 END SUBROUTINE InitializeScalarFields
 
 !************************************************************************
@@ -4643,7 +4704,7 @@ SUBROUTINE settrap
 
    !.....Local variables..... 
    INTEGER :: i, j, k, l, kmx, kmy, kms, k1x, k1y, k1s
-   REAL    :: uutemp, vvtemp, wght, wghtpp, scC, scCpp
+   REAL    :: uutemp, vvtemp, wght, wghtpp, scC, scCpp, z
    
    !.....Timing.....
    REAL, EXTERNAL :: TIMER
@@ -4676,9 +4737,15 @@ SUBROUTINE settrap
      ! ... At s-points
      kms = kmz(i,j) 
      DO k = k1, kms
+	   IF (zlevel(k) == -100) THEN
+         z = 0.5*hp(k,l)
+       ELSE
+         z = zlevel(k) + 0.5 * hp(k,l)
+       ENDIF
        salpp(k,l) = salp(k,l);     
        salp (k,l)=(sal(k,l)+salpp(k,l))/2.
-       rhop (k,l)=densty_s(salp(k,l),t0)-1000.
+       rhop (k,l)=densty_s(salp(k,l),0.0,z)-1000.
+	   ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      ENDDO
    
      ! ... At u-points    
@@ -4786,7 +4853,7 @@ SUBROUTINE save
 
    !.....Local variables.....
    INTEGER :: i, j, k, l, kms, k1s
-   REAL    :: uutemp, vvtemp
+   REAL    :: uutemp, vvtemp, z
 
    !.....Timing.....
    REAL, EXTERNAL :: TIMER
@@ -4816,9 +4883,15 @@ SUBROUTINE save
        i = l2i(l); j = l2j(l)
 
        DO k = k1, km;
-         ! ... At s-points  
+         ! ... At s-points
+         IF (zlevel(k) == -100) THEN
+           z = 0.5*hp(k,l)
+         ELSE
+           z = zlevel(k) + 0.5 * hp(k,l)
+         ENDIF
          salp (k,l) = sal(k,l)
-         rhop (k,l) = densty_s ( salp(k,l), t0 ) - 1000.
+         rhop (k,l) = densty_s ( salp(k,l), 0.0, z) - 1000.
+         ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
        ENDDO
 
        DO k = k1, km;
@@ -4898,9 +4971,15 @@ SUBROUTINE save
 
        DO k = k1, km;
          ! ... At s-points  
+         IF (zlevel(k) == -100) THEN
+           z = 0.5*hp(k,l)
+         ELSE
+           z = zlevel(k) + 0.5 * hp(k,l)
+         ENDIF
          salpp(k,l) = salp(k,l)
-         salp (k,l) = sal (k,l); 
-         rhop (k,l) = densty_s ( salp(k,l), t0 ) - 1000.
+         salp (k,l) = sal (k,l);
+         rhop (k,l) = densty_s ( salp(k,l), 0.0, z) - 1000.
+         ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
        ENDDO
 
        DO k = k1, km;
@@ -4992,7 +5071,7 @@ SUBROUTINE settrap2
 
    !.....Local variables.....
    INTEGER :: i,j,k,l,kms,kmy,kmx
-   REAL    :: wght, wghtpp
+   REAL    :: wght, wghtpp, z
 
    !....Zeta array.....
    sp = 0.5*(s + spp)
@@ -5010,8 +5089,14 @@ SUBROUTINE settrap2
      ! ... At s-points
      kms = kmz(i,j)
      DO k = k1, kms
+       IF (zlevel(k) == -100) THEN
+         z = 0.5*hp(k,l)
+       ELSE
+         z = zlevel(k) + 0.5 * hp(k,l)
+       ENDIF
        salp (k,l)= (sal(k,l)+salpp(k,l))/2.
-       rhop (k,l)=densty_s(salp(k,l),t0)-1000.
+       rhop (k,l)=densty_s(salp(k,l),0.0, z)-1000.
+       ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      ENDDO
 
      ! ... At u-points    
@@ -7632,7 +7717,7 @@ END FUNCTION leap_year
    CHARACTER(LEN=25):: flux_file="ScalarBalance.txt"
    INTEGER, SAVE	:: i899 = 899
    INTEGER              :: ios, i,j,k,l,k1s, kms
-   REAL                 :: elev, uijk, vijk, wijk, rijk
+   REAL                 :: elev, uijk, vijk, wijk, rijk, z
    REAL(real_G1)	:: HeatB, OxygB, PotE, KinE
    REAL, PARAMETER	:: SpecificHeat = 4181.6
 
@@ -7664,16 +7749,26 @@ END FUNCTION leap_year
    PotE = 0.0
    DO l = 1, lm;  
      i = l2i(l); j = l2j(l);
-     kms = kmz(i,j)
-     k1s = k1z(i,j)
-     elev = hhs(i,j)-h(kms,l)/2.
-     rijk = densty_s(salp(kms,l),0.0)+1000.
-     PotE = PotE + rijk*g*elev*h(kms,l) 
+kms = kmz(l)
+     k1s = k1z(l)
+     elev = hhs(l)-h(kms,l)/2.    
+     IF (zlevel(kms) == -100) THEN
+       z = 0.5*hp(kms,l)
+     ELSE
+       z = zlevel(kms) + 0.5 * hp(kms,l)
+     ENDIF
+     rijk = densty_s(salp(kms,l),0.0,z)+1000.
+     PotE = PotE + rijk*g*elev*h(kms,l)
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
+       IF (zlevel(k) == -100) THEN
+         z = 0.5*hp(k,l)
+       ELSE
+         z = zlevel(k) + 0.5 * hp(k,l)
+       ENDIF
        elev = elev + (hp(k+1,l)+hp(k,l))/2.
-       rijk = densty_s(salp(k,l),0.0)+1000.
-       PotE = PotE + rijk*g*elev*hp(k,l)             
+       rijk = densty_s(salp(k,l),0.0,z)+1000.
+       PotE = PotE + rijk*g*elev*hp(k,l)
      END DO
    END DO;
    PotE = PotE*dx*dy
@@ -7688,14 +7783,24 @@ END FUNCTION leap_year
      uijk = (up(kms,l) + up(kms  ,lWC(l)))/2.
      vijk = (vp(kms,l) + vp(kms  ,lSC(l)))/2.
      wijk = (wp(kms,l) + wp(kms+1,    l ))/2.
-     rijk = densty_s(salp(kms,l),0.0)+1000.
+     IF (zlevel(kms) == -100) THEN
+       z = 0.5*hp(kms,l)
+     ELSE
+       z = zlevel(kms) + 0.5 * hp(kms,l)
+     ENDIF
+     rijk = densty_s(salp(kms,l),0.0,z)+1000.
      KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(kms,l) 
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
        uijk = (up(k,l) + up(k  ,lWC(l)))/2.
        vijk = (vp(k,l) + vp(k  ,lSC(l)))/2.
        wijk = (wp(k,l) + wp(k+1,    l ))/2.
-       rijk = densty_s(salp(k,l),0.0)+1000.
+       IF (zlevel(k) == -100) THEN
+         z = 0.5*hp(k,l)
+       ELSE
+         z = zlevel(k) + 0.5 * hp(k,l)
+       ENDIF
+       rijk = densty_s(salp(k,l),0.0,z)+1000.
        KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(k,l) 
      END DO
    END DO;
