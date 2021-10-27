@@ -6316,14 +6316,6 @@ SUBROUTINE outz
        WRITE(tracer_id) n_frames
        WRITE(tracer_id) ipoints
      END DO
-
-     !IF (idbg == 1) PRINT *, "tracer file defined" !ACortes 09/27/2021
-     !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "tracer_file = ", tracer_file !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "n_frames = ", n_frames !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "iotr = ", iotr !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "ntr = ", ntr !ACortes 09/27/2021
 	 
      ! ... Time stamp
      year_out = iyr
@@ -6360,16 +6352,10 @@ SUBROUTINE outz
        &            ((out_array(m1,m2),m2=1,5),m1=1,ipoints)
 	   		
      END DO
-	   !IF (idbg == 1) PRINT *, "tracer file initialized, n = 0" !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "k_out = ", k_out !ACortes 09/27/2021
 	 
      DEALLOCATE (out_array)
 
    ELSE
-   
-   !IF (idbg == 1) PRINT *, "Time step in outz, n = ", n !ACortes 09/27/2021
    
      ! ... Time stamp
      year_out = iyr
@@ -6378,15 +6364,11 @@ SUBROUTINE outz
      hour_out = ihr
 
      ! ... Allocate space
-     ALLOCATE( out_array ( ipoints, 2), STAT=istat )
+     ALLOCATE( out_array ( ipoints, 2), STAT=istat ) !ACortes 09/28/2021, changed to two columns
      IF (istat /= 0) THEN;
        PRINT *, 'ERROR allocating space in output_tracer'
        STOP
      ENDIF
-  
-  	   !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "k_out = ", k_out !ACortes 09/27/2021
      
      ! ... Output tracer concentrations
      DO k_t = 1, ntr
