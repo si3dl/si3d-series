@@ -4624,7 +4624,7 @@ SUBROUTINE InitializeScalarFieldsTWO
 
    ! ... Initialize density field at time n-1 & n
    DO l = 1, lm1; DO k = k1, km1; 
-      rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
+      rhop(k,l) = densty_s ( salp(k,l), 0.0, z ) - 1000.
    END DO; END DO
 
 END SUBROUTINE InitializeScalarFieldsTWO
@@ -7731,9 +7731,9 @@ END FUNCTION leap_year
    PotE = 0.0
    DO l = 1, lm;  
      i = l2i(l); j = l2j(l);
-kms = kmz(l)
-     k1s = k1z(l)
-     elev = hhs(l)-h(kms,l)/2.    
+     kms = kmz(i,j)
+     k1s = k1z(i,j)
+     elev = hhs(i,j)-h(kms,l)/2.    
      IF (zlevel(kms) == -100) THEN
        z = 0.5*hp(kms,l)
      ELSE
@@ -7761,6 +7761,7 @@ kms = kmz(l)
      i = l2i(l); j = l2j(l);
      kms = kmz(i,j)
      k1s = k1z(i,j)
+	 
      ! ... Basin scale potential energy
      uijk = (up(kms,l) + up(kms  ,lWC(l)))/2.
      vijk = (vp(kms,l) + vp(kms  ,lSC(l)))/2.
