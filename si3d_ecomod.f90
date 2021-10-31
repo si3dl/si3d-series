@@ -1112,7 +1112,7 @@ SUBROUTINE sourceALG(kwq, lwq)
 	
   !. .  Calculate growth limiting factors
   ! light limitation
-  !		f_L = SolarFR(depth)*0.47/light_sat *e**(-SolarFR(depth)*0.47/light_sat +1)
+  !		f_L = SolarFR(depth)*0.45/light_sat *e**(-SolarFR(depth)*0.45/light_sat +1)
   ! f_L construct needs to be fixed, need more information.  for now, use f_L = 1
    f_L = 1.0
 

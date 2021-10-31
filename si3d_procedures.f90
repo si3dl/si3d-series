@@ -4318,7 +4318,7 @@ SUBROUTINE InitializeScalarFields
        ELSE
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
-       rhop(k,l) = densty_s ( salp(k,l), 0.0 ,z) - 1000.
+       rhop(k,l) = densty_s ( salp(k,l), 0.04 ,z) - 1000.
        ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      END DO
    END DO
@@ -4512,7 +4512,7 @@ SUBROUTINE InitializeScalarFieldsTWO
 
    ! ... Initialize density field at time n-1 & n
    DO l = 1, lm1; DO k = k1, km1; 
-      rhop(k,l) = densty_s ( salp(k,l), 0.0, z ) - 1000.
+      rhop(k,l) = densty_s ( salp(k,l), 0.04, z ) - 1000.
    END DO; END DO
 
 END SUBROUTINE InitializeScalarFieldsTWO
@@ -4632,7 +4632,7 @@ SUBROUTINE settrap
        ENDIF
        salpp(k,l) = salp(k,l);     
        salp (k,l)=(sal(k,l)+salpp(k,l))/2.
-       rhop (k,l)=densty_s(salp(k,l),0.0,z)-1000.
+       rhop (k,l)=densty_s(salp(k,l),0.04,z)-1000.
 	   ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      ENDDO
    
@@ -4778,7 +4778,7 @@ SUBROUTINE save
            z = zlevel(k) + 0.5 * hp(k,l)
          ENDIF
          salp (k,l) = sal(k,l)
-         rhop (k,l) = densty_s ( salp(k,l), 0.0, z) - 1000.
+         rhop (k,l) = densty_s ( salp(k,l), 0.04, z) - 1000.
          ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
        ENDDO
 
@@ -4866,7 +4866,7 @@ SUBROUTINE save
          ENDIF
          salpp(k,l) = salp(k,l)
          salp (k,l) = sal (k,l);
-         rhop (k,l) = densty_s ( salp(k,l), 0.0, z) - 1000.
+         rhop (k,l) = densty_s ( salp(k,l), 0.04, z) - 1000.
          ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
        ENDDO
 
@@ -4983,7 +4983,7 @@ SUBROUTINE settrap2
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
        salp (k,l)= (sal(k,l)+salpp(k,l))/2.
-       rhop (k,l)=densty_s(salp(k,l),0.0, z)-1000.
+       rhop (k,l)=densty_s(salp(k,l),0.04, z)-1000.
        ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      ENDDO
 
@@ -7627,7 +7627,7 @@ END FUNCTION leap_year
      ELSE
        z = zlevel(kms) + 0.5 * hp(kms,l)
      ENDIF
-     rijk = densty_s(salp(kms,l),0.0,z)+1000.
+     rijk = densty_s(salp(kms,l),0.04,z)+1000.
      PotE = PotE + rijk*g*elev*h(kms,l)
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
@@ -7637,7 +7637,7 @@ END FUNCTION leap_year
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
        elev = elev + (hp(k+1,l)+hp(k,l))/2.
-       rijk = densty_s(salp(k,l),0.0,z)+1000.
+       rijk = densty_s(salp(k,l),0.04,z)+1000.
        PotE = PotE + rijk*g*elev*hp(k,l)
      END DO
    END DO;
@@ -7659,7 +7659,7 @@ END FUNCTION leap_year
      ELSE
        z = zlevel(kms) + 0.5 * hp(kms,l)
      ENDIF
-     rijk = densty_s(salp(kms,l),0.0,z)+1000.
+     rijk = densty_s(salp(kms,l),0.04,z)+1000.
      KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(kms,l) 
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
@@ -7671,7 +7671,7 @@ END FUNCTION leap_year
        ELSE
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
-       rijk = densty_s(salp(k,l),0.0,z)+1000.
+       rijk = densty_s(salp(k,l),0.04,z)+1000.
        KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(k,l) 
      END DO
    END DO;
