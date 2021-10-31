@@ -98,7 +98,27 @@ SUBROUTINE InitTracerCloud
       ENDDO
     ENDDO
 
-  ENDDO
+ ENDDO
+  
+ ! INTEGER:: itr, i, j, k, l
+
+ ! k1 = 2
+  
+ ! DO itr = 1, ntr
+
+  !  DO l = 1, lm
+  !    i = l2i(l); 
+  !    j = l2j(l);
+  !     IF (i >= 70 .AND. i < 80) THEN
+  !	    IF (j >= 120 .AND. j < 130) THEN
+  !			tracer  (k1,l,itr) = 100
+  !		ENDIF
+  !	ENDIF
+  ! ENDDO
+  ! ENDDO
+
+  
+
 
 END SUBROUTINE InitTracerCloud
 
@@ -479,6 +499,8 @@ SUBROUTINE WQinput
     PRINT*, "iDON = ", iDON, "iNH4 = ", iNH4, "iNO3 = ", iNO3
     PRINT*, "iPOP = ", iPOP, "iDOP = ", iDOP, "iALG = ", iALG
   END IF 
+  
+  CALL WQinit !ACortes 09/24/2021
 
 END SUBROUTINE WQinput
 
@@ -640,6 +662,7 @@ SUBROUTINE srcsnkWQ
 
   ! reset soursesink = 0
   sourcesink = 0;
+  
 
   DO l = 1, lm; 
 
@@ -649,7 +672,7 @@ SUBROUTINE srcsnkWQ
     ! ... Retrieve top & bottom wet sal-pts .................
     kms = kmz(i,j)
     k1s = k1z(i,j)
- 
+
     DO k = k1s, kms;
 
       IF (iARB == 1) THEN
@@ -658,7 +681,7 @@ SUBROUTINE srcsnkWQ
       IF (iDO == 1) THEN
         CALL sourceDO(k,l)
       END IF
-      IF (iPON == 1) THEN
+      IF (iPON == 1) THEN	  
         CALL sourcePON(k,l)
       END IF
       IF (iDON == 1) THEN
@@ -812,7 +835,6 @@ SUBROUTINE sourcePON(kwq,lwq)
 
   !... Local variables
   REAL:: hydrol
-
 
   !. Calculate hydrolysis
   hydrol = k_hn *theta_hn**(salp(kwq,lwq) - 20) * tracerpp(kwq,lwq,LPON)
@@ -1090,7 +1112,7 @@ SUBROUTINE sourceALG(kwq, lwq)
 	
   !. .  Calculate growth limiting factors
   ! light limitation
-  !		f_L = SolarFR(depth)*0.47/light_sat *e**(-SolarFR(depth)*0.47/light_sat +1)
+  !		f_L = SolarFR(depth)*0.45/light_sat *e**(-SolarFR(depth)*0.45/light_sat +1)
   ! f_L construct needs to be fixed, need more information.  for now, use f_L = 1
    f_L = 1.0
 
