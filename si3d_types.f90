@@ -359,7 +359,7 @@
    REAL   :: acc, anc, apc, roc, ron
  	
    ! - Half-saturation values and algal prefernce for NH4	
-   REAL   :: KDOM, KNIT, KSN, KSP, FNH4	
+   REAL   :: KDOM, KNIT, KSN, KSP, FNH4, light_sat
 
    ! - Model rates
    REAL   :: k_a, k_arb, k_dn, k_DOM, k_ex, k_gr, k_hc
