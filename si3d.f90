@@ -26,7 +26,7 @@
    REAL :: utime, stime, utime1, stime1, utime2, stime2, utime3, stime3,  &
          & ttime1, ttime2, atime, ltime1, ltime2
    REAL :: TimeStart, TimeEnd
-   INTEGER :: maxcount = 1E6
+   INTEGER :: maxcount = 1.5E6
    INTEGER :: iter, itemp, i, j, niter1
  
    !.....Retrieve begin time of run.....
