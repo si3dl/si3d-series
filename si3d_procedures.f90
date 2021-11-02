@@ -661,7 +661,7 @@ SUBROUTINE bathy
          kmz(i,j) = kmz(i,j) + 1
        
        
-       ! --- B. Variable layer thickness (ibathyf < 0)
+       ! --- B. Variable layer thickness (ibathyf <0)
        ELSE 
          DO k = k1, km         
            IF (zlevel(k+1)>=hs1) THEN
@@ -4145,187 +4145,54 @@ END SUBROUTINE init
 SUBROUTINE InitializeScalarFields 
 !************************************************************************
 !
-!  Purpose: To read the salinity initial condition from a file. (Note:
-!           The salinity initial condition file will normally have been
-!           prepared by a pre-processing program.)
-!
-!  Revisions:
-!    Date            Programmer        Description of revision
-!    ----            ----------        -----------------------
+!  Purpose: Initialize scalar fields - The initial condition field
+!           is either read from an ASCII file (si3d_init.txt) or it
+!           is initialized using fields which will excite specific
+!           hydrodynamic responses in the lake (test case = 2).
+!           For test case 1 - the initial conditions are also hardcoded
+!           but I use uniform temperature for that cases.
 !
 !-------------------------------------------------------------------------
 
    !.....Local variables.....
    INTEGER :: i, j, k, l, ios, imm1, jmm1, kmm1, ncols, ncols1, nc, &
               nsets, ia, ib, nn, ntr1
-   INTEGER :: nprof, npf, ils, ile, jls, jle, nci ! Two-basin initalization
    REAL    :: Vamp, rhoamp, Ts, Tb,   &  ! Used to initialize IW-problem
               NBV, meandepth, length, &
               rhohere, x, z, rhos, rhob
    CHARACTER(LEN=18)  :: initfmt
-   INTEGER, PARAMETER :: InitProc =  0  
-   REAL, ALLOCATABLE, DIMENSION(:,:) :: ScalarProfile
+   INTEGER, PARAMETER :: InitProc = 4
+   REAL, ALLOCATABLE, DIMENSION(:,:) :: Scalardepthile
 
-   SELECT CASE (InitProc)
-  
-   ! ... OPTION -1 -  Use two profiles to initialize  ---------------------
-   CASE (-1)
+   SELECT CASE (initproc)
 
-     !.....Open salinity initial condition file.....
-     sal_ic_file = 'si3d_init.txt'
-     OPEN (UNIT=i4, FILE='si3d_init.txt', STATUS="OLD", FORM="FORMATTED", IOSTAT=ios)
-     IF(ios /= 0) CALL open_error ( "Error opening "//sal_ic_file, ios )
- 
-     ! .... Skip over first five header records in init file  
-     READ (UNIT=i4, FMT='(/////)', IOSTAT=ios)
-     IF (ios /= 0) CALL input_error ( ios, 13 )
+   ! ... OPTION 1 - Surface Seiche (use uniform temperatures) ------
+   CASE (1)
 
-     ! .... Read no. of profiles used to intialize the model
-     READ (UNIT = i4, FMT='(14X,I20)', IOSTAT=ios) nprof
-     IF (ios /=0) CALL input_error ( ios, 13 )
-     nprof = MAX(nprof,1)
-
-     ! .... Allocate space for working variables
-     ALLOCATE ( ScalarProfile (km1, ntr+1), STAT = ios )
-     IF (ios /= 0) THEN; PRINT *, 'Error alloc. init. arrays'; STOP; ENDIF
-	    
-     ! .....Write the format of the data records into an internal file
-     WRITE (UNIT=initfmt, FMT='("(10X,",I3,"G11.2)")') ntr+1
-
-
-     ! ... Loop over profiles for different regions in initial field
-     nci  = 0; 
-     salp = 0.0E0; IF (ntr>1) tracer = 0.0E0;
-     DO npf = 1, nprof
-
-       ! ... Read indexes defining limits of sub-domain
-       READ (UNIT=i4,FMT='(/(14X,I20))',IOSTAT=ios) ils
-       READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) ile
-       READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) jls
-       READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) jle
-       READ (UNIT=i4,FMT='(/        ) ',IOSTAT=ios) 
- 
-       ! ... Read data array 
-       DO k = 1, km1
-         READ (UNIT=i4, FMT=initfmt, IOSTAT=ios) &
-              (ScalarProfile(k,nn), nn = 1, ntr+1)
-         IF (ios /= 0) CALL input_error ( ios, 14 )
-       END DO
-
-       ! ... Loop over columns within the sub-domain
-       DO i = i1, im; DO j = j1, jm;
-         IF (.NOT.mask2d(i,j)) CYCLE
-         IF ( (i .GE. ils) .AND. &
-         &    (i .LT. ile) .AND. &
-         &    (j .GE. jls) .AND. &
-         &    (j .LT. jle) ) THEN 		   
-
-           ! .... map (i,j) into l-index & count
-           l = ij2l(i,j); nci = nci + 1;
-
-           ! .... Initialize active scalar fields 
-           DO k = 1, km1; 
-             salp(k,l) = ScalarProfile(k,1)   
-           END DO;
-
-           ! ... Initialize Non-active scalar fields 
-           IF (ntr > 0) THEN
-             DO  nn = 1, ntr
-               DO k = 1, km1
-                 tracer(k,l,nn) = ScalarProfile(k,nn+1)  
-               ENDDO
-             ENDDO ! ... End loop over tracers	  
-           ENDIF
-         ENDIF
-       ENDDO; ENDDO; 
-
-     ENDDO
-     ! ... Check if all the wett domain has been initialized
-     IF (nci .NE. lm) THEN
-	   PRINT *, 'ERROR: Some columns have not been initialized'
-	   STOP
-     ENDIF
-     ! ... Initialize variables at other time steps
-     sal = salp; 
-     salpp = salp;
-     tracerpp = tracer;
-
-     PRINT *, '..... Done initializing scalar fields from ASCII file'
-
-     ! ... Deallocate vector holding scalar concs.
-     DEALLOCATE ( ScalarProfile )
-
-     ! ... Close io file
-     CLOSE (i4)
- 
-
-   ! ... OPTION 0 -  Initialize from file ---------------------
-   !CASE (0)
-   CASE DEFAULT
-
-     !.....Open salinity initial condition file.....
-     sal_ic_file = 'si3d_init.txt'
-     OPEN (UNIT=i4, FILE='si3d_init.txt', STATUS="OLD", FORM="FORMATTED", IOSTAT=ios)
-     IF(ios /= 0) CALL open_error ( "Error opening "//sal_ic_file, ios )
-     PRINT *, "Reading init"                                                                !ACC
-     ALLOCATE ( ScalarProfile (km1, ntr+1), STAT = ios )
-     IF (ios /= 0) THEN; PRINT *, 'Error alloc. init. arrays'; STOP; ENDIF
-
-     ! Skip over first five header records in open boundary condition file  
-     READ (UNIT=i4, FMT='(/////)', IOSTAT=ios)
-     IF (ios /= 0) CALL input_error ( ios, 13 )
-
-     ! Write the format of the data records into an internal file
-     WRITE (UNIT=initfmt, FMT='("(10X,",I3,"G11.2)")') ntr+1
-
-     ! Read data array and store it in memory
-     ntr1 = ntr; IF (ecomod < 0) ntr1 = 0; 
-     DO k = 1, km1
-       READ (UNIT=i4, FMT=initfmt, IOSTAT=ios) &
-            (ScalarProfile(k,nn), nn = 1, ntr1+1)
-       IF (ios /= 0) CALL input_error ( ios, 14 )
-     END DO
-          
-     ! ... Initialize the active scalar field (allways) 
-     salp = 0.0
-     DO k = 1, km1; 
-        salp(k,:) = ScalarProfile(k,1)
-        PRINT *, "ScalarProfile", ScalarProfile(k,1)                                  !ACC
-     END DO;
-     sal = salp; 
+     salp  = 15.
+     sal   = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       tracer = 0.0;
-       IF (ecomod < 0 ) THEN
-         CALL InitTracerCloud
-       ELSE
-         DO  nn = 1, ntr
-           DO k = 1, km1
-             tracer(k,:,nn) = ScalarProfile(k,nn+1)  
-           ENDDO
-         END DO ! ... End loop over tracers	  
-       ENDIF
+       DO nn = 1, ntr;
+         tracer(:,:,nn) = sal;
+       ENDDO
        tracerpp = tracer;
      ENDIF
 
-     ! ... Deallocate vector holding scalar concs.
-     DEALLOCATE ( ScalarProfile )
+   ! ... OPTION 2 - Internal Seiche (use analytical solution) ------
+   CASE (2)
 
-     ! ... Close io file
-     CLOSE (i4)
- 
-   ! ... OPTION 1 - Use analytical solution to excite IW ----------
-   CASE (1) 
-
-     Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Parameters used to define the solution
+     Vamp =  0.10;
+     Ts   = 25.00;
+     Tb   = 15.00; ! Parameters used to define the solution
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
      length    = FLOAT(im-i1+1)*dx
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
-     NBV=SQRT(-g/rhos*drho/meandepth);
+     drho = rhos - rhob;		        ! Change in density from top to bottom
+     NBV=SQRT(-g/rhos*drho/meandepth);          ! Brunt-Vaisala frequency
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
        i = l2i(l); j = l2j(l);
@@ -4336,93 +4203,114 @@ SUBROUTINE InitializeScalarFields
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
      ENDIF
+     PRINT *, '**** Scalar field initilized for IW test case ****'
 
-   ! ... OPTION 2 - Use analytical solution in half a closed basin to test 
+   ! ... OPTION 3 - Use analytical solution in half a closed basin to test
    !                the nesting algorithms nesting. All variables defining the basin
-   !                & the IW need to be the same in the fine & coarse grid - 
-   !                In the fine grid we only modify the length and x. 
-   CASE (2) 
+   !                & the IW need to be the same in the fine & coarse grid -
+   !                In the fine grid we only modify the length and x.
+   CASE (3)
 
      Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Make sure these constants are as in CASE (1)
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
-     length    = FLOAT(im-i1+1)*dx; length = length * 2.; 
+     length    = FLOAT(im-i1+1)*dx; length = length * 2.;
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
+     drho = rhos - rhob;		! Change in density from top to bottom
      NBV=SQRT(-g/rhos*drho/meandepth);
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
        i = l2i(l); j = l2j(l);
-       x = FLOAT(i) * dx - 1.5 * dx; x = x + length/2.; 
+       x = FLOAT(i) * dx - 1.5 * dx; x = x + length/2.;
        DO k = k1, km
           z = zlevel(k+1) - 0.5 * hp(k,l); ! z = FLOAT(k) * ddz - 1.5 * ddz
           rhohere = rhos -z*drho/meandepth+rhoamp*COS(pi*x/length)*SIN(pi*z/meandepth);
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
      ENDIF
 
-   ! ... OPTION 2 - Use analytical solution in half a closed basin to test 
-   !                the nesting algorithms nesting. All variables defining the basin
-   !                & the IW need to be the same in the fine & coarse grid - 
-   !                In the fine grid we only modify the length and x. - EAST sims
-   CASE (3) 
+   ! ... All other options - Initialize from file ---------------------
+   CASE DEFAULT
 
-     Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Make sure these constants are as in CASE (1)
-     meandepth = zl; ! FLOAT(km-k1+1)*ddz
-     length    = FLOAT(im-i1+1)*dx; length = length * 2.; 
-     rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
-     rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
-     NBV=SQRT(-g/rhos*drho/meandepth);
-     rhoamp=rhos*Vamp*NBV/g;
-     DO l = 1, lm
-       i = l2i(l); j = l2j(l);
-       x = FLOAT(i) * dx - 1.5 * dx;    
-       DO k = k1, km
-          z = zlevel(k+1) - 0.5 * hp(k,l); ! z = FLOAT(k) * ddz - 1.5 * ddz
-          rhohere = rhos -z*drho/meandepth+rhoamp*COS(pi*x/length)*SIN(pi*z/meandepth);
-          salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
-       ENDDO
+     !.....Open initial condition file.....
+     sal_ic_file = 'si3d_init.txt'
+     OPEN (UNIT=i4, FILE='si3d_init.txt', STATUS="OLD", FORM="FORMATTED", IOSTAT=ios)
+     IF(ios /= 0) CALL open_error ( "Error opening "//sal_ic_file, ios )
+
+     !.....Allocate space for local variables used to read IC ...
+     ALLOCATE ( Scalardepthile (km1, ntr+1), STAT = ios )
+     IF (ios /= 0) THEN; PRINT *, 'Error alloc. init. arrays'; STOP; ENDIF
+
+     ! Skip over first five header records in open boundary condition file
+     READ (UNIT=i4, FMT='(/////)', IOSTAT=ios)
+     IF (ios /= 0) CALL input_error ( ios, 13 )
+
+     ! Write the format of the data records into an internal file
+     WRITE (UNIT=initfmt, FMT='("(10X,",I3,"G11.2)")') ntr+1
+
+     ! Read data array and store it in array Scalardepthile
+     print *,"km1:",km1
+     DO k = 1, km1
+       print *,"leo:",k
+       READ (UNIT=i4, FMT=initfmt, IOSTAT=ios) &
+            (Scalardepthile(k,nn), nn = 1, ntr+1)
+       IF (ios /= 0) CALL input_error ( ios, 14 )
      END DO
-     sal = salp; 
+
+     ! ... Initialize the active scalar field (allways)
+     salp = 0.0
+     DO k = 1, km1;
+        salp(k,:) = Scalardepthile(k,1)
+     END DO;
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize non-active scalar fields (if requested)
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
-         tracer(:,:,nn) = sal;
-       ENDDO
+       tracer = 0.0;
+       IF (ecomod < 0 ) THEN
+         CALL InitTracerCloud
+       ELSE
+       DO  nn = 1, ntr
+         DO k = 1, km1
+           tracer(k,:,nn) = Scalardepthile(k,nn+1)
+         ENDDO
+       END DO ! ... End loop over tracers
+       END IF
        tracerpp = tracer;
      ENDIF
+
+     ! ... Deallocate array holding scalar concs.
+     DEALLOCATE ( Scalardepthile )
+
+     ! ... Close io file
+     CLOSE (i4)
+
 
 
    END SELECT
 
    ! ... Initialize density field at time n-1 & n
-   !DO l = 1, lm1; DO k = k1, km1; 
-   !   rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
-   !END DO; END DO
-   
    DO l = 1, lm1;
      DO k = k1, km1;
        IF (zlevel(k) == -100) THEN
@@ -4430,7 +4318,7 @@ SUBROUTINE InitializeScalarFields
        ELSE
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
-       rhop(k,l) = densty_s ( salp(k,l), 0.0 ,z) - 1000.
+       rhop(k,l) = densty_s ( salp(k,l), 0.04 ,z) - 1000.
        ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      END DO
    END DO
@@ -4624,7 +4512,7 @@ SUBROUTINE InitializeScalarFieldsTWO
 
    ! ... Initialize density field at time n-1 & n
    DO l = 1, lm1; DO k = k1, km1; 
-      rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
+      rhop(k,l) = densty_s ( salp(k,l), 0.04, z ) - 1000.
    END DO; END DO
 
 END SUBROUTINE InitializeScalarFieldsTWO
@@ -4744,7 +4632,7 @@ SUBROUTINE settrap
        ENDIF
        salpp(k,l) = salp(k,l);     
        salp (k,l)=(sal(k,l)+salpp(k,l))/2.
-       rhop (k,l)=densty_s(salp(k,l),0.0,z)-1000.
+       rhop (k,l)=densty_s(salp(k,l),0.04,z)-1000.
 	   ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      ENDDO
    
@@ -4890,7 +4778,7 @@ SUBROUTINE save
            z = zlevel(k) + 0.5 * hp(k,l)
          ENDIF
          salp (k,l) = sal(k,l)
-         rhop (k,l) = densty_s ( salp(k,l), 0.0, z) - 1000.
+         rhop (k,l) = densty_s ( salp(k,l), 0.04, z) - 1000.
          ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
        ENDDO
 
@@ -4978,7 +4866,7 @@ SUBROUTINE save
          ENDIF
          salpp(k,l) = salp(k,l)
          salp (k,l) = sal (k,l);
-         rhop (k,l) = densty_s ( salp(k,l), 0.0, z) - 1000.
+         rhop (k,l) = densty_s ( salp(k,l), 0.04, z) - 1000.
          ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
        ENDDO
 
@@ -5095,7 +4983,7 @@ SUBROUTINE settrap2
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
        salp (k,l)= (sal(k,l)+salpp(k,l))/2.
-       rhop (k,l)=densty_s(salp(k,l),0.0, z)-1000.
+       rhop (k,l)=densty_s(salp(k,l),0.04, z)-1000.
        ! PRINT *, "z=",z,"rho=",rhop(k,l)+1000
      ENDDO
 
@@ -6316,14 +6204,6 @@ SUBROUTINE outz
        WRITE(tracer_id) n_frames
        WRITE(tracer_id) ipoints
      END DO
-
-     !IF (idbg == 1) PRINT *, "tracer file defined" !ACortes 09/27/2021
-     !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "tracer_file = ", tracer_file !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "n_frames = ", n_frames !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "iotr = ", iotr !ACortes 09/27/2021
-	 !IF (idbg == 1) PRINT *, "ntr = ", ntr !ACortes 09/27/2021
 	 
      ! ... Time stamp
      year_out = iyr
@@ -6360,16 +6240,10 @@ SUBROUTINE outz
        &            ((out_array(m1,m2),m2=1,5),m1=1,ipoints)
 	   		
      END DO
-	   !IF (idbg == 1) PRINT *, "tracer file initialized, n = 0" !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "k_out = ", k_out !ACortes 09/27/2021
 	 
      DEALLOCATE (out_array)
 
    ELSE
-   
-   !IF (idbg == 1) PRINT *, "Time step in outz, n = ", n !ACortes 09/27/2021
    
      ! ... Time stamp
      year_out = iyr
@@ -6378,15 +6252,11 @@ SUBROUTINE outz
      hour_out = ihr
 
      ! ... Allocate space
-     ALLOCATE( out_array ( ipoints, 2), STAT=istat )
+     ALLOCATE( out_array ( ipoints, 2), STAT=istat ) !ACortes 09/28/2021, changed to two columns
      IF (istat /= 0) THEN;
        PRINT *, 'ERROR allocating space in output_tracer'
        STOP
      ENDIF
-  
-  	   !IF (idbg == 1) PRINT *, "tracer_id = ", tracer_id !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "ipoints = ", ipoints !ACortes 09/27/2021
-	   !IF (idbg == 1) PRINT *, "k_out = ", k_out !ACortes 09/27/2021
      
      ! ... Output tracer concentrations
      DO k_t = 1, ntr
@@ -7749,15 +7619,15 @@ END FUNCTION leap_year
    PotE = 0.0
    DO l = 1, lm;  
      i = l2i(l); j = l2j(l);
-kms = kmz(l)
-     k1s = k1z(l)
-     elev = hhs(l)-h(kms,l)/2.    
+     kms = kmz(i,j)
+     k1s = k1z(i,j)
+     elev = hhs(i,j)-h(kms,l)/2.    
      IF (zlevel(kms) == -100) THEN
        z = 0.5*hp(kms,l)
      ELSE
        z = zlevel(kms) + 0.5 * hp(kms,l)
      ENDIF
-     rijk = densty_s(salp(kms,l),0.0,z)+1000.
+     rijk = densty_s(salp(kms,l),0.04,z)+1000.
      PotE = PotE + rijk*g*elev*h(kms,l)
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
@@ -7767,7 +7637,7 @@ kms = kmz(l)
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
        elev = elev + (hp(k+1,l)+hp(k,l))/2.
-       rijk = densty_s(salp(k,l),0.0,z)+1000.
+       rijk = densty_s(salp(k,l),0.04,z)+1000.
        PotE = PotE + rijk*g*elev*hp(k,l)
      END DO
    END DO;
@@ -7779,6 +7649,7 @@ kms = kmz(l)
      i = l2i(l); j = l2j(l);
      kms = kmz(i,j)
      k1s = k1z(i,j)
+	 
      ! ... Basin scale potential energy
      uijk = (up(kms,l) + up(kms  ,lWC(l)))/2.
      vijk = (vp(kms,l) + vp(kms  ,lSC(l)))/2.
@@ -7788,7 +7659,7 @@ kms = kmz(l)
      ELSE
        z = zlevel(kms) + 0.5 * hp(kms,l)
      ENDIF
-     rijk = densty_s(salp(kms,l),0.0,z)+1000.
+     rijk = densty_s(salp(kms,l),0.04,z)+1000.
      KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(kms,l) 
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
@@ -7800,7 +7671,7 @@ kms = kmz(l)
        ELSE
          z = zlevel(k) + 0.5 * hp(k,l)
        ENDIF
-       rijk = densty_s(salp(k,l),0.0,z)+1000.
+       rijk = densty_s(salp(k,l),0.04,z)+1000.
        KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(k,l) 
      END DO
    END DO;

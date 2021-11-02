@@ -677,51 +677,39 @@ SUBROUTINE srcsnkWQ
 
       IF (iARB == 1) THEN
         CALL sourceARB(k,l)
-		 !IF (idbg == 1) PRINT *, " sourceARB "
       END IF
       IF (iDO == 1) THEN
         CALL sourceDO(k,l)
-		!IF (idbg == 1) PRINT *, " sourceDO "
       END IF
       IF (iPON == 1) THEN	  
         CALL sourcePON(k,l)
-		!IF (idbg == 1) PRINT *, " sourcePON "
       END IF
       IF (iDON == 1) THEN
         CALL sourceDON(k,l)
-		!IF (idbg == 1) PRINT *, " sourceDON "
       END IF
       IF (iNH4 == 1) THEN
         CALL sourceNH4(k,l)
-		!IF (idbg == 1) PRINT *, " sourceNH4 "
       END IF 
       IF (iNO3 == 1) THEN
         CALL sourceNO3(k,l)
-		!IF (idbg == 1) PRINT *, " sourceNO3 "
       END IF
       IF (iPOP == 1) THEN
         CALL sourcePOP(k,l)
-		!IF (idbg == 1) PRINT *, " sourcePOP "
       END IF
       IF (iDOP == 1) THEN
         CALL sourceDOP(k,l)
-		!IF (idbg == 1) PRINT *, " sourceDOP "
       END IF
       IF (iPO4 == 1) THEN
         CALL sourcePO4(k,l)
-		!IF (idbg == 1) PRINT *, " sourcePO4 "
       END IF
       IF (iALG == 1) THEN
         CALL sourceALG(k,l)
-		!IF (idbg == 1) PRINT *, " sourceALG "
       END IF
       IF (iDOM == 1) THEN
         CALL sourceDOM(k,l)
-		!IF (idbg == 1) PRINT *, " sourceDOM "
       END IF
       IF (iPOM == 1) THEN
         CALL sourcePOM(k,l)
-		!IF (idbg == 1) PRINT *, " sourcePOM "
       END IF
       
     END DO
@@ -848,12 +836,6 @@ SUBROUTINE sourcePON(kwq,lwq)
   !... Local variables
   REAL:: hydrol
 
-!IF (idbg == 1) PRINT *, " in sourcePON 1" 
-!IF (idbg == 1) PRINT *, " salp(kwq,lwq) = ", salp(kwq,lwq), "tracerpp(kwq,lwq)", tracerpp(kwq,lwq)
-!IF (idbg == 1) PRINT *, " kwq = ", kwq, "lwq = ", lwq
-!IF (idbg == 1) PRINT *, " salp(kwq,lwq) = ", salp(kwq,lwq)
-!IF (idbg == 1) PRINT *, " tracerpp(kwq,lwq,LPON) = ", tracerpp(kwq,lwq,LPON)
-
   !. Calculate hydrolysis
   hydrol = k_hn *theta_hn**(salp(kwq,lwq) - 20) * tracerpp(kwq,lwq,LPON)
   sourcesink(kwq,lwq,LPON) = sourcesink(kwq,lwq,LPON)       -	&
@@ -862,12 +844,10 @@ SUBROUTINE sourcePON(kwq,lwq)
   &                          k_rs * tracerpp(kwq,lwq,LPON)			! resusupension
 						! + mortality	- only if IALG = 1; calcualted in sourceALG
 
-
   ! Add contribution of mineralization to DON concentration
   IF (IDON == 1) THEN
     sourcesink(kwq,lwq,LDON) = sourcesink(kwq,lwq,LDON)	+  hydrol
   END IF
-
 
 END SUBROUTINE sourcePON
 
@@ -1131,8 +1111,9 @@ SUBROUTINE sourceALG(kwq, lwq)
   ! Calculate mu, growth rate
 	
   !. .  Calculate growth limiting factors
-  ! light limitation - by Steele equation (Jassby and Platt, 1976
+  ! light limitation - by Steele equation (Jassby and Platt, 1976)
    		f_L = ((Qsw*QswFr(kwq,lwq)*0.47)/light_sat) *e**(1 -((Qsw*QswFr(kwq,lwq)*0.47)/light_sat))
+  !		f_L = SolarFR(depth)*0.45/light_sat *e**(-SolarFR(depth)*0.45/light_sat +1)
   ! f_L construct needs to be fixed, need more information.  for now, use f_L = 1
   !f_L = 1.0
 
