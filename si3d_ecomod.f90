@@ -445,7 +445,7 @@ SUBROUTINE WQinput
 
   !. . . Read model stochiometeric constants
   READ (UNIT=i99,FMT='(///(14X,G20.2))',IOSTAT=ios) acc, anc, apc, roc, &
-  &    ron, KDOM, KNIT, KSN, KSP, FNH4
+  &    ron, KDOM, KNIT, KSN, KSP, FNH4, light_sat
   IF (ios /= 0) CALL input_error ( ios, 93)
 
   !. . . Read model rates
@@ -1111,10 +1111,11 @@ SUBROUTINE sourceALG(kwq, lwq)
   ! Calculate mu, growth rate
 	
   !. .  Calculate growth limiting factors
-  ! light limitation
+  ! light limitation - by Steele equation (Jassby and Platt, 1976)
+   		f_L = ((Qsw*QswFr(kwq,lwq)*0.47)/light_sat) *e**(1 -((Qsw*QswFr(kwq,lwq)*0.47)/light_sat))
   !		f_L = SolarFR(depth)*0.45/light_sat *e**(-SolarFR(depth)*0.45/light_sat +1)
   ! f_L construct needs to be fixed, need more information.  for now, use f_L = 1
-   f_L = 1.0
+  !f_L = 1.0
 
 	! temperature limitaton
 		f_T = theta_mu**(salp(kwq,lwq -20))
