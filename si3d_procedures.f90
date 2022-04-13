@@ -14,7 +14,7 @@
 
    IMPLICIT NONE
    SAVE
-  
+
 CONTAINS
 
 !************************************************************************
@@ -39,7 +39,7 @@ SUBROUTINE input
    IF (ios /= 0) CALL input_error ( ios, 1)
 
    !.....Read & define start date of the run.............................
-   READ (UNIT=i5,FMT='(///(14X,G20.2))',IOSTAT=ios) iyr0,imon0,iday0,ihr0 
+   READ (UNIT=i5,FMT='(///(14X,G20.2))',IOSTAT=ios) iyr0,imon0,iday0,ihr0
    IF (ios /= 0) CALL input_error ( ios, 2 )
    CALL compute_date (0.0) ! idt real
 
@@ -73,9 +73,9 @@ SUBROUTINE input
      READ (UNIT=i5, FMT='(14X,I20)', IOSTAT=ios) n_planes
      IF (ios /= 0) CALL input_error ( ios, 6 )
      IF (n_planes > max_planes) THEN
-       PRINT *,'ERROR: # of planes requested > maximum allowed' 
+       PRINT *,'ERROR: # of planes requested > maximum allowed'
        STOP
-     END IF    
+     END IF
      DO j = 1, n_planes
        ! ... Read number of cells in X-section j
        READ (UNIT=i5, FMT='(14X,I20)' , IOSTAT=ios) p_out(j)
@@ -89,9 +89,9 @@ SUBROUTINE input
      READ (UNIT=i5, FMT='(14X,I20)', IOSTAT=ios) n_sections
      IF (ios /= 0) CALL input_error ( ios, 7 )
      IF (n_sections > max_sections) THEN
-       PRINT *,'ERROR: # of sections requested > maximum allowed' 
+       PRINT *,'ERROR: # of sections requested > maximum allowed'
        STOP
-     END IF    
+     END IF
      DO j = 1, n_sections
        ! ... Read number of cells in X-section j
        READ (UNIT=i5, FMT='(/14X,I20)' , IOSTAT=ios) n_section_cells(j)
@@ -134,7 +134,7 @@ SUBROUTINE input
          IF (ios /= 0) CALL input_error ( ios, 8 )
       END DO
    END IF
- 
+
    !.....Read info to output nested grid boundaries ......................
    IF (ioNBTOGGLE > 0 ) THEN
      READ (UNIT=i5,  FMT='(///14X,I20)', IOSTAT=ios) nxNBO
@@ -185,13 +185,13 @@ SUBROUTINE input
      ! Read time in seconds between consecutive records from time files
      READ (UNIT=i5, FMT='(14X,G20.2)', IOSTAT=ios) dtsecpss
 
-     ! ... Allocate space for arrays holding location 
+     ! ... Allocate space for arrays holding location
      !     of point sources and sinks and devices
      ALLOCATE ( ipss  (iopss), jpss   (iopss), &
                 iodev (iopss), STAT=istat)
      IF (istat /= 0) CALL allocate_error ( istat, 100 )
 
-     ! ... Read in locations & characteristics of diffusers 
+     ! ... Read in locations & characteristics of diffusers
      !     At this point, they are pressumed constants in time
      READ (UNIT=i5, FMT='(A)', IOSTAT=ios) commentline
      i = 0;
@@ -208,32 +208,32 @@ SUBROUTINE input
        STOP
      ENDIF
 
-     ! ... Read sources & sinks specifications - 
-     CALL PointSourceSinkInput 
+     ! ... Read sources & sinks specifications -
+     CALL PointSourceSinkInput
 
    ENDIF
 
-   ! ... Input instructions & parameters controlling the solution of 
-   !     the tracer transport equations. 
+   ! ... Input instructions & parameters controlling the solution of
+   !     the tracer transport equations.
    IF (ntr > 0) THEN
 
      ! ... Allocate space for some arrays - they are initialized
 	 !     only if ecomod < 0, but used allways in determining
-	 !     if the tracer transport equation is used or not in subroutine fd.  
-     ALLOCATE ( trct0(ntr), trcpk(ntr), trctn(ntr), & 
-                trcx0(ntr), trcy0(ntr), trcz0(ntr), & 
+	 !     if the tracer transport equation is used or not in subroutine fd.
+     ALLOCATE ( trct0(ntr), trcpk(ntr), trctn(ntr), &
+                trcx0(ntr), trcy0(ntr), trcz0(ntr), &
                 trcsx(ntr), trcsy(ntr), trcsz(ntr), STAT=istat)
      IF (istat /= 0) CALL allocate_error ( istat, 121 )
 
-     ! .... Initialize trct0 and trctn to default values 
-	 trct0 = 1E7; 
-	 trctn =   0; 
+     ! .... Initialize trct0 and trctn to default values
+	 trct0 = 1E7;
+	 trctn =   0;
 
      ! .... Define other input variables
      SELECT CASE (ecomod)
-     CASE (-1) ! Tracer Cloud Releases 
+     CASE (-1) ! Tracer Cloud Releases
         PRINT *, 'Tracer Cloud Modelling activated'
-        CALL trcinput 
+        CALL trcinput
      CASE (1) ! Water quality routines
         PRINT *, 'Water Quality Model activated'
         CALL wqinput
@@ -255,7 +255,7 @@ SUBROUTINE input
    gdtdx=g*dtdx; gdtdy=g*dtdy; gdt2dx2=gdtdx*dtdx; gdt2dy2=gdtdy*dtdy
    dxdy = dx * dy; ! Smagorinsky
    !gthx=gdtdx*theta; gthy=gdtdy*theta; gth1x=gdtdx*2.*(1.-theta)
-   !gth1y=gdtdy*2.*(1.-theta); 
+   !gth1y=gdtdy*2.*(1.-theta);
    cwind=2.*dt*cw*rhoair*wa*wa; alp4=(1.-alp)/4.
    twodx=2.*dx; twody=2.*dy; fourdx=2.*twodx; fourdy=2.*twody
    dxdx=dx*dx; dydy=dy*dy; twodxdx=2.*dxdx; twodydy=2.*dydy; beta2=beta/2.
@@ -265,7 +265,7 @@ SUBROUTINE input
    nts=tl/dt+.5; apxml = ABS(ipxml)
    isec0=REAL(ihr0)/100.*3600.; ! dt_min=idt/60. ! idt real
 
-   ! ... Generate grid dimensions in Z-direction 
+   ! ... Generate grid dimensions in Z-direction
    CALL ZGridDimensions
 
 END SUBROUTINE input
@@ -290,19 +290,19 @@ SUBROUTINE ZGridDimensions
      IF (ios /= 0) CALL open_error ( "Error opening "//input_file, ios )
 
      !.....Read information ...
-     ! Skip over first line (header)  
+     ! Skip over first line (header)
      READ (UNIT=i5, FMT='(//)', IOSTAT=ios)
      IF (ios /= 0) CALL input_error ( ios, 40 )
-   
+
      ! Read number of layers from second header record
      READ (UNIT=i5, FMT='(10X,I11)', IOSTAT=ios) km1
      IF (ios /= 0) CALL input_error ( ios, 41 )
-  
+
      !..... Allocate space for zlevel array
      ALLOCATE (zlevel(1:km1), STAT=istat )
      IF (istat /= 0) CALL allocate_error ( istat, 0 )
 
-     ! .... Read array with levels to layer interfaces 
+     ! .... Read array with levels to layer interfaces
      DO k = 1, km1
        READ (UNIT=i5, FMT='(10X,G11.2)', IOSTAT=ios) zlevel(k)
        IF (ios /= 0) CALL input_error ( ios, 42 )
@@ -313,7 +313,7 @@ SUBROUTINE ZGridDimensions
      k1  = 2        ;
      ndz = km1 - k1 ;
 
-   ! ... Constant layer thickness (original si3d) 
+   ! ... Constant layer thickness (original si3d)
    ELSE
 
      ! ... Generate grid dimensions in z-direction
@@ -325,12 +325,12 @@ SUBROUTINE ZGridDimensions
      ALLOCATE (zlevel(1:km1), STAT=istat )
      IF (istat /= 0) CALL allocate_error ( istat, 0 )
 
-     !.....Initialize arrays with levels to layer interfaces 
-     zlevel(k1) = 0.0; 
+     !.....Initialize arrays with levels to layer interfaces
+     zlevel(k1) = 0.0;
      DO k = k1+1, km1
        zlevel(k)=zlevel(k-1)+ddz
      END DO
-     zlevel(k1) = -100. 
+     zlevel(k1) = -100.
      zlevel(1 ) = -100.
 
    ENDIF
@@ -342,7 +342,7 @@ END SUBROUTINE ZGridDimensions
 SUBROUTINE AllocateSpace
 !************************************************************************
 !
-!  Purpose: To allocate space for model arrays at a size determined during 
+!  Purpose: To allocate space for model arrays at a size determined during
 !           execution. These arrays are 'permanently'
 !           allocated for the entire duration of a model run.
 !
@@ -382,11 +382,11 @@ SUBROUTINE AllocateSpace
             & eagx(im1,jm1), earx(im1,jm1), &
             & eagy(im1,jm1), eary(im1,jm1), &
             & rr  (im1,jm1), hhs (im1,jm1), &
-            & hhu (im1,jm1), hhv (im1,jm1), & 
+            & hhu (im1,jm1), hhv (im1,jm1), &
             & uair(im1,jm1), vair(im1,jm1), &
             & cdw (im1,jm1), STAT=istat )
    IF (istat /= 0) CALL allocate_error ( istat, 5 )
- 
+
    ! .... Allocate arrays used in model output
    ALLOCATE(  uout (km1) , vout (km1) , wout(km1),  &
             & Avout(km1) , Dvout(km1) , sal1(ndz),  &
@@ -399,7 +399,7 @@ SUBROUTINE AllocateSpace
    IF (istat /= 0) CALL allocate_error ( istat, 8 )
 
    ! .... Allocate arrays used to store velocity boundary conditions
-   IF (nopen > 0) THEN 
+   IF (nopen > 0) THEN
      ALLOCATE(  uhWB  (km1,jm1), uhEB  (km1,jm1),   &
                 huWB  (km1,jm1), huEB  (km1,jm1),   &
                 vhSB  (km1,im1), vhNB  (km1,im1),   &
@@ -417,11 +417,11 @@ SUBROUTINE AllocateSpace
 
 END SUBROUTINE AllocateSpace
 
-!************************************************************************ 
+!************************************************************************
 SUBROUTINE AllocateSpace2
 !************************************************************************
 !
-!  Purpose: To allocate space for model arrays at a size determined during 
+!  Purpose: To allocate space for model arrays at a size determined during
 !           execution. These arrays are 'permanently'
 !           allocated for the entire duration of a model run.
 !
@@ -437,28 +437,28 @@ SUBROUTINE AllocateSpace2
 
    ALLOCATE ( ij2l(im1,jm1), STAT=istat )
    IF (istat /= 0) CALL allocate_error ( istat, 10 )
- 
-   ALLOCATE ( l2i(lm1), l2j(lm1), & 
+
+   ALLOCATE ( l2i(lm1), l2j(lm1), &
    &          lEC(lm1), lWC(lm1), &
    &          lNC(lm1), lSC(lm1), STAT=istat )
    IF (istat /= 0) CALL allocate_error ( istat, 11 )
 
    !.....Allocate arrays at u-pts.....
-   ALLOCATE ( uh(km1,lm1), uhp(km1,lm1), uhpp(km1,lm1),      & 
+   ALLOCATE ( uh(km1,lm1), uhp(km1,lm1), uhpp(km1,lm1),      &
             & u (km1,lm1), up (km1,lm1), upp (km1,lm1),      &
             & ex(km1,lm1), agx(km1,lm1), arx (km1,lm1),      &
             & hu(km1,lm1), hup(km1,lm1), hupp(km1,lm1),STAT=istat)
    IF (istat /= 0) CALL allocate_error ( istat, 12 )
 
    !.....Allocate arrays at v-pts.....
-   ALLOCATE ( vh(km1,lm1), vhp(km1,lm1), vhpp(km1,lm1),      & 
+   ALLOCATE ( vh(km1,lm1), vhp(km1,lm1), vhpp(km1,lm1),      &
             & v (km1,lm1), vp (km1,lm1), vpp (km1,lm1),      &
             &              agy(km1,lm1), ary (km1,lm1),      &
             & hv(km1,lm1), hvp(km1,lm1), hvpp(km1,lm1),STAT=istat)
    IF (istat /= 0) CALL allocate_error ( istat, 13 )
 
    !.....Allocate arrays at pressure-pts.....
-   ALLOCATE ( h   (km1,lm1), hp  (km1,lm1), hpp   (km1,lm1), & 
+   ALLOCATE ( h   (km1,lm1), hp  (km1,lm1), hpp   (km1,lm1), &
             & sal (km1,lm1), salp(km1,lm1), salpp (km1,lm1), &
             & rhop(km1,lm1), STAT=istat )
    IF (istat /= 0) CALL allocate_error ( istat, 14 )
@@ -468,11 +468,11 @@ SUBROUTINE AllocateSpace2
               wp  (km1,lm1), STAT=istat    )
    IF (istat /= 0) CALL allocate_error ( istat, 15 )
 
-   ! ....Allocate arrays at pressure points  
+   ! ....Allocate arrays at pressure points
    ALLOCATE ( QswFr     (km1,lm1), &
            &  HeatSource(km1,lm1), STAT=istat)
    IF (istat /= 0) CALL allocate_error ( istat, 16 )
-   
+
    !.....Allocate horizontal diffusion, th, and th1 arrays.....
    ALLOCATE (haypp(km1,lm1),haxpp(km1,lm1), &
              hdypp(km1,lm1),hdxpp(km1,lm1), &
@@ -480,7 +480,7 @@ SUBROUTINE AllocateSpace2
    IF (istat /=0) CALL allocate_error ( istat, 17 )
 
    !.... Allocate space for Higher-Order turbulence models......
-   IF (iturb > 0) THEN   
+   IF (iturb > 0) THEN
      ALLOCATE ( q2 (km1,lm1), q2p (km1,lm1 ), q2pp (km1,lm1),   &
                 q2l(km1,lm1), q2lp(km1,lm1 ), q2lpp(km1,lm1),   &
                 dsT(km1)    , aaT (3, km1+1), sal1T(ndz+1), STAT = istat )
@@ -492,7 +492,7 @@ SUBROUTINE AllocateSpace2
      IF (istat /= 0) CALL allocate_error ( istat, 18 )  ! si3dgotm
    ENDIF
 
-   ! .... Allocate arrays used in advection for tracers & plumes & 
+   ! .... Allocate arrays used in advection for tracers & plumes &
    !      when scalar transport is done with flux-limiters ..............
    IF (iopss > 0 .OR. ntr > 0 .OR. itrsca >= 4 ) THEN
      ALLOCATE(  fluxX (km1,lm1),fluxY(km1,lm1),fluxZ(km1,lm1),  &
@@ -507,23 +507,23 @@ SUBROUTINE AllocateSpace2
                 sourcesink (km1,lm1,ntr),  &
                 STAT = istat )
      IF (istat /= 0) CALL allocate_error ( istat, 20 )
-   ENDIF 
+   ENDIF
 
    ! .... Allocate arrays used in oxygenation simulations - these are allocated
-   !      here and not in pssbc0 or bcpss0, since when I call to those other 
-   !      routines (at the time of reading IN, km1 has not been initialized yet 
+   !      here and not in pssbc0 or bcpss0, since when I call to those other
+   !      routines (at the time of reading IN, km1 has not been initialized yet
    !      (at that time one still needs to load the bathymetry information) .....
    IF (iopss > 0) THEN
 
-     ALLOCATE(Qpss(km1,iopss), & 
+     ALLOCATE(Qpss(km1,iopss), &
 	          Tpss(km1,iopss), STAT=istat)
-     IF (istat /= 0) CALL allocate_error ( istat, 21 ) 	 
+     IF (istat /= 0) CALL allocate_error ( istat, 21 )
      IF (ntr > 0) THEN
        ALLOCATE(Rpss(km1,iopss,ntr), STAT=istat)
        IF (istat /= 0) CALL allocate_error ( istat, 22 )
      ENDIF
 
-   ENDIF 
+   ENDIF
 
 
 END SUBROUTINE AllocateSpace2
@@ -536,10 +536,10 @@ SUBROUTINE bathy
 !           are assumed to be defined at the corners of each computational
 !           cell and stored in the array 'h4'. The average depths along
 !           each cell face are computed and used to define the 3-D layer
-!           thickness array hhs of bottom depths from datum at zeta points. 
-!           2-D logical mask arrays are defined with .TRUE. values for all 
-!           wet cells and .FALSE. values for all dry cells. The 2-D arrays, 
-!           hhu & hhv, of depths at u- & v-points are defined from hhs. 
+!           thickness array hhs of bottom depths from datum at zeta points.
+!           2-D logical mask arrays are defined with .TRUE. values for all
+!           wet cells and .FALSE. values for all dry cells. The 2-D arrays,
+!           hhu & hhv, of depths at u- & v-points are defined from hhs.
 !           The depths are in meters below a datum.
 !  13/11/08 Input depths at zeta point
 !
@@ -574,11 +574,11 @@ SUBROUTINE bathy
    !.....Write data format to an internal file.....
    IF (ibathyf == 1) THEN ! Stockton
      WRITE (UNIT=fmt, FMT='("(5X,", I4, "G4.0)")') ncols ! idt real
-     !WRITE (UNIT=fmt, FMT='("(5X,", I4, "G5.1)")') ncols ! idt real   
+     !WRITE (UNIT=fmt, FMT='("(5X,", I4, "G5.1)")') ncols ! idt real
 
    ELSE                   !General case (Deeper lakes > 100 m)
      WRITE (UNIT=fmt, FMT='("(5X,", I4, "G5.0)")') ncols ! idt real
-     !WRITE (UNIT=fmt, FMT='("(5X,", I4, "G5.1)")') ncols ! idt real  
+     !WRITE (UNIT=fmt, FMT='("(5X,", I4, "G5.1)")') ncols ! idt real
 
    ENDIF
 
@@ -587,9 +587,9 @@ SUBROUTINE bathy
    IF (istat /= 0) CALL allocate_error ( istat, 15 )
 
    !.....Read bathymetry.....
-   ncols1 = ncols     - 1; 
-   nc     = imm/ncols + 1; 
-   ia     = -ncols1   + 1; 
+   ncols1 = ncols     - 1;
+   nc     = imm/ncols + 1;
+   ia     = -ncols1   + 1;
    DO nn = 1, nc
       ia = ia + ncols
       ib = ia + ncols1
@@ -604,22 +604,22 @@ SUBROUTINE bathy
    !.....Close bathymetry file.....
    CLOSE (UNIT=i5)
 
-   !.....Convert data (in dm to meters) & 
-   !     add adjustment to bathymetry datum ..... 
+   !.....Convert data (in dm to meters) &
+   !     add adjustment to bathymetry datum .....
    h4 = h4 * 0.1 + datadj ! idt real
- 
+
    !.....Add fictitious row/column of depths around grid.....
    h4(1,j1:jm  ) = h4(2,j1:jm )         ! west side
    h4(i1:im,jm1) = h4(i1:im,jm)         ! north side
    h4(im1,j1:jm) = h4(im,j1:jm)         ! east side
    h4(i1:im,1  ) = h4(i1:im,2 )         ! south side
    ! Take care of corners
-   h4(  1,  1) = h4( 2, 2); h4(  1,jm1) = h4( 2,jm) 
+   h4(  1,  1) = h4( 2, 2); h4(  1,jm1) = h4( 2,jm)
    h4(im1,jm1) = h4(im,jm); h4(im1,  1) = h4(im, 2)
 
    !.....Define mask2d array.....
    DO j = 1, jm1; DO i = 1, im1
-     IF ( h4(i,j) > 0.0 ) THEN 
+     IF ( h4(i,j) > 0.0 ) THEN
         mask2d(i,j) = .TRUE.
      ELSE
         mask2d(i,j) = .FALSE.
@@ -631,9 +631,9 @@ SUBROUTINE bathy
    mask2d(  1,1:jm1) = .FALSE.; mask2d(1:im1,jm1) = .FALSE.
    mask2d(im1,1:jm1) = .FALSE.; mask2d(1:im1,  1) = .FALSE.
 
-   !.....Define layer No. for bottom cell (kmz) & 
+   !.....Define layer No. for bottom cell (kmz) &
    !     bottom depth from datum at zeta-points (hhs).....
-   hhs = ZERO; 
+   hhs = ZERO;
    DO j = 1,jm1; DO i = 1,im1
 
      SELECT CASE (mask2d(i,j))
@@ -648,7 +648,7 @@ SUBROUTINE bathy
        hs1 = h4(i,j)
 
        ! ... Compute No. of wet layers & depths at zeta-points
-       ! --- A. constant layer thickness (ibathyf >= 0) 
+       ! --- A. constant layer thickness (ibathyf >= 0)
        IF (ibathyf >= 0) THEN
          kmz(i,j) = FLOOR(hs1/ddz)
          IF( (hs1-kmz(i,j)*ddz) > dzmin ) THEN
@@ -659,20 +659,20 @@ SUBROUTINE bathy
          ENDIF
          ! Add the fictitious first layer above the water surface
          kmz(i,j) = kmz(i,j) + 1
-       
-       
+
+
        ! --- B. Variable layer thickness (ibathyf < 0)
-       ELSE 
-         DO k = k1, km         
+       ELSE
+         DO k = k1, km
            IF (zlevel(k+1)>=hs1) THEN
              ! ... Option 1 - it works
              hhs(i,j) = zlevel(k)+MAX(dzmin,(hs1-zlevel(k)));
-             kmz(i,j) = k 
+             kmz(i,j) = k
              EXIT
              !! ... Option 2 - preferable from a theoretical stand point
              !IF ( hs1-zlevel(k) > dzmin) THEN
              !  hhs(i,j) = hs1
-             !  kmz(i,j) = k 
+             !  kmz(i,j) = k
              !ELSE
              !  hhs(i,j) = zlevel(k)
              !  kmz(i,j) = k - 1
@@ -693,22 +693,22 @@ SUBROUTINE bathy
 
 
    !.....Define bottom depths from datum at u- and v- points
-   hhu = ZERO; 
+   hhu = ZERO;
    hhv = ZERO;
-   DO j = 1,jm; DO i = 1,im;   
-      IF(mask2d(i+1,j)) THEN         
+   DO j = 1,jm; DO i = 1,im;
+      IF(mask2d(i+1,j)) THEN
         hhu(i,j) = MIN(hhs(i+1,j), hhs(i,j))
-      ENDIF 
-      IF(mask2d(i,j+1)) THEN         
+      ENDIF
+      IF(mask2d(i,j+1)) THEN
         hhv(i,j) = MIN(hhs(i,j+1), hhs(i,j))
-      ENDIF 
+      ENDIF
    END DO; END DO
 
    !.....Process and output the bathymetry needed for
    !     graphics and particle tracking if ioutg=1.....
    IF ( ipxml > 0 ) CALL outg ( h4 )
 
-   !.....Compute the first and last column and row of grid 
+   !.....Compute the first and last column and row of grid
    !     with wet points. Variables used in subr. solver
    ifirst = im; ilast = i1; jfirst = jm; jlast = j1
    DO j = j1, jm; DO i = i1, im
@@ -719,21 +719,21 @@ SUBROUTINE bathy
      IF ( j > jlast  ) jlast  = j
    END DO; END DO
 
-   ! ... Find dimensions for 2D-lk arrays 
+   ! ... Find dimensions for 2D-lk arrays
    l = 0
-   DO i = i1, im; DO j = j1, jm; 
+   DO i = i1, im; DO j = j1, jm;
      IF(.NOT. mask2d(i,j)) CYCLE
      l = l + 1
    END DO; END DO;
    lm = l ; lm1 = lm + 1;
 
-   ! ... Allocate space for arrays in 2D-lk coordinates 
+   ! ... Allocate space for arrays in 2D-lk coordinates
    CALL AllocateSpace2
 
    ! ... Mapping functions from/to 3D-(i,j)- to/from 2D-l-indexes
    l = 0
    ij2l = lm1; ! For dry(i,j) the map function ij2l will yield lm1
-   DO i = i1, im; DO j = j1, jm; 
+   DO i = i1, im; DO j = j1, jm;
      IF(.NOT. mask2d(i,j)) CYCLE
      l = l + 1
      l2i (l  ) = i ; ! Goes from ipl to index i in the i,j plane
@@ -743,12 +743,12 @@ SUBROUTINE bathy
 
    ! ... Assign E,W,N,S colums for each l-column in the 2D-l space
    l = 0
-   DO i = i1, im; DO j = j1, jm; 
+   DO i = i1, im; DO j = j1, jm;
      IF(.NOT. mask2d(i,j)) CYCLE
      l = l + 1
      lEC(l) = ij2l(i+1,j); ! Defines water column East  of l
      lWC(l) = ij2l(i-1,j); ! Defines water column West  of l
-     lNC(l) = ij2l(i,j+1); ! Defines water column North of l 
+     lNC(l) = ij2l(i,j+1); ! Defines water column North of l
      lSC(l) = ij2l(i,j-1); ! Defines water column South of l
    END DO; END DO;
 
@@ -792,7 +792,7 @@ SUBROUTINE fd
    IF (idbg == 1) PRINT *, " surfbc"
 
    ! ... Assign boundary conditions at free surface .............
-   CALL surfbc 
+   CALL surfbc
 
    IF (idbg == 1) PRINT *, " exmom(1)"
    ex=0.0
@@ -843,9 +843,9 @@ SUBROUTINE fd
 
    IF (idbg == 1) PRINT *, " vel"
 
-   !.....Solve for velocities explicitly. If DRYING occurs 
+   !.....Solve for velocities explicitly. If DRYING occurs
    !     at this point, dry cells are removed and k1z/k1u/k1v
-   !     recalculated (wetting is done after finishing the 
+   !     recalculated (wetting is done after finishing the
    !     calculations for a given time step or iteration) ......
    CALL vel
 
@@ -853,21 +853,21 @@ SUBROUTINE fd
 
    ! ... Solve for active scalar transport
    IF (isal /= 0) THEN
-     CALL exsal 
+     CALL exsal
      CALL imsal
      CALL openbcSCA
    END IF
 
    IF (idbg == 1) PRINT *, " Tracers "
 
-   !.....Solve for non-active scalar transport 
-   IF (ntr      >  0 .AND. & 
+   !.....Solve for non-active scalar transport
+   IF (ntr      >  0 .AND. &
        niter    >  0 .AND. &
        lastiter == 1      ) THEN
        IF      (ecomod <  0) THEN
-         CALL srcsnk00         
-       ELSE IF (ecomod == 0) THEN 
-         CALL srcsnk00 
+         CALL srcsnk00
+       ELSE IF (ecomod == 0) THEN
+         CALL srcsnk00
        ELSE IF (ecomod == 1) THEN
          CALL srcsnkWQ
        ELSE IF (ecomod == 2) THEN
@@ -885,7 +885,7 @@ SUBROUTINE fd
 
    IF (idbg == 1) PRINT *, " vel2"
 
-   ! ... Recalculate near surface velocity to account 
+   ! ... Recalculate near surface velocity to account
    !     for WETTING & recalculate k1z, k1u & k1v ..............
    CALL vel2
 
@@ -947,9 +947,9 @@ SUBROUTINE exmomORIGINAL ( ieq )
 
    ! -----X-momentum equation-----
    CASE (1)
-        
+
       !......Calulate the explicit terms by sweeping over interior u-pts &
-      !      store results in ex- array                 
+      !      store results in ex- array
       !.....Calculate the coefficient array haypp for use
       !     in horizontal diffusion term & th1,th for use
       !     in vertical advection term in the x-momentum
@@ -971,19 +971,19 @@ SUBROUTINE exmomORIGINAL ( ieq )
         ! ... Horizontal diffusion ...........................
         DO k = k1x,kmx
           haypp(k,l)=Ay0*MIN(hupp(k,lNC(l)),hupp(k,l))
-          haxpp(k,l)=Ax0*MIN(hupp(k,lEC(l)),hupp(k,l)) 
+          haxpp(k,l)=Ax0*MIN(hupp(k,lEC(l)),hupp(k,l))
         ENDDO
 
-        !.....Calculate weighting arrays for vertical advection 
+        !.....Calculate weighting arrays for vertical advection
         DO k = k1x, kmx
           th (k,l) = hup(k-1,l)/(hup(k-1,l)+hup(k,l))
           th1(k,l) = 1.-th(k,l)
         ENDDO
 
-        !.....Set th=th1 at the free surface & bottom 
-        th (k1x  ,l) = 0.0; 
+        !.....Set th=th1 at the free surface & bottom
+        th (k1x  ,l) = 0.0;
         th1(k1x  ,l) = 0.0;
-        th (kmx+1,l) = 0.5; 
+        th (kmx+1,l) = 0.5;
         th1(kmx+1,l) = 0.5;
 
       END DO
@@ -993,7 +993,7 @@ SUBROUTINE exmomORIGINAL ( ieq )
  !$OMP PARALLEL DO private(i,j,k,k1x,kmx,corx,uE,uW,vN,vS,wU,wD,scE,scW,scN,scS,advx,hdx)
       DO l = 1, lm
          ex(:,l) = 0.0
- 
+
          ! ... Map 2D-l into 3D-(i,j) indexes
          i = l2i(l); j = l2j(l);
 
@@ -1004,45 +1004,45 @@ SUBROUTINE exmomORIGINAL ( ieq )
          kmx = MIN(kmz(i+1,j), kmz(i,j))
          k1x =                 k1u(i,j)
 
-         ! Compute explicit term	     
+         ! Compute explicit term
          DO k = k1x,kmx
-                                       
+
             ! ... For u-layers connecting wett & dry cells neglect
             !     contribution from advective, coriolis & diffusion
-            IF ( hp(k,l) <= ZERO .OR. hp(k,lEC(l)) <= ZERO) THEN 
-              ex(k,l) = uhpp(k,l)            
+            IF ( hp(k,l) <= ZERO .OR. hp(k,lEC(l)) <= ZERO) THEN
+              ex(k,l) = uhpp(k,l)
               CYCLE
             ENDIF
 
             !.....Coriolis.....
             corx = 0.25 * f * (vhp(k,     lEC(l) ) + vhp(k,    l )       &
                   &           +vhp(k, lSC(lEC(l))) + vhp(k,lSC(l)))
-                       
-            ! Horizontal advection   
+
+            ! Horizontal advection
             uE = uhp(k,    lEC(l) ) +uhp(k,    l )
             uW = uhp(k,        l  ) +uhp(k,lWC(l))
             vN = vhp(k,    lEC(l) ) +vhp(k,    l )
             vS = vhp(k,lSC(lEC(l))) +vhp(k,lSC(l))
             wU = wp (k,    lEC(l) ) +wp (k,    l )
-            wD = wp (k+1,  lEC(l) ) +wp (k+1  ,l )  
+            wD = wp (k+1,  lEC(l) ) +wp (k+1  ,l )
 
             SELECT CASE ( itrmom)
-            CASE (1)   
+            CASE (1)
               scE = (up(k,lEC(l))*hup(k,lEC(l))+  &
                      up(k,    l )*hup(k,    l))/  &
-                    (hup(k,lEC(l))+hup(k,l)) 
+                    (hup(k,lEC(l))+hup(k,l))
               scW = (up(k,lWC(l))*hup(k,lWC(l))+  &
                      up(k,    l )*hup(k,    l))/  &
-                    (hup(k,lWC(l))+hup(k,l)) 
+                    (hup(k,lWC(l))+hup(k,l))
               scN = (up(k,lNC(l))*hup(k,lNC(l))+  &
                      up(k,    l )*hup(k,    l))/  &
-                    (hup(k,lNC(l))+hup(k,l)) 
+                    (hup(k,lNC(l))+hup(k,l))
               scS = (up(k,lSC(l))*hup(k,lSC(l))+  &
                      up(k,    l )*hup(k,    l))/  &
-                    (hup(k,lSC(l))+hup(k,l)) 
+                    (hup(k,lSC(l))+hup(k,l))
               advx = (uE * scE - uW * scW ) / fourdx +         &
-                     (vN * scN - vS * scS ) / fourdy 
-            CASE (2:) 
+                     (vN * scN - vS * scS ) / fourdy
+            CASE (2:)
               advx = ( (uE+ABS(uE))* upp(k,    l ) +           &
                        (uE-ABS(uE))* upp(k,lEC(l)) -           &
                        (uW+ABS(uW))* upp(k,lWC(l)) -           &
@@ -1050,10 +1050,10 @@ SUBROUTINE exmomORIGINAL ( ieq )
                     +( (vN+ABS(vN))* upp(k,    l ) +           &
                        (vN-ABS(vN))* upp(k,lNC(l)) -           &
                        (vS+ABS(vS))* upp(k,lSC(l)) -           &
-                       (vS-ABS(vS))* upp(k,    l ) ) / fourdy  
+                       (vS-ABS(vS))* upp(k,    l ) ) / fourdy
             END SELECT
 
-            ! Vertical advection - Upwind only for the first 
+            ! Vertical advection - Upwind only for the first
             ! interface below the free surface; Centered diff.
             ! otherwise
             IF (k > k1x + 1) THEN
@@ -1070,7 +1070,7 @@ SUBROUTINE exmomORIGINAL ( ieq )
                        -  wD*(th (k+1,l)* up(k+1,l)+           &
                               th1(k+1,l)* up(k  ,l))/ 2.
             ENDIF
-			      		                  
+
             !.....Horizontal diffusion.....
             hdx  =   (haypp(k,    l )*(upp(k,lNC(l))-upp(k,    l ))       &
                  & -  haypp(k,lSC(l))*(upp(k,    l )-upp(k,lSC(l))))/dydy &
@@ -1079,21 +1079,21 @@ SUBROUTINE exmomORIGINAL ( ieq )
 
             !.....Final explicit term.....
             ex(k,l) = uhpp(k,l) - twodt1*(advx*iadv-corx-hdx*ihd)
-                
+
          END DO
       END DO
 !$OMP END PARALLEL DO
 
       ! ... Recalculate ex for near bdry. cells
-      IF (nopen > 0) CALL MODexmom4openBCX        
-      
-   ! -----Y-momentum equation-----      
+      IF (nopen > 0) CALL MODexmom4openBCX
+
+   ! -----Y-momentum equation-----
    CASE (2)
       !.....Calculate the explicit terms by sweeping over interior v-pts &
       !     store results in ex-array
       !.....Calculate the coefficient array haxpp for use
       !     in horizontal diffusion term & th1,th for use
-      !     in vertical advection term in the y-momentum 
+      !     in vertical advection term in the y-momentum
       haxpp(:,lm1) = 0.0; haypp(:,lm1) = 0.0
 !$OMP PARALLEL DO private(i,j,k,k1y,kmy)
       DO l = 1, lm
@@ -1111,21 +1111,21 @@ SUBROUTINE exmomORIGINAL ( ieq )
 
          ! ... NS horizontal diffusion ...........................
          DO k = k1y, kmy
-            haypp(k,l)=Ay0*MIN(hvpp(k,lNC(l)),hvpp(k,l)) 
+            haypp(k,l)=Ay0*MIN(hvpp(k,lNC(l)),hvpp(k,l))
             haxpp(k,l)=Ax0*MIN(hvpp(k,lEC(l)),hvpp(k,l))
          ENDDO
 
-         !.....Calculate weighting arrays for vertical advection 
+         !.....Calculate weighting arrays for vertical advection
          DO k = k1y, kmy
             th (k,l) = hvp(k-1,l)/(hvp(k-1,l)+hvp(k,l))
             th1(k,l) = 1.-th(k,l)
          ENDDO
-             
-         !.....Set th=th1 at the free surface & bottom 
-         th (k1y  ,l) = 0.0; 
+
+         !.....Set th=th1 at the free surface & bottom
+         th (k1y  ,l) = 0.0;
          th1(k1y  ,l) = 0.0;
-         th (kmy+1,l) = 0.5; 
-         th1(kmy+1,l) = 0.5;              
+         th (kmy+1,l) = 0.5;
+         th1(kmy+1,l) = 0.5;
 
       END DO
 !$OMP END PARALLEL DO
@@ -1144,45 +1144,45 @@ SUBROUTINE exmomORIGINAL ( ieq )
          kmy = MIN(kmz(i,j+1), kmz(i,j))
          k1y =                 k1v(i,j)
 
-         ! Compute explicit term	     
+         ! Compute explicit term
          DO k = k1y,kmy
-                                    
+
             ! ... For v-layers connecting wett & dry cells neglect
             !     contribution from advective, coriolis & diffusion
-            IF ( hp(k,l) <= ZERO .OR. hp(k,lNC(l)) <= ZERO) THEN 
+            IF ( hp(k,l) <= ZERO .OR. hp(k,lNC(l)) <= ZERO) THEN
                ex(k,l) = vhpp(k,l)
                CYCLE
             ENDIF
-         
+
             !.....Coriolis.....
             cory = 0.25 * f * (uhp(k,     lNC(l) ) + uhp(k,    l )       &
                   &           +uhp(k, lWC(lNC(l))) + uhp(k,lWC(l)))
-                       
-            ! Horizontal advection  
+
+            ! Horizontal advection
             uE = uhp(k,    lNC(l) ) +uhp(k,    l )
             uW = uhp(k,lWC(lNC(l))) +uhp(k,lWC(l))
             vN = vhp(k,    lNC(l) ) +vhp(k,    l )
             vS = vhp(k,        l  ) +vhp(k,lSC(l))
             wU = wp (k,    lNC(l) ) +wp (k,    l )
-            wD = wp (k+1,  lNC(l) ) +wp (k+1  ,l ) 
+            wD = wp (k+1,  lNC(l) ) +wp (k+1  ,l )
 
             SELECT CASE ( itrmom)
-            CASE (1)  
+            CASE (1)
               scE = (vp(k,lEC(l))*hvp(k,lEC(l))+  &
                      vp(k,    l )*hvp(k,    l))/  &
-                    (hvp(k,lEC(l))+hvp(k,l)) 
+                    (hvp(k,lEC(l))+hvp(k,l))
               scW = (vp(k,lWC(l))*hvp(k,lWC(l))+  &
                      vp(k,    l )*hvp(k,    l))/  &
-                    (hvp(k,lWC(l))+hvp(k,l)) 
+                    (hvp(k,lWC(l))+hvp(k,l))
               scN = (vp(k,lNC(l))*hvp(k,lNC(l))+  &
                      vp(k,    l )*hvp(k,    l))/  &
-                    (hvp(k,lNC(l))+hvp(k,l)) 
+                    (hvp(k,lNC(l))+hvp(k,l))
               scS = (vp(k,lSC(l))*hvp(k,lSC(l))+  &
                      vp(k,    l )*hvp(k,    l))/  &
-                    (hvp(k,lSC(l))+hvp(k,l)) 
+                    (hvp(k,lSC(l))+hvp(k,l))
               advy = (uE * scE - uW * scW ) / fourdx +         &
-                     (vN * scN - vS * scS ) / fourdy 
-            CASE(2:)       
+                     (vN * scN - vS * scS ) / fourdy
+            CASE(2:)
               advy = ( (uE+ABS(uE))* vpp(k,    l ) +           &
                   &    (uE-ABS(uE))* vpp(k,lEC(l)) -           &
                   &    (uW+ABS(uW))* vpp(k,lWC(l)) -           &
@@ -1190,10 +1190,10 @@ SUBROUTINE exmomORIGINAL ( ieq )
                   & +( (vN+ABS(vN))* vpp(k,    l ) +           &
                   &    (vN-ABS(vN))* vpp(k,lNC(l)) -           &
                   &    (vS+ABS(vS))* vpp(k,lSC(l)) -           &
-                  &    (vS-ABS(vS))* vpp(k,    l ) ) / fourdy  
+                  &    (vS-ABS(vS))* vpp(k,    l ) ) / fourdy
             END SELECT
- 
-            ! Vertical advection - Upwind only for the first 
+
+            ! Vertical advection - Upwind only for the first
             ! interface below the free surface; Centered diff.
             ! otherwise
             IF (k > k1y + 1) THEN
@@ -1210,23 +1210,23 @@ SUBROUTINE exmomORIGINAL ( ieq )
                        -  wD*(th (k+1,l)* vp(k+1,l)+         &
                               th1(k+1,l)* vp(k  ,l))/ 2.
             ENDIF
-						  		                  
+
             hdy  =   (haypp(k,    l )*(vpp(k,lNC(l))-vpp(k,    l ))       &
                  & -  haypp(k,lSC(l))*(vpp(k,    l )-vpp(k,lSC(l))))/dydy &
                  & + (haxpp(k,    l )*(vpp(k,lEC(l))-vpp(k,    l ))       &
                  & -  haxpp(k,lWC(l))*(vpp(k,    l )-vpp(k,lWC(l))))/dxdx
-                
+
             !.....Final explicit term.....
             ex(k,l) = vhpp(k,l) - twodt1*(advy*iadv+cory-hdy*ihd)
-                
+
          END DO
       END DO
 !$OMP END PARALLEL DO
       ! ... Recalculate ex for near bdry. cells
-      IF (nopen > 0) CALL MODexmom4openBCY        
+      IF (nopen > 0) CALL MODexmom4openBCY
    END SELECT
 
-   !.....Deallocate arrays..... 
+   !.....Deallocate arrays.....
 !   DEALLOCATE ( th1, th, haypp, haxpp )
 
    !.....Compute CPU time spent in subroutine.....
@@ -1261,7 +1261,7 @@ SUBROUTINE exmom ( ieq )
    !.....Local variables.....
    REAL :: twodt1
    REAL :: corx, cory, advx, advy, hdx, hdy, uE, uW, vN, vS, wU, wD, &
-           scW, scE, scN, scS, scU, scD, fr 
+           scW, scE, scN, scS, scU, scD, fr
    INTEGER :: i, j, k, l, istat, kmx, kmy, k1x, k1y, k1ne
    INTEGER :: kmne, nwlayers, nn, is, ie, js, je
 
@@ -1279,14 +1279,14 @@ SUBROUTINE exmom ( ieq )
 
    ! -----X-momentum equation-----
    CASE (1)
-        
+
       !......Calulate the explicit terms by sweeping over interior u-pts &
-      !      store results in ex- array                 
+      !      store results in ex- array
 
       !.....Calculate the coefficient array haypp for use
       !     in horizontal diffusion term & th1,th for use
       !     in vertical advection term in the x-momentum
-      haxpp(:,lm1) = 0.0; 
+      haxpp(:,lm1) = 0.0;
       haypp(:,lm1) = 0.0;
       DO l = 1, lm
 
@@ -1302,7 +1302,7 @@ SUBROUTINE exmom ( ieq )
 
         ! ... Horizontal diffusion ...........................
         DO k = k1x,kmx
-          haxpp(k,l)=Ax0*MIN(hupp(k,lEC(l)),hupp(k,l)) 
+          haxpp(k,l)=Ax0*MIN(hupp(k,lEC(l)),hupp(k,l))
           haypp(k,l)=Ay0*MIN(hupp(k,lNC(l)),hupp(k,l))
         ENDDO
 
@@ -1310,16 +1310,16 @@ SUBROUTINE exmom ( ieq )
 
         CASE(1)
 
-          !.....Calculate weighting arrays for vertical advection 
+          !.....Calculate weighting arrays for vertical advection
           DO k = k1x, kmx
             th (k,l) = hup(k-1,l)/(hup(k-1,l)+hup(k,l))
             th1(k,l) = 1.-th(k,l)
           ENDDO
 
-          !.....Set th=th1 at the free surface & bottom 
-          th (k1x  ,l) = 0.0; 
+          !.....Set th=th1 at the free surface & bottom
+          th (k1x  ,l) = 0.0;
           th1(k1x  ,l) = 0.0;
-          th (kmx+1,l) = 0.5; 
+          th (kmx+1,l) = 0.5;
           th1(kmx+1,l) = 0.5;
 
         CASE DEFAULT
@@ -1331,7 +1331,7 @@ SUBROUTINE exmom ( ieq )
 
       !......Calulate the explicit terms by sweeping over interior u-pts.....
       DO l = 1, lm
- 
+
          ! ... Map 2D-l into 3D-(i,j) indexes
          i = l2i(l); j = l2j(l);
 
@@ -1342,38 +1342,38 @@ SUBROUTINE exmom ( ieq )
          kmx = MIN(kmz(i+1,j), kmz(i,j))
          k1x =                 k1u(i,j)
 
-         ! Compute explicit term	     
+         ! Compute explicit term
          DO k = k1x,kmx
-                                       
+
             ! ... For u-layers connecting wett & dry cells neglect
             !     contribution from advective, coriolis & diffusion
-            IF ( hp(k,l) <= ZERO .OR. hp(k,lEC(l)) <= ZERO) THEN 
-              ex(k,l) = uhpp(k,l)            
+            IF ( hp(k,l) <= ZERO .OR. hp(k,lEC(l)) <= ZERO) THEN
+              ex(k,l) = uhpp(k,l)
               CYCLE
             ENDIF
 
             !.....Coriolis.....
             corx = 0.25 * f * (vhp(k,     lEC(l) ) + vhp(k,    l )       &
                   &           +vhp(k, lSC(lEC(l))) + vhp(k,lSC(l)))
-                      
-            !.....Advection   
+
+            !.....Advection
             uE = uhp(k,    lEC(l) ) +uhp(k,    l )
             uW = uhp(k,        l  ) +uhp(k,lWC(l))
             vN = vhp(k,    lEC(l) ) +vhp(k,    l )
             vS = vhp(k,lSC(lEC(l))) +vhp(k,lSC(l))
-            wU = wp (k,    lEC(l) ) +wp (k,    l ); IF ( k == k1x ) wU = 0.0; 
-            wD = wp (k+1,  lEC(l) ) +wp (k+1  ,l ); IF ( k == kmx ) wD = 0.0;  
+            wU = wp (k,    lEC(l) ) +wp (k,    l ); IF ( k == k1x ) wU = 0.0;
+            wD = wp (k+1,  lEC(l) ) +wp (k+1  ,l ); IF ( k == kmx ) wD = 0.0;
 
             SELECT CASE (itrmom)
 
-            CASE (1)   ! Centered differences with th & th1 
+            CASE (1)   ! Centered differences with th & th1
 
-              scE = up(k,lEC(l))+up(k,    l ) 
-              scW = up(k,lWC(l))+up(k,    l ) 
-              scN = up(k,lNC(l))+up(k,    l ) 
+              scE = up(k,lEC(l))+up(k,    l )
+              scW = up(k,lWC(l))+up(k,    l )
+              scN = up(k,lNC(l))+up(k,    l )
               scS = up(k,lSC(l))+up(k,    l )
               advx = (uE * scE - uW * scW ) / fourdx +          &
-                     (vN * scN - vS * scS ) / fourdy 
+                     (vN * scN - vS * scS ) / fourdy
               advx=advx+(wU*(th (k  ,l)* up(k  ,l)  +          &
                              th1(k  ,l)* up(k-1,l)) -          &
                          wD*(th (k+1,l)* up(k+1,l)  +          &
@@ -1388,29 +1388,29 @@ SUBROUTINE exmom ( ieq )
                     +( (vN+ABS(vN))* upp(k,    l ) +           &
                        (vN-ABS(vN))* upp(k,lNC(l)) -           &
                        (vS+ABS(vS))* upp(k,lSC(l)) -           &
-                       (vS-ABS(vS))* upp(k,    l ) ) / fourdy  &  
+                       (vS-ABS(vS))* upp(k,    l ) ) / fourdy  &
                     +( (wU+ABS(wU)) * upp(k  ,l) +             &
-                       (wU-ABS(wU)) * upp(k-1,l)) / 4.         & 
+                       (wU-ABS(wU)) * upp(k-1,l)) / 4.         &
                      -((wD+ABS(wD)) * upp(k+1,l) +             &
                        (wD-ABS(wD)) * upp(k  ,l)) / 4.
 
             CASE (3)  ! Centered differences - avoid computation of th1 and th
 
-              scE = up(k,lEC(l))+up(k,    l ) 
-              scW = up(k,lWC(l))+up(k,    l ) 
-              scN = up(k,lNC(l))+up(k,    l ) 
+              scE = up(k,lEC(l))+up(k,    l )
+              scW = up(k,lWC(l))+up(k,    l )
+              scN = up(k,lNC(l))+up(k,    l )
               scS = up(k,lSC(l))+up(k,    l )
               scU = (up(k  ,l)*hup(k  ,l)+        &
                      up(k-1,l)*hup(k-1,l))/       &
-                    (hup(k ,l)+hup(k-1,l)) 
+                    (hup(k ,l)+hup(k-1,l))
               scD = (up(k  ,l)*hup(k  ,l)+        &
                      up(k+1,l)*hup(k+1,l))/       &
-                    (hup(k ,l)+hup(k+1,l)) 
+                    (hup(k ,l)+hup(k+1,l))
               advx = (uE * scE - uW * scW ) / fourdx +          &
                      (vN * scN - vS * scS ) / fourdy +          &
                      (wU * scU - wD * scD ) / 2.
 
-            CASE (4) ! Upwinding for horizontal & centered for vertical  
+            CASE (4) ! Upwinding for horizontal & centered for vertical
 
               advx = ( (uE+ABS(uE))* upp(k,    l ) +           &
                        (uE-ABS(uE))* upp(k,lEC(l)) -           &
@@ -1419,14 +1419,14 @@ SUBROUTINE exmom ( ieq )
                     +( (vN+ABS(vN))* upp(k,    l ) +           &
                        (vN-ABS(vN))* upp(k,lNC(l)) -           &
                        (vS+ABS(vS))* upp(k,lSC(l)) -           &
-                       (vS-ABS(vS))* upp(k,    l ) ) / fourdy    
+                       (vS-ABS(vS))* upp(k,    l ) ) / fourdy
               advx=advx+(wU*(th (k  ,l)* up(k  ,l)  +          &
                              th1(k  ,l)* up(k-1,l)) -          &
                          wD*(th (k+1,l)* up(k+1,l)  +          &
                              th1(k+1,l)* up(k  ,l)) ) / 2.
 
             END SELECT
-	      		                  
+
             !.....Horizontal diffusion.....
             IF ( ihd == 0) THEN
               hdx = 0.0E0
@@ -1437,9 +1437,9 @@ SUBROUTINE exmom ( ieq )
                     & -  haxpp(k,lWC(l))*(upp(k,    l )-upp(k,lWC(l))))/dxdx
             ELSEIF ( ihd >  1) THEN
               hdx  = 2.* (haxpp(k,   (l))*(upp(k,lEC(    l ))-upp(k,    l ))       &
-                 &     -  haxpp(k,lWC(l))*(upp(k,        l  )-upp(k,lWC(l))))/dxdx & 
+                 &     -  haxpp(k,lWC(l))*(upp(k,        l  )-upp(k,lWC(l))))/dxdx &
                  &   +   (haypp(k,    l )*(upp(k,lNC(    l ))-upp(k,    l ))       &
-                 &     -  haypp(k,lSC(l))*(upp(k,        l  )-upp(k,lSC(l))))/dydy & 
+                 &     -  haypp(k,lSC(l))*(upp(k,        l  )-upp(k,lSC(l))))/dydy &
                  &   +   (haypp(k,    l )*(vpp(k,lEC(    l ))-vpp(k,    l ))       &
                  &     -  haypp(k,lSC(l))*(vpp(k,lEC(lSC(l)))-vpp(k,lSC(l))))/dxdy
             ENDIF
@@ -1455,18 +1455,18 @@ SUBROUTINE exmom ( ieq )
             !   advx = 0.0
             !   hdx  = 2.*hdx
             !ENDIF
-            !IF (j < 20 .OR. j > jm1-20) THEN; hdx = 0.0; corx = 0.0; end IF; 
+            !IF (j < 20 .OR. j > jm1-20) THEN; hdx = 0.0; corx = 0.0; end IF;
 
             !.....Final explicit term.....
             ex(k,l) = uhpp(k,l) - twodt1*(advx*iadv-corx-hdx)
-                
+
          END DO
       END DO
 
       ! ... Recalculate ex for near bdry. cells (Comment out for North Delta Salmon)
-      IF (nopen > 0) CALL MODexmom4openBCX        
-      
-   ! -----Y-momentum equation-----      
+      IF (nopen > 0) CALL MODexmom4openBCX
+
+   ! -----Y-momentum equation-----
    CASE (2)
 
       !.....Calculate the explicit terms by sweeping over interior v-pts &
@@ -1474,8 +1474,8 @@ SUBROUTINE exmom ( ieq )
 
       !.....Calculate the coefficient array haxpp for use
       !     in horizontal diffusion term & th1,th for use
-      !     in vertical advection term in the y-momentum 
-      haxpp(:,lm1) = 0.0; 
+      !     in vertical advection term in the y-momentum
+      haxpp(:,lm1) = 0.0;
       haypp(:,lm1) = 0.0;
       DO l = 1, lm
 
@@ -1491,7 +1491,7 @@ SUBROUTINE exmom ( ieq )
 
          ! ... Horizontal diffusion
          DO k = k1y, kmy
-           haypp(k,l)=Ay0*MIN(hvpp(k,lNC(l)),hvpp(k,l)) 
+           haypp(k,l)=Ay0*MIN(hvpp(k,lNC(l)),hvpp(k,l))
            haxpp(k,l)=Ax0*MIN(hvpp(k,lEC(l)),hvpp(k,l))
          ENDDO
 
@@ -1499,18 +1499,18 @@ SUBROUTINE exmom ( ieq )
 
          CASE (1)
 
-           !.....Calculate weighting arrays for vertical advection 
+           !.....Calculate weighting arrays for vertical advection
            DO k = k1y, kmy
               th (k,l) = hvp(k-1,l)/(hvp(k-1,l)+hvp(k,l))
               th1(k,l) = 1.-th(k,l)
            ENDDO
-             
-           !.....Set th=th1 at the free surface & bottom 
-           th (k1y  ,l) = 0.0; 
+
+           !.....Set th=th1 at the free surface & bottom
+           th (k1y  ,l) = 0.0;
            th1(k1y  ,l) = 0.0;
-           th (kmy+1,l) = 0.5; 
-           th1(kmy+1,l) = 0.5;              
-         
+           th (kmy+1,l) = 0.5;
+           th1(kmy+1,l) = 0.5;
+
          CASE DEFAULT
 
          END SELECT
@@ -1521,7 +1521,7 @@ SUBROUTINE exmom ( ieq )
 
          ! ... Map 2D-l into 3D-(i,j) indexes
          i = l2i(l); j = l2j(l);
-         
+
          ! ... Cycle if N-column is dry
          IF ( .NOT. mask2d(i,j+1) ) CYCLE
 
@@ -1529,21 +1529,21 @@ SUBROUTINE exmom ( ieq )
          kmy = MIN(kmz(i,j+1), kmz(i,j))
          k1y =                 k1v(i,j)
 
-         ! Compute explicit term	     
+         ! Compute explicit term
          DO k = k1y,kmy
-                                    
+
             ! ... For v-layers connecting wett & dry cells neglect
             !     contribution from advective, coriolis & diffusion
-            IF ( hp(k,l) <= ZERO .OR. hp(k,lNC(l)) <= ZERO) THEN 
+            IF ( hp(k,l) <= ZERO .OR. hp(k,lNC(l)) <= ZERO) THEN
                ex(k,l) = vhpp(k,l)
                CYCLE
             ENDIF
-         
+
             !.....Coriolis.....
             cory = 0.25 * f * (uhp(k,     lNC(l) ) + uhp(k,    l )       &
                   &           +uhp(k, lWC(lNC(l))) + uhp(k,lWC(l)))
-                      
-            !.....Advection  
+
+            !.....Advection
             uE = uhp(k,    lNC(l) ) +uhp(k,    l );
             uW = uhp(k,lWC(lNC(l))) +uhp(k,lWC(l));
             vN = vhp(k,    lNC(l) ) +vhp(k,    l );
@@ -1556,11 +1556,11 @@ SUBROUTINE exmom ( ieq )
             CASE (1)  ! Centered differences using th & th1 factors
 
               scE = vp(k,lEC(l)) + vp(k,    l )
-              scW = vp(k,lWC(l)) + vp(k,    l ) 
-              scN = vp(k,lNC(l)) + vp(k,    l ) 
-              scS = vp(k,lSC(l)) + vp(k,    l ) 
+              scW = vp(k,lWC(l)) + vp(k,    l )
+              scN = vp(k,lNC(l)) + vp(k,    l )
+              scS = vp(k,lSC(l)) + vp(k,    l )
               advy = (uE * scE - uW * scW ) / fourdx +       &
-                     (vN * scN - vS * scS ) / fourdy   
+                     (vN * scN - vS * scS ) / fourdy
               advy = advy  +                                 &
                      (wU*(th (k  ,l)* vp(k  ,l)  +           &
                           th1(k  ,l)* vp(k-1,l)) -           &
@@ -1568,7 +1568,7 @@ SUBROUTINE exmom ( ieq )
                           th1(k+1,l)* vp(k  ,l)) ) / 2.
 
             CASE(2) ! Upwinding
-			      
+
               advy = ( (uE+ABS(uE)) * vpp(k,    l ) +          &
                   &    (uE-ABS(uE)) * vpp(k,lEC(l)) -          &
                   &    (uW+ABS(uW)) * vpp(k,lWC(l)) -          &
@@ -1585,21 +1585,21 @@ SUBROUTINE exmom ( ieq )
             CASE (3)  ! Centered differences - avoid computation of th1 and th
 
               scE = vp(k,lEC(l)) + vp(k,    l )
-              scW = vp(k,lWC(l)) + vp(k,    l ) 
-              scN = vp(k,lNC(l)) + vp(k,    l ) 
-              scS = vp(k,lSC(l)) + vp(k,    l ) 
+              scW = vp(k,lWC(l)) + vp(k,    l )
+              scN = vp(k,lNC(l)) + vp(k,    l )
+              scS = vp(k,lSC(l)) + vp(k,    l )
               scU = (vp(k  ,l)*hvp(k  ,l)+                      &
                      vp(k-1,l)*hvp(k-1,l))/                     &
-                    (hvp(k ,l)+hvp(k-1,l)) 
+                    (hvp(k ,l)+hvp(k-1,l))
               scD = (vp(k  ,l)*hvp(k  ,l)+                      &
                      vp(k+1,l)*hvp(k+1,l))/                     &
-                    (hvp(k ,l)+hvp(k+1,l)) 
+                    (hvp(k ,l)+hvp(k+1,l))
               advy = (uE * scE - uW * scW ) / fourdx +          &
                      (vN * scN - vS * scS ) / fourdy +          &
                      (wU * scU - wD * scD ) / 2.
 
             CASE(4) ! Upwinding only for horizontal advection
-			      
+
               advy = ( (uE+ABS(uE))* vpp(k,    l ) +           &
                   &    (uE-ABS(uE))* vpp(k,lEC(l)) -           &
                   &    (uW+ABS(uW))* vpp(k,lWC(l)) -           &
@@ -1607,28 +1607,28 @@ SUBROUTINE exmom ( ieq )
                   & +( (vN+ABS(vN))* vpp(k,    l ) +           &
                   &    (vN-ABS(vN))* vpp(k,lNC(l)) -           &
                   &    (vS+ABS(vS))* vpp(k,lSC(l)) -           &
-                  &    (vS-ABS(vS))* vpp(k,    l ) ) / fourdy  
+                  &    (vS-ABS(vS))* vpp(k,    l ) ) / fourdy
               advy = advy +                                    &
                      (wU*(th (k  ,l)* vp(k  ,l)  +             &
                           th1(k  ,l)* vp(k-1,l)) -             &
                       wD*(th (k+1,l)* vp(k+1,l)  +             &
                           th1(k+1,l)* vp(k  ,l)) ) / 2.
-		
+
             END SELECT
 
             !.....Horizontal diffusion.....
             IF ( ihd == 0) THEN
               hdy = 0.0E0
-            ELSEIF ( ihd == 1) THEN  		                  
+            ELSEIF ( ihd == 1) THEN
               hdy  =   (haypp(k,    l )*(vpp(k,lNC(l))-vpp(k,    l ))              &
                    & -  haypp(k,lSC(l))*(vpp(k,    l )-vpp(k,lSC(l))))/dydy        &
                    & + (haxpp(k,    l )*(vpp(k,lEC(l))-vpp(k,    l ))              &
                    & -  haxpp(k,lWC(l))*(vpp(k,    l )-vpp(k,lWC(l))))/dxdx
             ELSEIF ( ihd >  1) THEN
               hdy  = 2.* (haypp(k,   (l))*(vpp(k,lNC(    l ))-vpp(k,    l ))       &
-                 &     -  haypp(k,lSC(l))*(vpp(k,        l  )-vpp(k,lSC(l))))/dydy & 
+                 &     -  haypp(k,lSC(l))*(vpp(k,        l  )-vpp(k,lSC(l))))/dydy &
                  &   +   (haxpp(k,    l )*(vpp(k,lEC(l     ))-vpp(k,    l ))       &
-                 &     -  haxpp(k,lWC(l))*(vpp(k,        l  )-vpp(k,lWC(l))))/dxdx & 
+                 &     -  haxpp(k,lWC(l))*(vpp(k,        l  )-vpp(k,lWC(l))))/dxdx &
                  &   +   (haxpp(k,    l )*(upp(k,lNC(    l ))-upp(k,    l ))       &
                  &     -  haxpp(k,lWC(l))*(upp(k,lNC(lWC(l)))-upp(k,lWC(l))))/dxdy
             ENDIF
@@ -1645,16 +1645,16 @@ SUBROUTINE exmom ( ieq )
             !   hdy  = 2.*hdy
             !ENDIF
             !IF (j < 20 .OR. j > jm1-20) THEN; hdy = 0.; cory = 0.0; end IF
-               
+
             !.....Final explicit term.....
             ex(k,l) = vhpp(k,l) - twodt1*(advy*iadv+cory-hdy)
-                
+
          END DO
       END DO
 
       ! ... Recalculate ex for near bdry. cells (Comment out for North Delta Salmon)
-      IF (nopen > 0) CALL MODexmom4openBCY    
-    
+      IF (nopen > 0) CALL MODexmom4openBCY
+
    END SELECT
 
    !.....Compute CPU time spent in subroutine.....
@@ -1694,7 +1694,7 @@ SUBROUTINE matmom ( ieq )
 !           x  or  y  momentum equation are to be evaluated.
 !           (1=x-momentum, 2=y-momentum)
 !
-!  23/04/2008   F.J. Rueda    Recompute baroclinic term at bottom 
+!  23/04/2008   F.J. Rueda    Recompute baroclinic term at bottom
 !  23/04/2008   F.J. Rueda    Do not set to zero baroclinic term at
 !                             wett/dry cells near the surface
 !  26/05/2009   F.J. Rueda    Include ptype option 3 (circular plume)
@@ -1706,8 +1706,8 @@ SUBROUTINE matmom ( ieq )
    !.....Local variables.....
    INTEGER :: i, j, k, l, kmx, kmy, k1x, k1y, nwlayers, inn
    REAL    :: twodt1, wsx0, wsy0, tausx, taubx, tausy, tauby,      &
-              hpmin, usurf, vsurf,Uhvalue, Usource, Vsource,       & 
-              Vhvalue, cwx, cwy 
+              hpmin, usurf, vsurf,Uhvalue, Usource, Vsource,       &
+              Vhvalue, cwx, cwy
    REAL, DIMENSION(km1) :: bclncx, bclncy, vdiffx, vdiffy,         &
          & hupdrho, hvpdrho, deltaz, Avxdudz, Avydvdz, Avx, Avy,   &
          & rhopx, rhopy, gg, hh, ar, ag
@@ -1720,16 +1720,16 @@ SUBROUTINE matmom ( ieq )
    btime = TIMER(0.0)
 
    !.....Constants.....
-   twodt1 = twodt*tz; 
+   twodt1 = twodt*tz;
 
    SELECT CASE ( ieq )
-   
-   !                -----X-momentum equation----- 
+
+   !                -----X-momentum equation-----
    CASE (1)
       !eagx = 0.0; earx = 0.0;
       !.....Loop over interior u-pts .....
       DO l = 1, lm
-            
+
             ! ... Map 2D-l into 3D-(i,j) indexes
             i = l2i(l); j = l2j(l);
 
@@ -1743,7 +1743,7 @@ SUBROUTINE matmom ( ieq )
             IF(nwlayers < 1) CYCLE
 
             ! ... Compute eddy viscosity at interfaces vertically between u-pts
-            Avx = 0.0 
+            Avx = 0.0
             DO k = k1x+1,kmx
               Avx(k) = 0.5 * (Av(k,lEC(l))+Av(k,l))
             ENDDO
@@ -1752,7 +1752,7 @@ SUBROUTINE matmom ( ieq )
             rhopx(k1x:kmx) = 1000. ! Neglect vertical density variations
 
             ! ... Compute explicit portion of water surface slope term ........
-            wsx0 = rhopx(k1x) * gdtdx * (spp(i+1,j) - spp(i,j)) 
+            wsx0 = rhopx(k1x) * gdtdx * (spp(i+1,j) - spp(i,j))
 
             ! ... Compute baroclinic term .....................................
             SELECT CASE (ibc)
@@ -1762,7 +1762,7 @@ SUBROUTINE matmom ( ieq )
               DO k = k1x, kmx
                 hupdrho(k) = gdtdx*hup(k,l)*(rhop(k,lEC(l))-rhop(k,l))
                 !IF(hp(k,l) <= ZERO .OR. hp(k,lEC(l)) <= ZERO) hupdrho(k) = 0.0
-              ENDDO 
+              ENDDO
               bclncx(k1x) = hupdrho(k1x)
               IF (kmx > k1x) THEN   ! Two or more wet layers
                 ! Recompute bottom layer baroclinic term along horizontal plane
@@ -1784,17 +1784,17 @@ SUBROUTINE matmom ( ieq )
               Avxdudz(k1x)      = 0.0  ! Set value at free surface to zero
               Avxdudz(kmx+1)    = 0.0  ! Set value at bottom boundary to zero
               vdiffx(k1x:kmx) = twodt*(Avxdudz(k1x:kmx) - Avxdudz(k1x+1:kmx+1)) &
-                                *2.*(1.-theta) ! This factor accounts for semi-implicitness 
+                                *2.*(1.-theta) ! This factor accounts for semi-implicitness
             END SELECT
 
             !.....Form  [hh]  matrix...........................................
             hh   (k1x:kmx) = hup(k1x:kmx,l)/rhopx(k1x:kmx)
- 
+
             !.....Form [gg]  matrix............................................
             gg(k1x:kmx) = ex(k1x:kmx,l)                                       &
                          -hh(k1x:kmx  ) * (bclncx(k1x:kmx)+wsx0) * tz         &
                          +vdiffx(k1x:kmx)                        * tz
- 
+
             !.....Form [aa]  matrix............................................
             SELECT CASE (nwlayers)
             CASE (1)    ! Single wet layer
@@ -1804,7 +1804,7 @@ SUBROUTINE matmom ( ieq )
               aa(3,k1x:kmx-1)= -twodt1*Avx(k1x+1:kmx)/(hup(k1x+1:kmx,l)*      &
                                 (hup(k1x:kmx-1,l)+hup(k1x+1:kmx,l)))*2.*theta
               aa(3,kmx)      =  0.0
-              ! Define lower diagonal terms 
+              ! Define lower diagonal terms
               aa(1,k1x+1:kmx)= -twodt1*Avx(k1x+1:kmx)/(hup(k1x:kmx-1,l)*      &
                                 (hup(k1x:kmx-1,l)+hup(k1x+1:kmx,l)))*2.*theta
               aa(1,k1x)      =  0.0
@@ -1817,18 +1817,18 @@ SUBROUTINE matmom ( ieq )
             ! ... Top boundary conditions......................................
             ! a. Form wind stress term
             usurf = up(k1x,l)
-            vsurf =(vp(k1v(i  ,j  ),        l  ) +                            & 
+            vsurf =(vp(k1v(i  ,j  ),        l  ) +                            &
                     vp(k1v(i  ,j-1),    lSC(l) ) +                            &
                     vp(k1v(i+1,j  ),    lEC(l) ) +                            &
                     vp(k1v(i+1,j-1),lSC(lEC(l))))/4.
             cwx = cdw(i,j)*rhoair*SQRT((vair(i,j)-vsurf)**2.+ &
-                                       (uair(i,j)-usurf)**2.)         
+                                       (uair(i,j)-usurf)**2.)
             ! b. Modify [gg] matrix
             tausx     = cwx/rhopx(k1x)*uair(i,j)
             gg(  k1x) = gg(  k1x) + tausx*twodt1
             ! c. Modify [aa] matrix
-            tausx     = cwx/rhopx(k1x)/hup(k1x,l)  
-            aa(2,k1x) = aa(2,k1x) + tausx*twodt1    
+            tausx     = cwx/rhopx(k1x)/hup(k1x,l)
+            aa(2,k1x) = aa(2,k1x) + tausx*twodt1
 
             ! ... Bottom boundary conditions...................................
             ! a. Form bottom stress term
@@ -1839,22 +1839,22 @@ SUBROUTINE matmom ( ieq )
             ! b. Modify [aa] matrix
             aa(2,kmx)   = aa(2,kmx) + taubx*twodt1
 
-            ! .... Point sources and sinks .................................... 
+            ! .... Point sources and sinks ....................................
             IF ( iopss > 0 ) THEN
 
-              DO inn = 1, iopss  
+              DO inn = 1, iopss
                 IF (i == ipss(inn)     .AND. &
                     j == jpss(inn)     ) THEN
                   DO k = k1x,kmx
                     IF (ABS(Qpss(k,inn))<1.E-10) CYCLE
-                    ! ... Strength of Source - here it is assumed that 
+                    ! ... Strength of Source - here it is assumed that
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
                     Usource = ABS(Qpss(k,inn))/(dx*dy*hup(k,l))*twodt1/2.
                     IF(ptype(iodev(inn)) == -2) Usource = 1.E2
                     ! ... Velocity of the source in E direction (positive
                     !     towards east if a source; negative or towards west if
-                    !     a sink) - idetr = 1 by default; 
+                    !     a sink) - idetr = 1 by default;
                     Uhvalue = (Qpss(k,inn)*uEpss(iodev(inn))/dy)*idetr(iodev(inn)) !FJRPlume
                     aa(2,k) = aa(2,k) + Usource
                     gg(  k) = gg(  k) + Usource * Uhvalue
@@ -1864,14 +1864,14 @@ SUBROUTINE matmom ( ieq )
                     j == jpss(inn)    ) THEN
                   DO k = k1x,kmx
                     IF (ABS(Qpss(k,inn))<1.E-10) CYCLE
-                    ! ... Strength of Source - here it is assumed that 
+                    ! ... Strength of Source - here it is assumed that
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
                     Usource = ABS(Qpss(k,inn))/(dx*dy*hup(k,l))*twodt1/2.
                     IF(ptype(iodev(inn)) == -2) Usource = 1.E2
                     ! ... Velocity of the source in N direction (positive
                     !     towards north if a source; negative or towards south if
-                    !     a sink) - idetr = 1 by default; 
+                    !     a sink) - idetr = 1 by default;
                     Uhvalue = -(Qpss(k,inn)*uWpss(iodev(inn))/dy)*idetr(iodev(inn)) !FJRPlume
                     aa(2,k) =   aa(2,k) + Usource
                     gg(  k) =   gg(  k) + Usource * Uhvalue
@@ -1886,7 +1886,7 @@ SUBROUTINE matmom ( ieq )
               ag(k1x) = gg(k1x)/aa(2,k1x)
               ar(k1x) = hh(k1x)/aa(2,k1x)
             CASE (2:)   ! Two or more wet layers
-              CALL trid ( aa, gg, hh, ag, ar, k1x, kmx, kmx+1, nwlayers ) 
+              CALL trid ( aa, gg, hh, ag, ar, k1x, kmx, kmx+1, nwlayers )
             END SELECT
 
             !.....Save  [ag]  and  [ar]  arrays and sum them over
@@ -1919,14 +1919,14 @@ SUBROUTINE matmom ( ieq )
             IF(nwlayers < 1) CYCLE
 
             ! .... Compute eddy viscosity at interfaces between v-pts)
-            Avy = 0.0       
+            Avy = 0.0
             DO k = k1y, kmy
               Avy(k) = 0.5*(Av(k,lNC(l))+Av(k,l))
             ENDDO
 
             ! .... Define average layer density at v-pts (in kg/m**3) .........
-            rhopy(k1y:kmy) = 1000. ! Neglect vertical density variations 
- 
+            rhopy(k1y:kmy) = 1000. ! Neglect vertical density variations
+
             !.....Compute explicit part of water surface slope term ...........
             wsy0 = rhopy(k1y) *  gdtdy  *(spp(i,j+1) - spp(i,j))
 
@@ -1961,7 +1961,7 @@ SUBROUTINE matmom ( ieq )
               Avydvdz(k1y)      = 0.0  ! Set value at free surface to zero
               Avydvdz(kmy+1)    = 0.0  ! Set value at bottom boundary to zero
               vdiffy(k1y:kmy) = twodt*(Avydvdz(k1y:kmy) - Avydvdz(k1y+1:kmy+1)) &
-                                *2.*(1.-theta) ! This factor accounts for semi-implicitness 
+                                *2.*(1.-theta) ! This factor accounts for semi-implicitness
             END SELECT
 
 
@@ -1969,9 +1969,9 @@ SUBROUTINE matmom ( ieq )
             hh   (k1y:kmy) = hvp(k1y:kmy,l)/rhopy(k1y:kmy)
 
             !.....Compute  [gg]  matrix .......................................
-            gg(k1y:kmy) = ex(k1y:kmy,l)                                       & 
+            gg(k1y:kmy) = ex(k1y:kmy,l)                                       &
                         - hh(k1y:kmy  ) * (bclncy(k1y:kmy)+wsy0) * tz         &
-                        + vdiffy(k1y:kmy)                        * tz 
+                        + vdiffy(k1y:kmy)                        * tz
 
             !.....Form  [aa]  matrix...........................................
             SELECT CASE (nwlayers)
@@ -1980,11 +1980,11 @@ SUBROUTINE matmom ( ieq )
             CASE (2:)   ! Two or more wet layers (hv->hvp)
               ! Define upper diagonal terms
               aa(3,k1y:kmy-1)=-twodt1*Avy(k1y+1:kmy)/(hvp(k1y+1:kmy,l)*       &
-                             & (hvp(k1y:kmy-1,l)+hvp(k1y+1:kmy,l)))*2.*theta 
+                             & (hvp(k1y:kmy-1,l)+hvp(k1y+1:kmy,l)))*2.*theta
               aa(3,kmy)      = 0.0
               ! Define lower diagonal terms
               aa(1,k1y+1:kmy)=-twodt1*Avy(k1y+1:kmy)/(hvp(k1y:kmy-1,l)*       &
-                             & (hvp(k1y:kmy-1,l)+hvp(k1y+1:kmy,l)))*2.*theta  
+                             & (hvp(k1y:kmy-1,l)+hvp(k1y+1:kmy,l)))*2.*theta
               aa(1,k1y)      = 0.0
               ! Define center diagonal terms
               aa(2,k1y:kmy)  = 1.0                                            &
@@ -1993,21 +1993,21 @@ SUBROUTINE matmom ( ieq )
             END SELECT
 
             ! ... Top boundary conditions .....................................
-            ! a. Form wind stress term 
+            ! a. Form wind stress term
             vsurf = vp(k1y,l)
-            usurf =(up(k1u(i  ,j  ),        l  ) +                            & 
+            usurf =(up(k1u(i  ,j  ),        l  ) +                            &
                     up(k1u(i-1,j  ),    lWC(l) ) +                            &
                     up(k1u(i  ,j+1),    lNC(l) ) +                            &
-                    up(k1u(i-1,j+1),lWC(lNC(l))))/4. 
+                    up(k1u(i-1,j+1),lWC(lNC(l))))/4.
             cwy = cdw(i,j)*rhoair*SQRT((uair(i,j)-usurf)**2.+ &
-                                       (vair(i,j)-vsurf)**2.)          
+                                       (vair(i,j)-vsurf)**2.)
             ! b. Modify [gg] matrix
             tausy = cwy/rhopy(k1y)*vair(i,j)
             gg(k1y)   = gg(  k1y) + tausy*twodt1
             ! c. Modify [aa] matrix
-            tausy = cwy/rhopy(k1y)/hvp(k1y,l) 
-            aa(2,k1y) = aa(2,k1y) + tausy*twodt1   
-             
+            tausy = cwy/rhopy(k1y)/hvp(k1y,l)
+            aa(2,k1y) = aa(2,k1y) + tausy*twodt1
+
             ! ... Bottom boundary conditions ..................................
             ! a. Form bottom stress term
             tauby = cd*SQRT((vhpp(kmy,l)*vhpp(kmy,l)) +                       &
@@ -2018,23 +2018,23 @@ SUBROUTINE matmom ( ieq )
             ! b. Modify [aa] matrix
             aa(2,kmy) = aa(2,kmy) + tauby*twodt1
 
-            ! .... Point sources and sinks .................................... 
+            ! .... Point sources and sinks ....................................
             IF( iopss > 0 ) THEN
 
-              DO inn = 1, iopss  
+              DO inn = 1, iopss
 
                 IF (i == ipss(inn)     .AND. &
                     j == jpss(inn)     ) THEN
                   DO k = k1y,kmy
                     IF (ABS(Qpss(k,inn))<1.E-10) CYCLE
-                    ! ... Strength of Source - here it is assumed that 
+                    ! ... Strength of Source - here it is assumed that
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
                     Vsource = ABS(Qpss(k,inn))/(dx*dy*hvp(k,l))*twodt1/2.
                     IF(ptype(iodev(inn)) == -2) Vsource = 1.E2
                     ! ... Velocity of the source in N direction (positive
                     !     towards north if a source; negative or towards south if
-                    !     a sink) - idetr = 1 by default; 
+                    !     a sink) - idetr = 1 by default;
                     Vhvalue = (Qpss(k,inn)*vNpss(iodev(inn))/dx)*idetr(iodev(inn)) !FJRPlume
                     aa(2,k) = aa(2,k) + Vsource
                     gg(  k) = gg(  k) + Vsource * Vhvalue
@@ -2044,21 +2044,21 @@ SUBROUTINE matmom ( ieq )
                     j == jpss(inn)-1    ) THEN
                   DO k = k1y,kmy
                     IF (ABS(Qpss(k,inn))<1.E-10) CYCLE
-                    ! ... Strength of Source - here it is assumed that 
+                    ! ... Strength of Source - here it is assumed that
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
                     Vsource = ABS(Qpss(k,inn))/(dx*dy*hvp(k,l))*twodt1/2.
                     IF(ptype(iodev(inn)) == -2) Vsource = 1.E2
                     ! ... Velocity of the source in S direction (negative
                     !     towards south if a source; positive or towards north if
-                    !     a sink) - idetr = 1 by default; 
+                    !     a sink) - idetr = 1 by default;
                     Vhvalue = -(Qpss(k,inn)*vSpss(iodev(inn))/dx)*idetr(iodev(inn)) !FJRPlume
                     aa(2,k) = aa(2,k) + Vsource
                     gg(  k) = gg(  k) + Vsource * Vhvalue
                   ENDDO
                 ENDIF
               ENDDO
-			
+
             ENDIF
 
             !.....Solve tridiagonal system for  [ag]  and  [ar]  arrays........
@@ -2067,7 +2067,7 @@ SUBROUTINE matmom ( ieq )
               ag(k1y) = gg(k1y)/aa(2,k1y)
               ar(k1y) = hh(k1y)/aa(2,k1y)
             CASE (2:)   ! Two or more wet layers
-              CALL trid ( aa, gg, hh, ag, ar, k1y, kmy, km1, nwlayers ) 
+              CALL trid ( aa, gg, hh, ag, ar, k1y, kmy, km1, nwlayers )
             END SELECT
 
             !.....Save  [ag]  and  [ar]  arrays and sum them over
@@ -2076,7 +2076,7 @@ SUBROUTINE matmom ( ieq )
             ary(k1y:kmy,l) = ar(k1y:kmy)
             eagy(i,j) = SUM(ag(k1y:kmy))
             eary(i,j) = SUM(ar(k1y:kmy))
- 
+
          !.....End loop over v-pts.....
          END DO
    END SELECT
@@ -2120,8 +2120,8 @@ SUBROUTINE bclnc_km (l, kb, ieq, huvpdrho )
 
 
    CASE (1)
-      
-      !.....Check if the depth at the press-pt on the east side of the 
+
+      !.....Check if the depth at the press-pt on the east side of the
       !     control volume is not equal to the depth at the u-pt.....
       hup_plus = hup(kb,l)+eps;  hup_minus = hup(kb,l)-eps
       IF((hp(kb,lEC(l)) > hup_plus) .OR. (hp(kb,lEC(l)) < hup_minus)) THEN
@@ -2136,7 +2136,7 @@ SUBROUTINE bclnc_km (l, kb, ieq, huvpdrho )
          rhop_e = rhop(kb,lEC(l))
       END IF
 
-      !.....Check if the depth at the press-pt on the west side of the 
+      !.....Check if the depth at the press-pt on the west side of the
       !     control volume is not equal to the depth at the u-pt.....
       IF((hp(kb,l) > hup_plus) .OR. (hp(kb,l) < hup_minus)) THEN
          condition_w = .TRUE.
@@ -2161,8 +2161,8 @@ SUBROUTINE bclnc_km (l, kb, ieq, huvpdrho )
 
 
    CASE (2)
-      
-      !.....Check if the depth at the press-pt on the north side of 
+
+      !.....Check if the depth at the press-pt on the north side of
       !     the control volume is not equal to the depth at the v-pt.....
       hvp_plus = hvp(kb,l)+eps;  hvp_minus = hvp(kb,l)-eps
       IF((hp(kb,lNC(l)) > hvp_plus) .OR. (hp(kb,lNC(l)) < hvp_minus)) THEN
@@ -2177,7 +2177,7 @@ SUBROUTINE bclnc_km (l, kb, ieq, huvpdrho )
          rhop_n = rhop(kb,lNC(l))
       END IF
 
-      !.....Check if the depth at the press-pt on the south side of 
+      !.....Check if the depth at the press-pt on the south side of
       !     the control volume is not equal to the depth at the v-pt.....
       IF((hp(kb,l) > hvp_plus) .OR. (hp(kb,l) < hvp_minus)) THEN
          condition_s = .TRUE.
@@ -2220,11 +2220,11 @@ SUBROUTINE matcon
    btime = TIMER(0.0)
 
    !.....Constants.....
-   cx     = gdt2dx2*tz*tz; 
+   cx     = gdt2dx2*tz*tz;
    cy     = gdt2dy2*tz*tz;
-   dtdx1  = dtdx*tz; 
+   dtdx1  = dtdx*tz;
    dtdy1  = dtdy*tz;
-   dt1    = dt*tz; 
+   dt1    = dt*tz;
    rho4sx = 1000. ! Neglect density variations
    rho4sy = 1000. ! Neglect density variations
 
@@ -2232,11 +2232,11 @@ SUBROUTINE matcon
    sx = 0.0; sy = 0.0;
    DO l = 1, lm
 
-     ! ... Map 2D-l into 3D-(i,j) indexes 
+     ! ... Map 2D-l into 3D-(i,j) indexes
      i = l2i(l); j = l2j(l);
 
      ! ... u-pts
-     IF (mask2d(i+1,j)) THEN 
+     IF (mask2d(i+1,j)) THEN
         sx(i,j)= cx * rho4sx * earx(i,j)
      ENDIF
 
@@ -2246,12 +2246,12 @@ SUBROUTINE matcon
      ENDIF
 
    ENDDO
-	  
+
    !.....Calculate  [dd], [qq], and [rr]  matrices at zeta-pts.....
    dd = 0.0; qq = 0.0; rr = 1.0
-   DO l = 1, lm   
+   DO l = 1, lm
 
-     ! ... Map 2D-l into 3D-(i,j) indexes 
+     ! ... Map 2D-l into 3D-(i,j) indexes
      i = l2i(l); j = l2j(l);
 
      ! ... Top & bottom cells
@@ -2274,8 +2274,8 @@ SUBROUTINE matcon
    IF ( iopss > 0 ) THEN
      DO inn = 1, iopss
        IF ( ptype(iodev(inn)) > 0) CYCLE
-       i = ipss(inn); 
-       j = jpss(inn); 
+       i = ipss(inn);
+       j = jpss(inn);
        qq(i,j) = qq(i,j) +  SUM(Qpss(:,inn))/(dx*dy)*twodt*tz
      ENDDO
    ENDIF
@@ -2385,16 +2385,16 @@ SUBROUTINE solverBLOCK
    !.....STOP program execution if a fatal error is encountered in nspcg.....
    IF (ier < 0 ) THEN
       PRINT *, " "
-      PRINT '(" Fatal error in matrix solution on time step = ", I7)', n 
+      PRINT '(" Fatal error in matrix solution on time step = ", I7)', n
       PRINT '(" **ERROR", I5, " from nspcg")', ier
       PRINT '(" Time = ", F10.4, " hours")', thrs
       PRINT *, " "
       PRINT *, " "
       PRINT *, " ****STOPPING si3d due to fatal error in matrix solution"
       WRITE (UNIT=i6,FMT='(" ****STOPPING si3d due to fatal matrix error")' )
-      WRITE (UNIT=i6,FMT='(" Time = ", F10.4, " hours")') thrs 
+      WRITE (UNIT=i6,FMT='(" Time = ", F10.4, " hours")') thrs
       STOP
-   END IF 
+   END IF
 
    !.....Load matrix solution into  zeta  array.....
    DO m = 1, ndim
@@ -2407,7 +2407,7 @@ SUBROUTINE solverBLOCK
    CALL slayer_h
 
    !.....Save the workspace parameters, slightly over-dimensioning it
-   !     Otherwise one gets some errors. 
+   !     Otherwise one gets some errors.
    nw = FLOOR(nw1*1.5); inw = FLOOR(inw1*1.5); maxnz = maxnz1
 
    !.....Deallocate arrays.....
@@ -2424,22 +2424,22 @@ SUBROUTINE solverSPARSE
 !***********************************************************************
 !
 !  Purpose: To solve the system matrix for zeta using the
-!           preconditioned conjugate gradient method. It uses 
-!           Storage format 1 (i.e. ELLPACK or iparm(12) = 1; 
+!           preconditioned conjugate gradient method. It uses
+!           Storage format 1 (i.e. ELLPACK or iparm(12) = 1;
 !           in this manner a considerable amount of time is saved
-!           as we do not have to store an imxjm by imxjm matrix, 
-!           pentadiagonal but very large; instead we only store 
-!           lmxlm matrix; this is extremely useful in sparse 
-!           bathymetries such as in rivers. Each row in the matrix 
-!           has at most 5 non-zero elements, which are stored in coeffA; 
-!           the location of the coefficients in the matrix is stored 
-!           in jcoefA - see instructions.  
-!           
+!           as we do not have to store an imxjm by imxjm matrix,
+!           pentadiagonal but very large; instead we only store
+!           lmxlm matrix; this is extremely useful in sparse
+!           bathymetries such as in rivers. Each row in the matrix
+!           has at most 5 non-zero elements, which are stored in coeffA;
+!           the location of the coefficients in the matrix is stored
+!           in jcoefA - see instructions.
+!
 !-----------------------------------------------------------------------
 
    !.....Local variables.....
    EXTERNAL mic1, jac1, cg, si
-   INTEGER :: nw1a, inw1a, maxnz1a, i, j, m, & 
+   INTEGER :: nw1a, inw1a, maxnz1a, i, j, m, &
               ier, nrA, ncA, istat, nfirstA=0, ios
    INTEGER, SAVE:: i895 = 895
    CHARACTER(LEN=25):: solverfile="SolverAMODE.txt"
@@ -2459,7 +2459,7 @@ SUBROUTINE solverSPARSE
       maxnzA = mdimA
       ! Liberally estimate workspace requirements
       nwA = 20*ndimA;  inwA = 5*ndimA
-      ! Open file 
+      ! Open file
       !OPEN (UNIT=i895, FILE=solverfile, IOSTAT=ios)
    END IF
 
@@ -2468,7 +2468,7 @@ SUBROUTINE solverSPARSE
 
    !.....Allocate arrays.....
    ALLOCATE (coeffA(ndimA,mdimA), &
-          &  jcoefA(ndimA,mdimA), & 
+          &  jcoefA(ndimA,mdimA), &
           &  rhs   (ndimA)      , &
           &  zeta  (ndimA)      , &
           &  wksp  (nw1A )      , &
@@ -2478,7 +2478,7 @@ SUBROUTINE solverSPARSE
    !.....Define  coef, jcoef1  and  rhs  arrays in
    !     preparation for calling .....
    DO m = 1, lm
-     i = l2i(m); 
+     i = l2i(m);
      j = l2j(m);
      coeffA (m,1) =  rr(i,j)
      coeffA (m,2) = -sx(i-1,j  )
@@ -2486,10 +2486,10 @@ SUBROUTINE solverSPARSE
      coeffA (m,4) = -sy(i  ,j  )
      coeffA (m,5) = -sx(i  ,j  )
      jcoefA (m,1) =  m
-     jcoefA (m,2) =  lWC(m) 
-     jcoefA (m,3) =  lSC(m)   
-     jcoefA (m,4) =  lNC(m)  
-     jcoefA (m,5) =  lEC(m) 
+     jcoefA (m,2) =  lWC(m)
+     jcoefA (m,3) =  lSC(m)
+     jcoefA (m,4) =  lNC(m)
+     jcoefA (m,5) =  lEC(m)
      IF(jcoefA(m,2)==lm1) jcoefA(m,2)=0;
      IF(jcoefA(m,3)==lm1) jcoefA(m,3)=0;
      IF(jcoefA(m,4)==lm1) jcoefA(m,4)=0;
@@ -2524,20 +2524,20 @@ SUBROUTINE solverSPARSE
    !.....STOP program execution if a fatal error is encountered in nspcg.....
    IF (ier < 0 ) THEN
       PRINT *, " "
-      PRINT '(" Fatal error in matrix solution on time step = ", I7)', n 
+      PRINT '(" Fatal error in matrix solution on time step = ", I7)', n
       PRINT '(" **ERROR", I5, " from nspcg")', ier
       PRINT '(" Time = ", F10.4, " hours")', thrs
       PRINT *, " "
       PRINT *, " "
       PRINT *, " ****STOPPING si3d due to fatal error in matrix solution"
       WRITE (UNIT=i6,FMT='(" ****STOPPING si3d due to fatal matrix error")' )
-      WRITE (UNIT=i6,FMT='(" Time = ", F10.4, " hours")') thrs 
+      WRITE (UNIT=i6,FMT='(" Time = ", F10.4, " hours")') thrs
       STOP
-   END IF 
+   END IF
 
    !.....Load matrix solution into  zeta  array.....
    DO m = 1, lm
-     i = l2i(m); 
+     i = l2i(m);
      j = l2j(m);
      s(i,j) = zeta(m)
    END DO
@@ -2574,15 +2574,15 @@ SUBROUTINE slayer_h
    INTEGER :: i, j, k, l
 
 
-   ! ... Initialize layer thickness for time n+1 
-   h  = hp ; 
-   hu = hup; 
+   ! ... Initialize layer thickness for time n+1
+   h  = hp ;
+   hu = hup;
    hv = hvp;
-   
+
    ! ... Redo calculations for surface cells
-   !     1.- If drying occurs redo calcs. at cell k1s+1 
-   !     2.- If cell k1s becomes thicker than its nominal size 
-   !         just ignore. Wetting is not done at this time 
+   !     1.- If drying occurs redo calcs. at cell k1s+1
+   !     2.- If cell k1s becomes thicker than its nominal size
+   !         just ignore. Wetting is not done at this time
    !     Arrays storing surface cells are not modified at this
    !     time since they are used in subr. vel
 
@@ -2590,46 +2590,46 @@ SUBROUTINE slayer_h
 
       ! ... Map 3D-(i,j) from 2D-l indexes
       i = l2i(l); j = l2j(l);
-      
+
       ! ... At zeta-points
       k = k1z(i,j)
-      h(k,l)=AMIN1(zlevel(k+1),hhs(i,j)) + s(i,j)        
+      h(k,l)=AMIN1(zlevel(k+1),hhs(i,j)) + s(i,j)
       IF(h (k,l) <= HMIN) THEN
-         h  (k,l) = ZERO; 
-         k = k + 1; 
+         h  (k,l) = ZERO;
+         k = k + 1;
          h (k,l) = AMIN1(zlevel(k+1),hhs(i,j)) + s(i,j)
          IF (h  (k,l) <= HMIN) h  (k,l)  = ZERO
       ENDIF
 
-      ! ... At u-points    
+      ! ... At u-points
       IF (mask2d(i+1,j)) THEN
         k = k1u(i,j)
         hu(k,l)=AMIN1(zlevel(k+1),hhu(i,j)) +             &
         &        MAX(s(i,j),s(i+1,j))
         IF(hu(k,l) <= HMIN) THEN
-           hu (k,l) = ZERO; 
+           hu (k,l) = ZERO;
            k = k + 1; k = k1u(i,j)
            hu (k,l)=AMIN1(zlevel(k+1),hhu(i,j)) +         &
            &        MAX(s(i,j),s(i+1,j))
            IF(hu (k,l) <= HMIN) hu (k,l)  = ZERO;
         ENDIF
       ENDIF
-      
-      ! ... At v-points    
+
+      ! ... At v-points
       IF (mask2d(i,j+1)) THEN
         k = k1v(i,j)
         hv(k,l)=AMIN1(zlevel(k+1),hhv(i,j)) +             &
         &        MAX(s(i,j),s(i,j+1))
         IF(hv (k,l) <= HMIN) THEN
-           hv (k,l) = ZERO; 
-           k = k + 1; 
+           hv (k,l) = ZERO;
+           k = k + 1;
            hv (k,l)=AMIN1(zlevel(k+1),hhv(i,j)) +         &
            &        MAX(s(i,j),s(i,j+1))
            IF(hv (k,l) <= HMIN) hv (k,l)  = ZERO;
         ENDIF
       ENDIF
 
-   ENDDO  
+   ENDDO
 
 END SUBROUTINE slayer_h
 
@@ -2652,7 +2652,7 @@ SUBROUTINE layer_h
 
       ! ... Map 3D-(i,j) from 2D-l indexes
       i = l2i(l); j = l2j(l);
-      
+
       ! ... At zeta-points
       kms = kmz(i,j)
       DO k = k1, kms
@@ -2660,8 +2660,8 @@ SUBROUTINE layer_h
         &       AMAX1(zlevel(  k),-s (i,j))
         IF(h (k,l) <= HMIN) h (k,l) = ZERO;
       ENDDO
-  
-      ! ... At u-points    
+
+      ! ... At u-points
       IF (mask2d(i+1,j)) THEN
         kmx = MIN(kmz(i,j),kmz(i+1,j))
         DO k = k1, kmx
@@ -2670,8 +2670,8 @@ SUBROUTINE layer_h
           IF(hu(k,l) <= HMIN) hu(k,l) = ZERO;
         ENDDO
       ENDIF
-      
-      ! ... At v-points    
+
+      ! ... At v-points
       IF (mask2d(i,j+1)) THEN
         kmy = MIN(kmz(i,j),kmz(i,j+1))
         DO k = k1, kmy
@@ -2681,7 +2681,7 @@ SUBROUTINE layer_h
         ENDDO
       ENDIF
 
-   ENDDO  
+   ENDDO
 
 END SUBROUTINE layer_h
 
@@ -2708,7 +2708,7 @@ SUBROUTINE layer_hp
 
       ! ... Map 3D-(i,j) from 2D-l indexes
       i = l2i(l); j = l2j(l);
-      
+
       ! ... At zeta-points
       kms = kmz(i,j)
       DO k = k1, kms
@@ -2716,8 +2716,8 @@ SUBROUTINE layer_hp
           &        AMAX1(zlevel(  k),-sp(i,j))
           IF(hp(k,l) <= HMIN) hp(k,l) = ZERO;
       ENDDO
-  
-      ! ... At u-points    
+
+      ! ... At u-points
       IF (mask2d(i+1,j)) THEN
         kmx = MIN(kmz(i,j),kmz(i+1,j))
         DO k = k1, kmx
@@ -2726,8 +2726,8 @@ SUBROUTINE layer_hp
           IF(hup(k,l) <= HMIN) hup(k,l) = ZERO;
         ENDDO
       ENDIF
-      
-      ! ... At v-points    
+
+      ! ... At v-points
       IF (mask2d(i,j+1)) THEN
         kmy = MIN(kmz(i,j),kmz(i,j+1))
         DO k = k1, kmy
@@ -2737,7 +2737,7 @@ SUBROUTINE layer_hp
         ENDDO
       ENDIF
 
-   ENDDO  
+   ENDDO
 
 END SUBROUTINE layer_hp
 
@@ -2745,7 +2745,7 @@ END SUBROUTINE layer_hp
 SUBROUTINE TopLayerIndexp
 !***********************************************************************
 !
-!  Purpose: To determine the top layer index given that values of hp, 
+!  Purpose: To determine the top layer index given that values of hp,
 !           hup and hvp have been calculated previously
 !
 !  Revisions:
@@ -2757,14 +2757,14 @@ SUBROUTINE TopLayerIndexp
    !.....Local variables.....
    INTEGER :: i, j, k, l, kmx, kmy, kms, nwlup, nwlvp, nwlsp
 
-   k1z = km1; 
-   k1u = km1; 
+   k1z = km1;
+   k1u = km1;
    k1v = km1;
    DO l = 1, lm
 
       ! ... Map 3D-(i,j) from 2D-l indexes
       i = l2i(l); j = l2j(l);
-      
+
       ! ... At zeta-points
       kms = kmz(i,j)
       DO k = k1, kms
@@ -2773,8 +2773,8 @@ SUBROUTINE TopLayerIndexp
           EXIT
         ENDIF
       ENDDO
-  
-      ! ... At u-points    
+
+      ! ... At u-points
       IF (mask2d(i+1,j)) THEN
         kmx = MIN(kmz(i,j),kmz(i+1,j))
         DO k = k1, kmx
@@ -2784,8 +2784,8 @@ SUBROUTINE TopLayerIndexp
           ENDIF
         ENDDO
       ENDIF
-      
-      ! ... At v-points    
+
+      ! ... At v-points
       IF (mask2d(i,j+1)) THEN
         kmy = MIN(kmz(i,j),kmz(i,j+1))
         DO k = k1, kmy
@@ -2796,7 +2796,7 @@ SUBROUTINE TopLayerIndexp
         ENDDO
       ENDIF
 
-   ENDDO  
+   ENDDO
 
 END SUBROUTINE TopLayerIndexp
 
@@ -2830,19 +2830,19 @@ SUBROUTINE vel
    ALLOCATE (cxx(im1,jm1), STAT=istat)
    IF (istat /= 0) CALL allocate_error ( istat, 24 )
 
-   ! ... Define constants: Ignore density variations in z 
-   rho4cxx = 1000. 
-   rho4cyy = 1000. 
+   ! ... Define constants: Ignore density variations in z
+   rho4cxx = 1000.
+   rho4cyy = 1000.
 
    ! ... Loop over cells
    DO l = 1, lm
-     
+
       ! .... Map l into 2D-xy space
       i = l2i(l); j = l2j(l);
 
       ! ... Skip if East Column is dry
       IF(.NOT.mask2d(i+1,j)) CYCLE
-                 
+
       !.....Top & Bottom wett u-points
       kmx = MIN(kmz(i+1,j),kmz(i,j))
       k0x = k1u(i,j)
@@ -2859,7 +2859,7 @@ SUBROUTINE vel
       ! ... Redo near surface flux calcs. if Drying occurs
       !     hu is calculated after the solution of zeta
       !     in subr. solver. The top most layer during
-      !     time n (n+1/2) remains the same through the 
+      !     time n (n+1/2) remains the same through the
       !     calculations to predict n+1 from n or n+1/2
       k = k0x;
       IF (hu(k  ,l) <= ZERO) THEN
@@ -2869,23 +2869,23 @@ SUBROUTINE vel
         ! ... Update surface array
         k1u(i,j) = k0x+1
       ENDIF
-  	      
+
    END DO
 
    !.....Deallocate pointer cxx
    DEALLOCATE ( cxx )
 
-   
+
    !                -----Y-momentum equation-----
-   
-   
+
+
    !.....Allocate cyy pointer array for temporary storage.....
    ALLOCATE (cyy(im1,jm1), STAT=istat)
    IF (istat /= 0) CALL allocate_error ( istat, 25 )
 
    ! ... Loop over cells
    DO l = 1, lm
-     
+
       ! .... Map l into 2D-xy space
       i = l2i(l); j = l2j(l);
 
@@ -2895,20 +2895,20 @@ SUBROUTINE vel
       !.....Top & Bottom wett v-points .....
       kmy = MIN(kmz(i,j+1),kmz(i,j))
       k0y = k1v(i,j)
-                        
+
       !.....Solve for the water surface slope portion of the
       !     y-mom eq and save the result in the cyy array.....
       cyy(i,j) = gthy1 * rho4cyy * (s(i,j+1)-s(i,j))
-         
+
       !.....Solve the y-momentum equation for vh.....
       DO k = k0y, kmy
         vh(k,l) =  agy(k,l)    - cyy(i,j)*ary(k,l)
-      ENDDO 
+      ENDDO
 
       ! ... Redo near surface flux calcs. if Drying occurs
       !     hu is calculated after the solution of zeta
       !     in subr. solver. The top most layer during
-      !     time n (n+1/2) remains the same through the 
+      !     time n (n+1/2) remains the same through the
       !     calculations to predict n+1 from n or n+1/2
       k = k0y;
       IF (hv(k  ,l) <= ZERO) THEN
@@ -2918,7 +2918,7 @@ SUBROUTINE vel
         ! ... Update surface array
         k1v(i,j) = k0y+1
       ENDIF
-       
+
    END DO
 
    !.....Deallocate pointer cyy
@@ -2935,7 +2935,7 @@ SUBROUTINE vel
       ! ... Top wett s-points
       k0s = k1z(i,j);
       ! ... Recalculate surface cell if water column
-      !     is wett. 
+      !     is wett.
       IF (k0s<km1 .AND. h(k0s,l)<=ZERO) k1z(i,j)=k0s+1
    ENDDO
 
@@ -2970,12 +2970,12 @@ SUBROUTINE vel2
 
    ! ... Loop over cells
    DO l = 1, lm
-     
+
      ! .... Map l into 2D-xy space
      i = l2i(l); j = l2j(l);
 
      ! ... Skip if East Column is dry
-     IF(mask2d(i+1,j)) THEN       
+     IF(mask2d(i+1,j)) THEN
        k = k1u(i,j);
        IF (hu(k-1,l) >  ZERO) THEN
          uutemp    = uh(k,l)/(hu(k,l)+hu(k-1,l))
@@ -2983,7 +2983,7 @@ SUBROUTINE vel2
          uh(k-1,l) = uutemp * hu(k-1,l);
        ENDIF
      ENDIF
-     
+
      ! ... Skip if North Column is dry
      IF(mask2d(i,j+1)) THEN
        k = k1v(i,j);
@@ -2991,9 +2991,9 @@ SUBROUTINE vel2
          vvtemp    = vh(k,l)/(hv(k,l)+ hv(k-1,l))
          vh(k  ,l) = vvtemp * hv(k  ,l);
          vh(k-1,l) = vvtemp * hv(k-1,l);
-       ENDIF	               
+       ENDIF
      ENDIF
-	       
+
    END DO
 
    !.....No need to recalculate vertical velocities since
@@ -3011,14 +3011,14 @@ END SUBROUTINE vel2
 SUBROUTINE continuity (ist)
 !***********************************************************************
 !
-!  Purpose: To compute wp from horizontal components of the velocity 
+!  Purpose: To compute wp from horizontal components of the velocity
 !           field
 !
 !-----------------------------------------------------------------------
 
    ! ... Arguments
    INTEGER, INTENT(IN):: ist
-  
+
    ! ... Local variables
    INTEGER :: i, j, k, l, k1s, kms, inn
 
@@ -3033,13 +3033,13 @@ SUBROUTINE continuity (ist)
 
        ! ... Bottom wett s-points
        kms = kmz(i,j);
-       k1s = k1z(i,j); 
+       k1s = k1z(i,j);
 
        ! ... Cycle if water column is dry
        IF( k1s > kms ) CYCLE
 
-       ! .... Loop over cells in water colum to estimate vertical 
-       !      velocities which are consistent with the formulation of 
+       ! .... Loop over cells in water colum to estimate vertical
+       !      velocities which are consistent with the formulation of
        !      continuity (mass conservation). These velocities are then
        !      used for scalar transport calculations
        wp(:,l) = 0.0
@@ -3066,14 +3066,14 @@ SUBROUTINE continuity (ist)
      ! .... Modify w estimates to incorporate sources/sinks (PSS)
      IF ( iopss > 0 ) THEN
        DO inn = 1, iopss
-         i = ipss(inn) 
+         i = ipss(inn)
          j = jpss(inn)
-         l = ij2l(i,j); 
-         kms = kmz(i,j); 
+         l = ij2l(i,j);
+         kms = kmz(i,j);
          k1s = k1z(i,j);
          DO k = kms,k1s,-1
            wp(k,l) = wp(k,l) + SUM(Qpss(k:kms,inn))/(dx*dy)
-         ENDDO     
+         ENDDO
        ENDDO
      ENDIF
 
@@ -3081,20 +3081,20 @@ SUBROUTINE continuity (ist)
    !     of velocities at next time step
    CASE (2)
 
-     DO l = 1, lm 
+     DO l = 1, lm
 
        ! .... Map l into 2D-xy space
        i = l2i(l); j = l2j(l);
 
        ! ... Bottom wett s-points
        kms = kmz(i,j);
-       k1s = k1z(i,j); 
-       
+       k1s = k1z(i,j);
+
        ! ... Cycle if water column is dry
        IF( k1s > kms ) CYCLE
 
-       ! .... Loop over cells in water colum to estimate vertical 
-       !      velocities 
+       ! .... Loop over cells in water colum to estimate vertical
+       !      velocities
        wp(:,l) = 0.0
        DO k = kms,k1s,-1
          wp(k,l) = wp(k+1,l)-(uhp(k,l)-uhp(k,lWC(l)))/dx    &
@@ -3113,20 +3113,20 @@ SUBROUTINE continuity (ist)
      ! .... Modify w estimates to incorporate sources/sinks (PSS)
      IF ( iopss > 0 ) THEN
        DO inn = 1, iopss
-         i = ipss(inn) 
+         i = ipss(inn)
          j = jpss(inn)
-         l = ij2l(i,j); 
-         kms = kmz(i,j); 
+         l = ij2l(i,j);
+         kms = kmz(i,j);
          k1s = k1z(i,j);
          DO k = kms,k1s,-1
            wp(k,l) = wp(k,l) + SUM(Qpss(k:kms,inn))/(dx*dy)
-         ENDDO     
+         ENDDO
        ENDDO
      ENDIF
 
    END SELECT
 
-   ! ... Modify velocity estimates near the boundaries to 
+   ! ... Modify velocity estimates near the boundaries to
    !     account for open boundaries.
    IF (nopen > 0) CALL MODvel4openBC
 
@@ -3144,9 +3144,9 @@ SUBROUTINE exsal
 !-----------------------------------------------------------------------
 
    !.....Local variables.....
-   REAL    :: adv, hd, hti, twodt1, advk1s, scC,   & 
+   REAL    :: adv, hd, hti, twodt1, advk1s, scC,   &
               scE, scW, scN, scS, scU, scD,        &
-              uE , uW , vN , vS , wU , wD  
+              uE , uW , vN , vS , wU , wD
    INTEGER :: i, j, k, l, istat, kms, k1s, nwlayers
 
    !.....Timing.....
@@ -3156,15 +3156,15 @@ SUBROUTINE exsal
 
    ! ... Solve using Flux-Limiters if requested. In that case just
    !     return from this subroutine.
-   IF (itrsca == 4) THEN 
-     CALL exsalFL; 
+   IF (itrsca == 4) THEN
+     CALL exsalFL;
      RETURN
    ENDIF
 
    ! ... Constants used in solution
    twodt1 = twodt*tz
 
-   ! ... Calculate hdxpp & hdypp arrays for diffusion terms & 
+   ! ... Calculate hdxpp & hdypp arrays for diffusion terms &
    !               th    & th1   arrays for advection terms
    hdxpp = 0.0; hdypp = 0.0; th = 0.0; th1 = 0.0;
    DO l = 1, lm
@@ -3177,14 +3177,14 @@ SUBROUTINE exsal
       k1s = k1z(i,j)
 
       ! ... Calculate hdxpp & hdypp array at u-&v- pts ........
-      !     Note that interfaces connecting wett & dry cells  
-      !     DO NOT have diffussive transport  
+      !     Note that interfaces connecting wett & dry cells
+      !     DO NOT have diffussive transport
       DO k = k1, kms
         hdxpp(k,l) = Ax0*hupp(k,l)
         hdypp(k,l) = Ay0*hvpp(k,l)
       ENDDO
-                      
-      !.....Calculate weighting arrays for vertical advection 
+
+      !.....Calculate weighting arrays for vertical advection
       DO k = k1s+1, kms
          th (k,l) = hp(k-1,l)/(hp(k-1,l)+hp(k,l))
          th1(k,l) = 1.-th(k,l)
@@ -3195,21 +3195,21 @@ SUBROUTINE exsal
    !.....Calculate the explicit part of the scalar transport equation.....
    ex = 0.0;
    DO l = 1, lm
-            
-      ! ... Map l- into 3D-(i,j) indexes 
+
+      ! ... Map l- into 3D-(i,j) indexes
       i = l2i(l); j = l2j(l);
-            
+
       !..... Top & bottom s-pts.....
-      kms = kmz(i,j); 
+      kms = kmz(i,j);
       k1s = k1z(i,j);
 
       ! ... Cycle DRY cells
       IF ( k1s > kms ) CYCLE
-     
+
       ! ... Loop over cells in water column
       DO k = k1s, kms
-  
-        ! ... Define velocities (2 x vel) at EWNS faces 
+
+        ! ... Define velocities (2 x vel) at EWNS faces
         uE = (uh(k,    l )+uhpp(k,    l ))
         uW = (uh(k,lWC(l))+uhpp(k,lWC(l)))
         vN = (vh(k,    l )+vhpp(k,    l ))
@@ -3218,28 +3218,28 @@ SUBROUTINE exsal
         ! ... Define velocities at UD faces
         wU = wp (k  ,l); IF(k == k1s) wU = 0.0;
         wD = wp (k+1,l); IF(k == kms) wD = 0.0;
-        
+
         ! ... Calculate advective term
         SELECT CASE (itrsca)
 
-        CASE (1) ! Centered scheme 
+        CASE (1) ! Centered scheme
 
           ! ... Scalars at EWNS faces
-          scE = (salp(k,lEC(l)) + salp(k,l)) 
-          scW = (salp(k,lWC(l)) + salp(k,l)) 
-          scN = (salp(k,lNC(l)) + salp(k,l)) 
-          scS = (salp(k,lSC(l)) + salp(k,l)) 
+          scE = (salp(k,lEC(l)) + salp(k,l))
+          scW = (salp(k,lWC(l)) + salp(k,l))
+          scN = (salp(k,lNC(l)) + salp(k,l))
+          scS = (salp(k,lSC(l)) + salp(k,l))
 
           ! ... Scalars at UD faces
-          scU = th (k  ,l)*salp(k  ,l)+th1(k  ,l)*salp(k-1,l) 
-          scD = th (k+1,l)*salp(k+1,l)+th1(k+1,l)*salp(k  ,l)  
-            
-          ! ... Advective term 
+          scU = th (k  ,l)*salp(k  ,l)+th1(k  ,l)*salp(k-1,l)
+          scD = th (k+1,l)*salp(k+1,l)+th1(k+1,l)*salp(k  ,l)
+
+          ! ... Advective term
           adv = ( uE * scE - uW * scW ) / fourdx +           &
                 ( vN * scN - vS * scS ) / fourdy +           &
-                ( wU * scU - wD * scD )      
+                ( wU * scU - wD * scD )
 
-        CASE (2) ! Upwind scheme 
+        CASE (2) ! Upwind scheme
 
           adv  = ( (uE+ABS(uE)) * salpp(k,    l ) +          &
                    (uE-ABS(uE)) * salpp(k,lEC(l)) -          &
@@ -3248,43 +3248,43 @@ SUBROUTINE exsal
                 +( (vN+ABS(vN)) * salpp(k,    l ) +          &
                    (vN-ABS(vN)) * salpp(k,lNC(l)) -          &
                    (vS+ABS(vS)) * salpp(k,lSC(l)) -          &
-                   (vS-ABS(vS)) * salpp(k,    l ) ) / fourdy & 
+                   (vS-ABS(vS)) * salpp(k,    l ) ) / fourdy &
                  -((wD+ABS(wD)) * salpp(k+1,l) +             &
                    (wD-ABS(wD)) * salpp(k  ,l)) / 2.         &
                  +((wU+ABS(wU)) * salpp(k  ,l) +             &
                    (wU-ABS(wU)) * salpp(k-1,l)) / 2.
 
         CASE (3) ! Centered in all faces but in vertical flux
-                 ! faces located next below the free surface 
+                 ! faces located next below the free surface
 
           ! ... Scalars at EWNS faces
-          scE = (salp(k,lEC(l)) + salp(k,l)) 
-          scW = (salp(k,lWC(l)) + salp(k,l)) 
-          scN = (salp(k,lNC(l)) + salp(k,l)) 
-          scS = (salp(k,lSC(l)) + salp(k,l)) 
-  
+          scE = (salp(k,lEC(l)) + salp(k,l))
+          scW = (salp(k,lWC(l)) + salp(k,l))
+          scN = (salp(k,lNC(l)) + salp(k,l))
+          scS = (salp(k,lSC(l)) + salp(k,l))
+
           ! ... Scalars at UD faces
-          scU = th(k  ,l)*salp(k  ,l)+th1(k  ,l)*salp(k-1,l) 
-          scD = th(k+1,l)*salp(k+1,l)+th1(k+1,l)*salp(k  ,l)  
-              
-          ! ... Horizontal advection 
+          scU = th(k  ,l)*salp(k  ,l)+th1(k  ,l)*salp(k-1,l)
+          scD = th(k+1,l)*salp(k+1,l)+th1(k+1,l)*salp(k  ,l)
+
+          ! ... Horizontal advection
           adv= ( uE * scE - uW * scW ) / fourdx +            &
-               ( vN * scN - vS * scS ) / fourdy            
-  
+               ( vN * scN - vS * scS ) / fourdy
+
           ! ... Vertical advection - Note that 1.E-1 is an
-          !     an 'arbitrary' small value. One can choose 
+          !     an 'arbitrary' small value. One can choose
           !     a priori any other small positive value
           IF      (k == k1s   .AND. h(k1s,l) < SMALL) THEN
             adv=adv-((wD+ABS(wD)) * salpp(k+1,l) +           &
                      (wD-ABS(wD)) * salpp(k  ,l)) / 2.
-          ELSE IF (k == k1s+1 .AND. h(k1s,l) < 1.E-1) THEN 
+          ELSE IF (k == k1s+1 .AND. h(k1s,l) < 1.E-1) THEN
             adv=adv+((wU+ABS(wU)) * salpp(k  ,l) +           &
                      (wU-ABS(wU)) * salpp(k-1,l)) / 2.       &
                    -  wD*scD
           ELSE
-            adv=adv+wU*scU-wD*scD 
+            adv=adv+wU*scU-wD*scD
           ENDIF
-                                   
+
         END SELECT
 
         !.....Horizontal diffusion.....
@@ -3313,24 +3313,24 @@ SUBROUTINE exsal
         uW = uh(k,lWC(l))+uhpp(k,lWC(l))
         vN = vh(k,    l )+vhpp(k,    l )
         vS = vh(k,lSC(l))+vhpp(k,lSC(l))
-        
+
         ! ... Calculate advective term
         SELECT CASE (itrsca)
 
-        CASE (1) ! Centered scheme 
+        CASE (1) ! Centered scheme
 
           ! ... Scalars at EWNS faces
-          scE = (salp(k,lEC(l)) + salp(k,l)) 
-          scW = (salp(k,lWC(l)) + salp(k,l)) 
-          scN = (salp(k,lNC(l)) + salp(k,l)) 
-          scS = (salp(k,lSC(l)) + salp(k,l)) 
-          
-          ! ... Advective term 
+          scE = (salp(k,lEC(l)) + salp(k,l))
+          scW = (salp(k,lWC(l)) + salp(k,l))
+          scN = (salp(k,lNC(l)) + salp(k,l))
+          scS = (salp(k,lSC(l)) + salp(k,l))
+
+          ! ... Advective term
           advk1s = advk1s +                                  &
                    ( uE * scE - uW * scW ) / fourdx +        &
-                   ( vN * scN - vS * scS ) / fourdy - hd *ihd 
+                   ( vN * scN - vS * scS ) / fourdy - hd *ihd
 
-        CASE (2) ! Upwind scheme 
+        CASE (2) ! Upwind scheme
 
           advk1s = advk1s +                                  &
                  ( (uE+ABS(uE)) * salpp(k,    l ) +          &
@@ -3343,19 +3343,19 @@ SUBROUTINE exsal
                    (vS-ABS(vS)) * salpp(k,    l ) ) / fourdy - hd *ihd
 
         CASE (3) ! Centered in all faces but in vertical flux
-                 ! faces located next below the free surface 
+                 ! faces located next below the free surface
 
           ! ... Scalars at EWNS faces
-          scE = (salp(k,lEC(l)) + salp(k,l)) 
-          scW = (salp(k,lWC(l)) + salp(k,l)) 
-          scN = (salp(k,lNC(l)) + salp(k,l)) 
-          scS = (salp(k,lSC(l)) + salp(k,l)) 
-               
-          ! ... Horizontal advection 
+          scE = (salp(k,lEC(l)) + salp(k,l))
+          scW = (salp(k,lWC(l)) + salp(k,l))
+          scN = (salp(k,lNC(l)) + salp(k,l))
+          scS = (salp(k,lSC(l)) + salp(k,l))
+
+          ! ... Horizontal advection
           advk1s = advk1s +                                   &
                ( uE * scE - uW * scW ) / fourdx +             &
-               ( vN * scN - vS * scS ) / fourdy - hd *ihd           
-                                  
+               ( vN * scN - vS * scS ) / fourdy - hd *ihd
+
         END SELECT
 
       ENDDO
@@ -3381,7 +3381,7 @@ END SUBROUTINE exsal
 SUBROUTINE exsalFL
 !***********************************************************************
 !
-!  Purpose: To evaluate the explicit terms (advection) in the salinity 
+!  Purpose: To evaluate the explicit terms (advection) in the salinity
 !           equation using flux limiter methods. The sum of these
 !           terms are saved in the array  ex(k,l)  which is the
 !           primary output from this subroutine.
@@ -3405,7 +3405,7 @@ SUBROUTINE exsalFL
    ! ... Constants used in solution
    twodt1 = twodt*tz
 
-   ! ... Calculate hdxpp & hdypp arrays for diffusion terms & 
+   ! ... Calculate hdxpp & hdypp arrays for diffusion terms &
    hdxpp = 0.0; hdypp = 0.0;
    DO l = 1, lm
 
@@ -3417,54 +3417,54 @@ SUBROUTINE exsalFL
       k1s = k1z(i,j)
 
       ! ... Calculate hdxpp & hdypp array at u-&v- pts ........
-      !     Interfaces connecting wett & dry cells will not 
-      !     have diffussive transport in present formulation 
+      !     Interfaces connecting wett & dry cells will not
+      !     have diffussive transport in present formulation
       DO k = k1, kms
         hdxpp(k,l) = Ax0*hupp(k,l)
         hdypp(k,l) = Ay0*hvpp(k,l)
       ENDDO
-                        
+
    END DO
 
    ! ... Initialize ex & flux arrays to zeros
    ex = 0.0; fluxX= 0.0; fluxY = 0.0; fluxZ = 0.0;
 
-   DO l = 1, lm; 
+   DO l = 1, lm;
 
      ! ... Map l- into (i,j)-indexes .........................
      i = l2i(l); j = l2j(l);
-	 
+
      ! ... Retrieve top & bottom wet sal-pts .................
      kms = kmz(i,j)
      k1s = k1z(i,j)
- 
+
      DO k = k1s, kms;
-	    
+
        ! ... EW fluxes .......................................
        IF (hup(k,l)> ZERO) THEN
 
-         ! ... Velocities at time n+1/2  
+         ! ... Velocities at time n+1/2
          vel  = (uhpp(k,l) + uh(k,l))/2.
 
          ! ... Define stencil for scalar transport
-         ss(2)  = salpp(k,    l ); 
-         ss(3)  = salpp(k,lEC(l)); 
-         IF (hpp(k,    lWC(l) )<=ZERO) THEN; ss(1) = ss(2); 
+         ss(2)  = salpp(k,    l );
+         ss(3)  = salpp(k,lEC(l));
+         IF (hpp(k,    lWC(l) )<=ZERO) THEN; ss(1) = ss(2);
           ELSE; ss(1)=salpp(k,    lWC(l) ); ENDIF;
-         IF (hpp(k,lEC(lEC(l)))<=ZERO) THEN; ss(4) = ss(3); 
+         IF (hpp(k,lEC(lEC(l)))<=ZERO) THEN; ss(4) = ss(3);
           ELSE; ss(4)=salpp(k,lEC(lEC(l))); ENDIF;
 
          ! ... Calculate Cf for flux computation
-         C_f    = 0.0; 
+         C_f    = 0.0;
          gamma1 = -SIGN (1., vel)
-         IF (ss(3) - ss(2) /= 0 ) THEN 
+         IF (ss(3) - ss(2) /= 0 ) THEN
            ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))
            ! MC flux limiter (VanLeer, 1977)
            !C_f   = MAX(0., MIN( 2*ratio, (1+ratio)/2., 2. ))
            ! ... Roe's Superbee Limiter
            C_f = MAX(0., MIN(1.,2.*ratio),MIN(2.,ratio))
          ENDIF
- 
+
          ! ... Calculate fluxes
          fluxX(k,l) = vel/2.*(ss(3)+ss(2))- &
          & ((1.-C_f)*ABS(vel)+vel**2.*twodt1/dx*C_f)*(ss(3)-ss(2))/2.
@@ -3474,28 +3474,28 @@ SUBROUTINE exsalFL
        ! ... NS fluxes .......................................
        IF (hvp(k,l)> ZERO) THEN
 
-         ! ... Velocities at time n+1/2  
+         ! ... Velocities at time n+1/2
          vel  = (vhpp(k,l) + vh(k,l))/2.
 
          ! ... Define stencil for scalar transport
-         ss(2)  = salpp(k,        l  ); 
-         ss(3)  = salpp(k,    lNC(l) ); 
-         IF (hpp(k,    lSC(l) )<= ZERO) THEN; ss(1) = ss(2);  
+         ss(2)  = salpp(k,        l  );
+         ss(3)  = salpp(k,    lNC(l) );
+         IF (hpp(k,    lSC(l) )<= ZERO) THEN; ss(1) = ss(2);
            ELSE; ss(1)  = salpp(k,    lSC(l) ); ENDIF;
-         IF (hpp(k,lNC(lNC(l)))<= ZERO) THEN; ss(4) = ss(3);  
+         IF (hpp(k,lNC(lNC(l)))<= ZERO) THEN; ss(4) = ss(3);
            ELSE; ss(4)  = salpp(k,lNC(lNC(l))); ENDIF;
 
          ! ... Calculate Cf for flux computation
          C_f    = 0.0
          gamma1 = -SIGN (1., vel)
-         IF (ss(3) - ss(2) /= 0 ) THEN 
+         IF (ss(3) - ss(2) /= 0 ) THEN
            ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))
            ! MC flux limiter (VanLeer, 1977)
            !C_f   = MAX(0., MIN( 2*ratio, (1+ratio)/2., 2. ))
            ! ... Roe's Superbee Limiter
            C_f = MAX(0., MIN(1.,2.*ratio),MIN(2.,ratio))
          ENDIF
- 
+
          ! ... Calculate fluxes
          fluxY(k,l) = vel/2.*(ss(3)+ss(2))- &
          & ((1.-C_f)*ABS(vel)+vel**2.*twodt1/dx*C_f)*(ss(3)-ss(2))/2.
@@ -3509,19 +3509,19 @@ SUBROUTINE exsalFL
          vel  = wp(k,l); IF (k == k1s) vel = 0.0;
 
          ! ... Define stencil for scalar transport
-         ss(2) = salpp(k  ,l); 
-         ss(3) = salpp(k-1,l); 
+         ss(2) = salpp(k  ,l);
+         ss(3) = salpp(k-1,l);
          IF (hpp(k-2,l)<=ZERO) THEN ; ss(4)=ss(3);
             ELSE; ss(4)=salpp(k-2,l); ENDIF;
          IF (hpp(k+1,l)<=ZERO) THEN ; ss(1)=ss(2);
-            ELSE; ss(1)=salpp(k+1,l); ENDIF;  
+            ELSE; ss(1)=salpp(k+1,l); ENDIF;
 
          ! ... Define C_f for flux computations
          C_f   = 1.0 ! Default method is Lax-Wendroff
          gamma1 = -SIGN (1., vel)
-         IF (ss(3) - ss(2) /= 0 ) THEN 
-           ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))  
-           ! MC flux limiter (VanLeer, 1977)   
+         IF (ss(3) - ss(2) /= 0 ) THEN
+           ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))
+           ! MC flux limiter (VanLeer, 1977)
            !C_f   = MAX(0., MIN( 2*ratio, (1+ratio)/2., 2. ))
            ! ... Roe's Superbee Limiter
            C_f = MAX(0., MIN(1.,2.*ratio),MIN(2.,ratio))
@@ -3534,20 +3534,20 @@ SUBROUTINE exsalFL
 
        ENDIF
 
-     ENDDO; 
-   ENDDO; 
+     ENDDO;
+   ENDDO;
 
    ! ... Update ex array with x-flux divergence
-   DO l = 1, lm; 
+   DO l = 1, lm;
 
      ! ... Map l- into (i,j)-indexes .........................
      i = l2i(l); j = l2j(l);
-	 
+
      ! ... Retrieve top & bottom wet sal-pts .................
      kms = kmz(i,j)
      k1s = k1z(i,j)
- 
-     DO k = k1s, kms;	   
+
+     DO k = k1s, kms;
 
         !.....Horizontal diffusion.....
         hd= (hdxpp(k,    l )*(salpp(k,lEC(l)) - salpp(k,    l ))       &
@@ -3555,13 +3555,13 @@ SUBROUTINE exsalFL
           &+(hdypp(k,    l )*(salpp(k,lNC(l)) - salpp(k,    l ))       &
           & -hdypp(k,lSC(l))*(salpp(k,    l ) - salpp(k,lSC(l))))/dydy
 
-        !.....Sum all terms 
-        ex(k,l) =   hpp(k,l)*salpp(k,l)/twodt1        &  
+        !.....Sum all terms
+        ex(k,l) =   hpp(k,l)*salpp(k,l)/twodt1        &
                 - (fluxX(k,l) - fluxX(k,lWC(l))) / dx &
                 - (fluxY(k,l) - fluxY(k,lSC(l))) / dy &
                 - (fluxZ(k,l) - fluxZ(k+1,l   )) + hd * ihd
 
-     ENDDO; 
+     ENDDO;
 
    ENDDO
 
@@ -3604,21 +3604,21 @@ SUBROUTINE imsal
    !.....Loop over interior sal-pts to solve for
    !     matrix from the active scalar equation.....
    DO l = 1, lm
-            
+
       ! ... 3D-(i,j) indexes for l
       i = l2i(l); j = l2j(l);
-            
+
       !.....Compute top & bottom layer numbers & No. of layers ....
       kms = kmz(i,j);
       k1s = k1z(i,j);
       nwlayers = kms-k1s+1
 
       ! ... Define layer thikness at time n - The corrections for
-      !     surface and recently submerged cells are needed to 
+      !     surface and recently submerged cells are needed to
       !     keep mass conservation -  The test used to check
-      !     mass conservation is that of a surface seiche with 
-      !     an equilibrium water surface level at the level of 
-      !     where grids cells change from level k to k+1 
+      !     mass conservation is that of a surface seiche with
+      !     an equilibrium water surface level at the level of
+      !     where grids cells change from level k to k+1
       hn(k1s+1:kms) = h(k1s+1:kms,l)
       hn(k1s      ) = twodt1*wp(k1s,l)+hpp(k1s,l)
       IF (hpp(k1s,l)<= ZERO) THEN
@@ -3627,21 +3627,21 @@ SUBROUTINE imsal
 
       SELECT CASE (nwlayers)
       !.....Calculate active scalar for case of a single layer.....
-      CASE (1)   
+      CASE (1)
 
-        ! ... Use h(k1s,l) instead of hn(k1s) - 
+        ! ... Use h(k1s,l) instead of hn(k1s) -
         aa( 2,k1s) = hn(k1s)/twodt1
-        ds(   k1s) = ex(k1s,l) + HeatSource(k1s,l) 
+        ds(   k1s) = ex(k1s,l) + HeatSource(k1s,l)
         sal(k1s,l) = ds(k1s  )/aa(2,k1s)
 
         ! ... For one-layer columns that become dry - The
-        !     value of the threshold 1.E-5 is completely 
+        !     value of the threshold 1.E-5 is completely
         !     arbitrary but small - it is used to avoid the
         !     occurrence of errors in scalar conc. etimates
-        !     arising from errors in dividing ds by aa - 
+        !     arising from errors in dividing ds by aa -
         !     Note that the error allowed in estimating zeta
         !     is of O(10-6) - see SUB. SOLVER
-        IF (h(k1s,l) < 1.E-2) sal(k1s,l) = salpp(k1s,l) 
+        IF (h(k1s,l) < 1.E-2) sal(k1s,l) = salpp(k1s,l)
 
       !.....Calculate active scalar for case of two or more layers.....
       CASE (2:)
@@ -3655,8 +3655,8 @@ SUBROUTINE imsal
          aa(1,k1s)       =  0.0
          ! Define center diagonal terms
          aa(2,k1s:kms)   =  hn(k1s:kms)/twodt1-aa(1,k1s:kms)-aa(3,k1s:kms)
-     
-         !.....form r.h.s. matrix [ds]..... 
+
+         !.....form r.h.s. matrix [ds].....
          DO k = k1s, kms
             ds(k) = ex(k,l) + HeatSource(k,l)
          ENDDO
@@ -3671,7 +3671,7 @@ SUBROUTINE imsal
                Qsource  = Qpss(k,inn)/(dx*dy)
                Tsource  = Tpss(k,inn)
                ds(k)    = ds(k)+Qsource*Tsource
-             ENDDO	
+             ENDDO
            ENDDO
 
 		 ENDIF
@@ -3679,11 +3679,11 @@ SUBROUTINE imsal
          !.....Solve tridiagonal system for the
          !     vertical distribution of active scalar.....
          CALL trid1 (aa, ds, sal1, k1s, kms, km1, nwlayers)
- 
+
          !.....Define scalars at new time step....
          sal(k1s:kms  ,l) = sal1(1:nwlayers)
-         sal(k1 :k1s-1,l) = sal1(1         ) 
-        
+         sal(k1 :k1s-1,l) = sal1(1         )
+
       END SELECT
 
    !.....End loop over scalar-pts.....
@@ -3700,11 +3700,11 @@ PURE FUNCTION densty_s ( temperature, salinity )
 !***********************************************************************
 !
 !  Purpose: To compute density (in kg/m**3) from active scalars
-!           It uses UNESCO Eq.of state for density of freshwater 
+!           It uses UNESCO Eq.of state for density of freshwater
 !           taken from Gill(1982) - Atmosphere-Ocean Dynamics, Appendix 3
 !           However, at this point pressure (depth) effects are not
 !           included in the calculation of water density.
-!           This function is based on the original function written by 
+!           This function is based on the original function written by
 !           P.E. Smith in which the first arg. was salinity and the 2nd temp.
 !           Here, we use temp. as first argument, as it is the first arg. whose
 !           transport equation is solved in the code. These changes
@@ -3719,20 +3719,20 @@ PURE FUNCTION densty_s ( temperature, salinity )
     ! ... Io variables
 	REAL, INTENT(IN) :: temperature, salinity
 	REAL             :: densty_s
-	
+
     densty_s =999.842594                &
       +6.793952e-2*temperature          &
-      -9.095290e-3*temperature**2.      & 
+      -9.095290e-3*temperature**2.      &
       +1.001685e-4*temperature**3.      &
       -1.120083e-6*temperature**4.      &
       +6.536332e-9*temperature**5.
-  
+
 END FUNCTION densty_s
 
 !***********************************************************************
 SUBROUTINE trid ( acoef, g, r, ag, ar, k1, km, km1, n )
 !***********************************************************************
-!            
+!
 !  Purpose: Tridiagonal matrix solver for the momentum equation using
 !           the double-sweep method
 !
@@ -3886,20 +3886,20 @@ SUBROUTINE init
    INTEGER, PARAMETER :: InitProc = 0
 
    ! ... Initialize time step counter, time in seconds and hours from &
-   !     start of simulations (these are global variables defined in 
+   !     start of simulations (these are global variables defined in
    !     si3d_types.
    n = 0; its = 0; thrs = 0.0E0
 
    !.....Define initial water surface elevations.....
    SELECT CASE (InitProc)
    CASE (0)
-     s    = zetainit; 
-     sp   = zetainit; 
+     s    = zetainit;
+     sp   = zetainit;
      spp  = zetainit;
      !s  (1:46,:) = -15.;
      !sp (1:46,:) = -15.;
      !spp(1:46,:) = -15.;
- 
+
    CASE(1)
 
      amp = 0.05;
@@ -3909,7 +3909,7 @@ SUBROUTINE init
        zeta0 = amp*COS(pi*x/xl)
        deltZ = zlevel(k1+1); ! Move initial free surface to first interface
        DO j = 1, jm1
-         sp  (i,j) = zeta0  - deltZ; 
+         sp  (i,j) = zeta0  - deltZ;
          spp (i,j) = zeta0  - deltZ;
          s   (i,j) = zeta0  - deltZ;
        END DO
@@ -3917,20 +3917,20 @@ SUBROUTINE init
    END SELECT
 
    ! ... Define thickness of cells a s-,u- & v-points
-   hup = ZERO; 
-   hvp = ZERO; 
-   hp  = ZERO; 
-   k1z = km1; 
-   k1u = km1; 
+   hup = ZERO;
+   hvp = ZERO;
+   hp  = ZERO;
+   k1z = km1;
+   k1u = km1;
    k1v = km1;
    DO l = 1, lm
 
       ! ... Map 3D-(i,j) from 2D-l indexes
       i = l2i(l); j = l2j(l);
-      
+
       ! ... At zeta-points
       kms = kmz(i,j)
-      nwlsp = 0 
+      nwlsp = 0
       DO k = k1, kms
           hp (k,l)=AMIN1(zlevel(k+1),hhs(i,j)) -            &
           &        AMAX1(zlevel(  k),-sp(i,j))
@@ -3949,8 +3949,8 @@ SUBROUTINE init
          sp (i,j) = -hhs(i,j)+HMIN;
          spp(i,j) = -hhs(i,j)+HMIN;
       ENDIF
-  
-      ! ... At u-points    
+
+      ! ... At u-points
       IF (mask2d(i+1,j)) THEN
         kmx = MIN(kmz(i,j),kmz(i+1,j))
         nwlup = 0
@@ -3965,8 +3965,8 @@ SUBROUTINE init
           ENDIF
         ENDDO
       ENDIF
-      
-      ! ... At v-points    
+
+      ! ... At v-points
       IF (mask2d(i,j+1)) THEN
         kmy = MIN(kmz(i,j),kmz(i,j+1))
         nwlvp = 0
@@ -3981,11 +3981,11 @@ SUBROUTINE init
           ENDIF
         ENDDO
       ENDIF
- 
-   ENDDO  
 
-   hupp = hup; hu = hup; 
-   hvpp = hvp; hv = hvp; 
+   ENDDO
+
+   hupp = hup; hu = hup;
+   hvpp = hvp; hv = hvp;
    hpp  = hp ; h  = hp
 
    !.....Check if the cells hosting diffusers have other cells on both sides
@@ -3995,7 +3995,7 @@ SUBROUTINE init
    !     i = ipss(js)
    !     j = jpss(js)
    !     l = ij2l(i,j)
-   !     k = kmz(i,j)-1 
+   !     k = kmz(i,j)-1
    !     IF(ptype(js)==1) THEN
    !       IF(hup(k,l)<=ZERO .OR. hup(k,lWC(l))<=ZERO) THEN
    !         PRINT *, 'Cell (i,j)=(', i,',', j,') has one of the sides closed'
@@ -4028,7 +4028,7 @@ SUBROUTINE init
    !     i = ipss(js)
    !     j = jpss(js)
    !     l = ij2l(i,j)
-   !     k = kmz(i,j)-3 
+   !     k = kmz(i,j)-3
    !     IF(ptype(js)==1) THEN
    !       IF(hup(k,l)<=ZERO .OR. hup(k,lWC(l))<=ZERO) THEN
    !         PRINT *, 'Cell (i,j)=(', i,',', j,') has one of the sides closed'
@@ -4042,40 +4042,40 @@ SUBROUTINE init
    !     ENDIF
    !  ENDDO
    !ENDIF
- 
+
    !.....Initialize 1-d arrays.....
-   uout  = 0.0; 
-   vout  = 0.0; 
-   wout  = 0.0; 
+   uout  = 0.0;
+   vout  = 0.0;
+   wout  = 0.0;
    uhout = 0.0
-   Avout = 0.0; 
-   Dvout = 0.0; 
-   sal1 = 0.0; 
-   ds = 0.0;  
- 
+   Avout = 0.0;
+   Dvout = 0.0;
+   sal1 = 0.0;
+   ds = 0.0;
+
    !.....Initialize solution arrays.....
-   eagx = 0.0; 
-   eagy = 0.0; 
-   earx = 0.0; 
+   eagx = 0.0;
+   eagy = 0.0;
+   earx = 0.0;
    eary = 0.0
-   sx = 0.0; 
-   sy = 0.0; 
-   dd = 0.0; 
-   qq = 0.0; 
-   rr = 1.0; 
+   sx = 0.0;
+   sy = 0.0;
+   dd = 0.0;
+   qq = 0.0;
+   rr = 1.0;
 
    !.....Initialize velocity arrays.....
    u=u0; up=u0; upp=u0; uh=u0h0; uhp=u0h0; uhpp=u0h0
-   v=v0; vp=v0; vpp=v0; vh=v0h0; vhp=v0h0; vhpp=v0h0 
+   v=v0; vp=v0; vpp=v0; vh=v0h0; vhp=v0h0; vhpp=v0h0
    wp=w0
 
-   ! ... Initialize eddy coefficient arrays ..... 
-   Av=0.0; 
-   Dv=0.0; 
-   
+   ! ... Initialize eddy coefficient arrays .....
+   Av=0.0;
+   Dv=0.0;
+
    !.....Initialize arrays used in the soln of the matrix mom eq.....
-   ex=0.0; agx = 0.0; arx = 0.0; agy = 0.0; ary = 0.0 
-   
+   ex=0.0; agx = 0.0; arx = 0.0; agy = 0.0; ary = 0.0
+
    !.....Initialize 3D active scalar and density arrays.....
    CALL InitializeScalarFields
 
@@ -4087,13 +4087,13 @@ SUBROUTINE init
    Qpss = 0.0E0
 	 Tpss = 0.0E0
 	 Rpss = 0.0E0
-   ENDIF 
+   ENDIF
 
 
 END SUBROUTINE init
 
 !************************************************************************
-SUBROUTINE InitializeScalarFields 
+SUBROUTINE InitializeScalarFields
 !************************************************************************
 !
 !  Purpose: To read the salinity initial condition from a file. (Note:
@@ -4114,11 +4114,11 @@ SUBROUTINE InitializeScalarFields
               NBV, meandepth, length, &
               rhohere, x, z, rhos, rhob
    CHARACTER(LEN=18)  :: initfmt
-   INTEGER, PARAMETER :: InitProc =  0  
+   INTEGER, PARAMETER :: InitProc =  0
    REAL, ALLOCATABLE, DIMENSION(:,:) :: ScalarProfile
 
    SELECT CASE (InitProc)
-  
+
    ! ... OPTION -1 -  Use two profiles to initialize  ---------------------
    CASE (-1)
 
@@ -4126,8 +4126,8 @@ SUBROUTINE InitializeScalarFields
      sal_ic_file = 'si3d_init.txt'
      OPEN (UNIT=i4, FILE='si3d_init.txt', STATUS="OLD", FORM="FORMATTED", IOSTAT=ios)
      IF(ios /= 0) CALL open_error ( "Error opening "//sal_ic_file, ios )
- 
-     ! .... Skip over first five header records in init file  
+
+     ! .... Skip over first five header records in init file
      READ (UNIT=i4, FMT='(/////)', IOSTAT=ios)
      IF (ios /= 0) CALL input_error ( ios, 13 )
 
@@ -4139,13 +4139,13 @@ SUBROUTINE InitializeScalarFields
      ! .... Allocate space for working variables
      ALLOCATE ( ScalarProfile (km1, ntr+1), STAT = ios )
      IF (ios /= 0) THEN; PRINT *, 'Error alloc. init. arrays'; STOP; ENDIF
-	    
+
      ! .....Write the format of the data records into an internal file
      WRITE (UNIT=initfmt, FMT='("(10X,",I3,"G11.2)")') ntr+1
 
 
      ! ... Loop over profiles for different regions in initial field
-     nci  = 0; 
+     nci  = 0;
      salp = 0.0E0; IF (ntr>1) tracer = 0.0E0;
      DO npf = 1, nprof
 
@@ -4154,9 +4154,9 @@ SUBROUTINE InitializeScalarFields
        READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) ile
        READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) jls
        READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) jle
-       READ (UNIT=i4,FMT='(/        ) ',IOSTAT=ios) 
- 
-       ! ... Read data array 
+       READ (UNIT=i4,FMT='(/        ) ',IOSTAT=ios)
+
+       ! ... Read data array
        DO k = 1, km1
          READ (UNIT=i4, FMT=initfmt, IOSTAT=ios) &
               (ScalarProfile(k,nn), nn = 1, ntr+1)
@@ -4169,26 +4169,26 @@ SUBROUTINE InitializeScalarFields
          IF ( (i .GE. ils) .AND. &
          &    (i .LT. ile) .AND. &
          &    (j .GE. jls) .AND. &
-         &    (j .LT. jle) ) THEN 		   
+         &    (j .LT. jle) ) THEN
 
            ! .... map (i,j) into l-index & count
            l = ij2l(i,j); nci = nci + 1;
 
-           ! .... Initialize active scalar fields 
-           DO k = 1, km1; 
-             salp(k,l) = ScalarProfile(k,1)   
+           ! .... Initialize active scalar fields
+           DO k = 1, km1;
+             salp(k,l) = ScalarProfile(k,1)
            END DO;
 
-           ! ... Initialize Non-active scalar fields 
+           ! ... Initialize Non-active scalar fields
            IF (ntr > 0) THEN
              DO  nn = 1, ntr
                DO k = 1, km1
-                 tracer(k,l,nn) = ScalarProfile(k,nn+1)  
+                 tracer(k,l,nn) = ScalarProfile(k,nn+1)
                ENDDO
-             ENDDO ! ... End loop over tracers	  
+             ENDDO ! ... End loop over tracers
            ENDIF
          ENDIF
-       ENDDO; ENDDO; 
+       ENDDO; ENDDO;
 
      ENDDO
      ! ... Check if all the wett domain has been initialized
@@ -4197,7 +4197,7 @@ SUBROUTINE InitializeScalarFields
 	   STOP
      ENDIF
      ! ... Initialize variables at other time steps
-     sal = salp; 
+     sal = salp;
      salpp = salp;
      tracerpp = tracer;
 
@@ -4208,7 +4208,7 @@ SUBROUTINE InitializeScalarFields
 
      ! ... Close io file
      CLOSE (i4)
- 
+
 
    ! ... OPTION 0 -  Initialize from file ---------------------
    !CASE (0)
@@ -4222,7 +4222,7 @@ SUBROUTINE InitializeScalarFields
      ALLOCATE ( ScalarProfile (km1, ntr+1), STAT = ios )
      IF (ios /= 0) THEN; PRINT *, 'Error alloc. init. arrays'; STOP; ENDIF
 
-     ! Skip over first five header records in open boundary condition file  
+     ! Skip over first five header records in open boundary condition file
      READ (UNIT=i4, FMT='(/////)', IOSTAT=ios)
      IF (ios /= 0) CALL input_error ( ios, 13 )
 
@@ -4230,23 +4230,23 @@ SUBROUTINE InitializeScalarFields
      WRITE (UNIT=initfmt, FMT='("(10X,",I3,"G11.2)")') ntr+1
 
      ! Read data array and store it in memory
-     ntr1 = ntr; IF (ecomod < 0) ntr1 = 0; 
+     ntr1 = ntr; IF (ecomod < 0) ntr1 = 0;
      DO k = 1, km1
        READ (UNIT=i4, FMT=initfmt, IOSTAT=ios) &
             (ScalarProfile(k,nn), nn = 1, ntr1+1)
        IF (ios /= 0) CALL input_error ( ios, 14 )
      END DO
-          
-     ! ... Initialize the active scalar field (allways) 
+
+     ! ... Initialize the active scalar field (allways)
      salp = 0.0
-     DO k = 1, km1; 
+     DO k = 1, km1;
         salp(k,:) = ScalarProfile(k,1)
         PRINT *, "ScalarProfile", ScalarProfile(k,1)                                  !ACC
      END DO;
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
        tracer = 0.0;
        IF (ecomod < 0 ) THEN
@@ -4254,9 +4254,9 @@ SUBROUTINE InitializeScalarFields
        ELSE
          DO  nn = 1, ntr
            DO k = 1, km1
-             tracer(k,:,nn) = ScalarProfile(k,nn+1)  
+             tracer(k,:,nn) = ScalarProfile(k,nn+1)
            ENDDO
-         END DO ! ... End loop over tracers	  
+         END DO ! ... End loop over tracers
        ENDIF
        tracerpp = tracer;
      ENDIF
@@ -4266,16 +4266,16 @@ SUBROUTINE InitializeScalarFields
 
      ! ... Close io file
      CLOSE (i4)
- 
+
    ! ... OPTION 1 - Use analytical solution to excite IW ----------
-   CASE (1) 
+   CASE (1)
 
      Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Parameters used to define the solution
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
      length    = FLOAT(im-i1+1)*dx
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
+     drho = rhos - rhob;		! Change in density from top to bottom
      NBV=SQRT(-g/rhos*drho/meandepth);
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
@@ -4287,80 +4287,80 @@ SUBROUTINE InitializeScalarFields
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
      ENDIF
 
-   ! ... OPTION 2 - Use analytical solution in half a closed basin to test 
+   ! ... OPTION 2 - Use analytical solution in half a closed basin to test
    !                the nesting algorithms nesting. All variables defining the basin
-   !                & the IW need to be the same in the fine & coarse grid - 
-   !                In the fine grid we only modify the length and x. 
-   CASE (2) 
+   !                & the IW need to be the same in the fine & coarse grid -
+   !                In the fine grid we only modify the length and x.
+   CASE (2)
 
      Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Make sure these constants are as in CASE (1)
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
-     length    = FLOAT(im-i1+1)*dx; length = length * 2.; 
+     length    = FLOAT(im-i1+1)*dx; length = length * 2.;
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
+     drho = rhos - rhob;		! Change in density from top to bottom
      NBV=SQRT(-g/rhos*drho/meandepth);
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
        i = l2i(l); j = l2j(l);
-       x = FLOAT(i) * dx - 1.5 * dx; x = x + length/2.; 
+       x = FLOAT(i) * dx - 1.5 * dx; x = x + length/2.;
        DO k = k1, km
           z = zlevel(k+1) - 0.5 * hp(k,l); ! z = FLOAT(k) * ddz - 1.5 * ddz
           rhohere = rhos -z*drho/meandepth+rhoamp*COS(pi*x/length)*SIN(pi*z/meandepth);
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
      ENDIF
 
-   ! ... OPTION 2 - Use analytical solution in half a closed basin to test 
+   ! ... OPTION 2 - Use analytical solution in half a closed basin to test
    !                the nesting algorithms nesting. All variables defining the basin
-   !                & the IW need to be the same in the fine & coarse grid - 
+   !                & the IW need to be the same in the fine & coarse grid -
    !                In the fine grid we only modify the length and x. - EAST sims
-   CASE (3) 
+   CASE (3)
 
      Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Make sure these constants are as in CASE (1)
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
-     length    = FLOAT(im-i1+1)*dx; length = length * 2.; 
+     length    = FLOAT(im-i1+1)*dx; length = length * 2.;
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
+     drho = rhos - rhob;		! Change in density from top to bottom
      NBV=SQRT(-g/rhos*drho/meandepth);
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
        i = l2i(l); j = l2j(l);
-       x = FLOAT(i) * dx - 1.5 * dx;    
+       x = FLOAT(i) * dx - 1.5 * dx;
        DO k = k1, km
           z = zlevel(k+1) - 0.5 * hp(k,l); ! z = FLOAT(k) * ddz - 1.5 * ddz
           rhohere = rhos -z*drho/meandepth+rhoamp*COS(pi*x/length)*SIN(pi*z/meandepth);
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
@@ -4370,7 +4370,7 @@ SUBROUTINE InitializeScalarFields
    END SELECT
 
    ! ... Initialize density field at time n-1 & n
-   DO l = 1, lm1; DO k = k1, km1; 
+   DO l = 1, lm1; DO k = k1, km1;
       rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
    END DO; END DO
 
@@ -4400,11 +4400,11 @@ SUBROUTINE InitializeScalarFieldsTWO
               NBV, meandepth, length, &
               rhohere, x, z, rhos, rhob
    CHARACTER(LEN=18)  :: initfmt
-   INTEGER, PARAMETER :: InitProc = 0  
+   INTEGER, PARAMETER :: InitProc = 0
    REAL   , ALLOCATABLE, DIMENSION(:,:) :: ScalarProfile
 
    SELECT CASE (InitProc)
-  
+
    ! ... OPTION 0 -  Initialize from file ---------------------
    CASE (0)
 
@@ -4412,8 +4412,8 @@ SUBROUTINE InitializeScalarFieldsTWO
      sal_ic_file = 'si3d_init.txt'
      OPEN (UNIT=i4, FILE='si3d_init.txt', STATUS="OLD", FORM="FORMATTED", IOSTAT=ios)
      IF(ios /= 0) CALL open_error ( "Error opening "//sal_ic_file, ios )
- 
-     ! .... Skip over first five header records in init file  
+
+     ! .... Skip over first five header records in init file
      READ (UNIT=i4, FMT='(/////)', IOSTAT=ios)
      IF (ios /= 0) CALL input_error ( ios, 13 )
 
@@ -4425,12 +4425,12 @@ SUBROUTINE InitializeScalarFieldsTWO
      ! .... Allocate space for working variables
      ALLOCATE ( ScalarProfile (km1, ntr+1), STAT = ios )
      IF (ios /= 0) THEN; PRINT *, 'Error alloc. init. arrays'; STOP; ENDIF
-	    
+
      ! .....Write the format of the data records into an internal file
      WRITE (UNIT=initfmt, FMT='("(10X,",I3,"G11.2)")') ntr+1
 
      ! ... Loop over profiles for different regions in initial field
-     nci  = 0; 
+     nci  = 0;
      salp = 0.0E0; IF (ntr>1) tracer = 0.0E0;
      DO npf = 1, nprof
 
@@ -4439,9 +4439,9 @@ SUBROUTINE InitializeScalarFieldsTWO
        READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) ile
        READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) jls
        READ (UNIT=i4,FMT='(  14X,I20) ',IOSTAT=ios) jle
-       READ (UNIT=i4,FMT='(/        ) ',IOSTAT=ios) 
- 
-       ! ... Read data array 
+       READ (UNIT=i4,FMT='(/        ) ',IOSTAT=ios)
+
+       ! ... Read data array
        DO k = 1, km1
          READ (UNIT=i4, FMT=initfmt, IOSTAT=ios) &
               (ScalarProfile(k,nn), nn = 1, ntr+1)
@@ -4454,26 +4454,26 @@ SUBROUTINE InitializeScalarFieldsTWO
          IF ( (i .GE. ils) .AND. &
          &    (i .LT. ile) .AND. &
          &    (j .GE. jls) .AND. &
-         &    (j .LT. jle) ) THEN 		   
+         &    (j .LT. jle) ) THEN
 
            ! .... map (i,j) into l-index & count
            l = ij2l(i,j); nci = nci + 1;
 
-           ! .... Initialize active scalar fields 
-           DO k = 1, km1; 
-             salp(k,l) = ScalarProfile(k,1)   
+           ! .... Initialize active scalar fields
+           DO k = 1, km1;
+             salp(k,l) = ScalarProfile(k,1)
            END DO;
 
-           ! ... Initialize Non-active scalar fields 
+           ! ... Initialize Non-active scalar fields
            IF (ntr > 0) THEN
              DO  nn = 1, ntr
                DO k = 1, km1
-                 tracer(k,l,nn) = ScalarProfile(k,nn+1)  
+                 tracer(k,l,nn) = ScalarProfile(k,nn+1)
                ENDDO
-             ENDDO ! ... End loop over tracers	  
+             ENDDO ! ... End loop over tracers
            ENDIF
          ENDIF
-       ENDDO; ENDDO; 
+       ENDDO; ENDDO;
 
      ENDDO
      ! ... Check if all the wett domain has been initialized
@@ -4482,7 +4482,7 @@ SUBROUTINE InitializeScalarFieldsTWO
 	   STOP
      ENDIF
      ! ... Initialize variables at other time steps
-     sal = salp; 
+     sal = salp;
      salpp = salp;
      tracerpp = tracer;
 
@@ -4493,16 +4493,16 @@ SUBROUTINE InitializeScalarFieldsTWO
 
      ! ... Close io file
      CLOSE (i4)
- 
+
    ! ... OPTION 1 - Use analytical solution to excite IW ----------
-   CASE (1) 
+   CASE (1)
 
      Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Parameters used to define the solution
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
      length    = FLOAT(im-i1+1)*dx
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
+     drho = rhos - rhob;		! Change in density from top to bottom
      NBV=SQRT(-g/rhos*drho/meandepth);
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
@@ -4514,46 +4514,46 @@ SUBROUTINE InitializeScalarFieldsTWO
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
      ENDIF
 
-   ! ... OPTION 2 - Use analytical solution in half a closed basin to test 
+   ! ... OPTION 2 - Use analytical solution in half a closed basin to test
    !                the nesting algorithms nesting. All variables defining the basin
-   !                & the IW need to be the same in the fine & coarse grid - 
-   !                In the fine grid we only modify the length and x. 
-   CASE (2) 
+   !                & the IW need to be the same in the fine & coarse grid -
+   !                In the fine grid we only modify the length and x.
+   CASE (2)
 
      Vamp = 0.10; Ts = 25.00; Tb = 15.0; ! Make sure these constants are as in CASE (1)
      meandepth = zl; ! FLOAT(km-k1+1)*ddz
-     length    = FLOAT(im-i1+1)*dx; length = length * 2.; 
+     length    = FLOAT(im-i1+1)*dx; length = length * 2.;
      rhos = 1028.*(1.-1.7E-4*(Ts-10.));		! Surface density
      rhob = 1028.*(1.-1.7E-4*(Tb-10.));		! Bottom  density
-     drho = rhos - rhob;		! Change in density from top to bottom 
+     drho = rhos - rhob;		! Change in density from top to bottom
      NBV=SQRT(-g/rhos*drho/meandepth);
      rhoamp=rhos*Vamp*NBV/g;
      DO l = 1, lm
        i = l2i(l); j = l2j(l);
-       x = FLOAT(i) * dx - 1.5 * dx; x = x + length/2.; 
+       x = FLOAT(i) * dx - 1.5 * dx; x = x + length/2.;
        DO k = k1, km
           z = zlevel(k+1) - 0.5 * hp(k,l); ! z = FLOAT(k) * ddz - 1.5 * ddz
           rhohere = rhos -z*drho/meandepth+rhoamp*COS(pi*x/length)*SIN(pi*z/meandepth);
           salp(k,l)= 10.-((rhohere-1028.)/1028.)/1.7E-4;
        ENDDO
      END DO
-     sal = salp; 
+     sal = salp;
      salpp = salp;
 
-     ! ... Initialize Non-active scalar fields 
+     ! ... Initialize Non-active scalar fields
      IF (ntr > 0) THEN
-       DO nn = 1, ntr; 
+       DO nn = 1, ntr;
          tracer(:,:,nn) = sal;
        ENDDO
        tracerpp = tracer;
@@ -4562,7 +4562,7 @@ SUBROUTINE InitializeScalarFieldsTWO
    END SELECT
 
    ! ... Initialize density field at time n-1 & n
-   DO l = 1, lm1; DO k = k1, km1; 
+   DO l = 1, lm1; DO k = k1, km1;
       rhop(k,l) = densty_s ( salp(k,l), t0 ) - 1000.
    END DO; END DO
 
@@ -4591,17 +4591,17 @@ SUBROUTINE smooth
    REAL    :: wght, wghtpp, scC, scCpp
 
    !.....Smooth zeta (and then recalculate hp, hup, and hvp).....
-   DO l = 1, lm; 
+   DO l = 1, lm;
      i = l2i(l); j = l2j(l);
      sp(i,j) = sp(i,j) + (beta2)*(s(i,j)-2.*sp(i,j)+spp(i,j))
    ENDDO
-   CALL layer_hp 
+   CALL layer_hp
 
    !.....Smooth horizontal velocity components.....
-   DO l = 1, lm; 
+   DO l = 1, lm;
      ! ... Map l- into (i,j)-indexes
      i = l2i(l); j = l2j(l);
-     ! ... At u-points     
+     ! ... At u-points
      IF(mask2d(i+1,j)) THEN
        kmx = MIN(kmz(i,j),kmz(i+1,j))
        DO k = k1, kmx
@@ -4622,8 +4622,8 @@ SUBROUTINE smooth
    ENDDO
 
    !.....No need to recalculate vertical velocity components
-   !     since these values should be stored in wpp either in save or 
-   !     in settrap, which are not used in any computations - 
+   !     since these values should be stored in wpp either in save or
+   !     in settrap, which are not used in any computations -
 
 END SUBROUTINE smooth
 
@@ -4641,47 +4641,47 @@ SUBROUTINE settrap
 !
 !-----------------------------------------------------------------------
 
-   !.....Local variables..... 
+   !.....Local variables.....
    INTEGER :: i, j, k, l, kmx, kmy, kms, k1x, k1y, k1s
    REAL    :: uutemp, vvtemp, wght, wghtpp, scC, scCpp
-   
+
    !.....Timing.....
    REAL, EXTERNAL :: TIMER
    REAL :: btime, etime
    btime = TIMER(0.0)
-   
+
 
    !....Zeta array.....
    spp  = sp
    sp   = 0.5*(s + spp)
 
-   ! ... Save layer thickness at time n 
-   hpp  = hp; 
-   hupp = hup; 
-   hvpp = hvp; 
+   ! ... Save layer thickness at time n
+   hpp  = hp;
+   hupp = hup;
+   hvpp = hvp;
 
-   ! ... Define layer thickness at time n+1/2 & 
+   ! ... Define layer thickness at time n+1/2 &
    !     recompute top layer index
    CALL layer_hp
    CALL TopLayerIndexp
 
-   ! ... Define variable values at time n+1/2. 
-   !     Only define values at cells that at n+1/2 
-   !     are wett. 
+   ! ... Define variable values at time n+1/2.
+   !     Only define values at cells that at n+1/2
+   !     are wett.
    DO l = 1, lm
 
      ! ... Map 3D-(i,j) from 2D-l indexes
      i = l2i(l); j = l2j(l);
-      
+
      ! ... At s-points
-     kms = kmz(i,j) 
+     kms = kmz(i,j)
      DO k = k1, kms
-       salpp(k,l) = salp(k,l);     
+       salpp(k,l) = salp(k,l);
        salp (k,l)=(sal(k,l)+salpp(k,l))/2.
        rhop (k,l)=densty_s(salp(k,l),t0)-1000.
      ENDDO
-   
-     ! ... At u-points    
+
+     ! ... At u-points
      IF (mask2d(i+1,j)) THEN
        kmx = MIN(kmz(i,j),kmz(i+1,j))
        DO k = k1, kmx
@@ -4689,7 +4689,7 @@ SUBROUTINE settrap
          upp (k,l) = up(k,l)
          IF (hup(k,l)>ZERO) THEN
            uhp (k,l) = 0.5*(uh(k,l) + uhpp(k,l))
-           up  (k,l) = uhp(k,l)/hup(k,l) 
+           up  (k,l) = uhp(k,l)/hup(k,l)
          ELSE
            uhp (k,l) = 0.0
            up  (k,l) = 0.0
@@ -4698,22 +4698,22 @@ SUBROUTINE settrap
 
        ! ... Redo near surface flux calcs. at n+1/2
        k = k1u(i,j);
-	  
+
        ! a. Wetting occurs from n+1/2 to n+1
        IF (hu  (k-1,l) > ZERO) THEN
          uhp(k,l) = uhp(k,l)+uh(k-1,l)/2.
          up (k,l) = uhp(k,l) / hup(k,l)
        ENDIF
-	 
+
        ! b. Drying occurs from n to n+1/2
        IF (hupp(k-1,l) > ZERO) THEN
          uhp (k  ,l) = uhp (k,l)+uhpp(k-1,l)/2.
          up  (k  ,l) = uhp(k,l) / hup(k,l)
-       ENDIF	 	    	  
+       ENDIF
 
      ENDIF
-      
-     ! ... At v-points    
+
+     ! ... At v-points
      IF (mask2d(i,j+1)) THEN
        kmy = MIN(kmz(i,j),kmz(i,j+1))
        DO k = k1, kmy
@@ -4721,16 +4721,16 @@ SUBROUTINE settrap
          vpp (k,l) = vp(k,l)
          IF (hvp(k,l)>ZERO) THEN
            vhp (k,l) = 0.5*(vh(k,l) + vhpp(k,l))
-           vp  (k,l) = vhp(k,l)/hvp(k,l)   
+           vp  (k,l) = vhp(k,l)/hvp(k,l)
          ELSE
            vhp (k,l) = 0.0
-           vp  (k,l) = 0.0            
-         ENDIF	          
+           vp  (k,l) = 0.0
+         ENDIF
        ENDDO
 
-       ! ... Redo near surface flux calcs. at n+1/2 
+       ! ... Redo near surface flux calcs. at n+1/2
        k = k1v(i,j);
-	  
+
        ! a. Wetting occurs from n+1/2 to n+1
        IF (hv  (k-1,l) > ZERO) THEN
          vhp(k,l) = vhp(k,l)+vh(k-1,l)/2.
@@ -4742,13 +4742,13 @@ SUBROUTINE settrap
          vhp (k,l) = vhp (k,l)+vhpp(k-1,l)/2.
          vp  (k,l) = vhp (k,l) /  hvp (k,l)
        ENDIF
-	
+
      ENDIF
 
-   ENDDO  
-          
+   ENDDO
+
    !.....Recalculate vertical velocity at n+1/2 -  used in
-   !     computing horizontal fluxes at n+1 
+   !     computing horizontal fluxes at n+1
    CALL continuity(2)
 
    ! ... Save bndry. variables from n-1 into n
@@ -4802,21 +4802,21 @@ SUBROUTINE save
      sp = s
 
      ! ... Save layer thicknesses (h is calculated from s in solver)
-     hp  = h ; 
+     hp  = h ;
      hup = hu;
-     hvp = hv; 
+     hvp = hv;
 
      ! ... Retrieve index for surface layer for next step
      CALL TopLayerIndexp
 
-     ! ... Save state variables     
-     DO l = 1, lm;   
+     ! ... Save state variables
+     DO l = 1, lm;
 
        ! ... Map 2D-l into 3D-(i,j) indexes
        i = l2i(l); j = l2j(l)
 
        DO k = k1, km;
-         ! ... At s-points  
+         ! ... At s-points
          salp (k,l) = sal(k,l)
          rhop (k,l) = densty_s ( salp(k,l), t0 ) - 1000.
        ENDDO
@@ -4824,7 +4824,7 @@ SUBROUTINE save
        DO k = k1, km;
          ! ... At u-points
          IF (hup(k,l)>ZERO)THEN
-           uhp (k,l) = uh (k,l) ! For horiz. scalar & momentum advection 
+           uhp (k,l) = uh (k,l) ! For horiz. scalar & momentum advection
            up  (k,l) = uhp(k,l)/hup(k,l) ! For horiz. momentum advection
            u   (k,l) = up (k,l) ! For output purposes
          ELSE
@@ -4849,11 +4849,11 @@ SUBROUTINE save
 
      END DO;
 
-     !.....Recalculate vertical velocity wp to be used 
+     !.....Recalculate vertical velocity wp to be used
      !     in calcuation of velocities at next time step
      CALL continuity(2)
 
-     ! ... Save bndry. variables from n-1 into n 
+     ! ... Save bndry. variables from n-1 into n
      IF (nopen > 0) THEN
        uhEBp  = uhEB ; huEBp = huEB ;
        uhWBp  = uhWB ; huWBp = huWB ;
@@ -4866,12 +4866,12 @@ SUBROUTINE save
 
      ! ... Save tracers
      IF (ntr > 0) THEN
-      tracerpp = tracer; 
+      tracerpp = tracer;
      ENDIF
 
 
    !                   -----After a leapfrog step (istep=1)-----
-   CASE (1)       
+   CASE (1)
 
      !.....Save zeta.....
      spp   = sp
@@ -4879,8 +4879,8 @@ SUBROUTINE save
 
      !.....Save layer thickness at time n
      hpp  = hp
-     hupp = hup    
-     hvpp = hvp    
+     hupp = hup
+     hvpp = hvp
 
      ! ... Save layer thickness at time n+1
      hp  = h
@@ -4891,15 +4891,15 @@ SUBROUTINE save
      CALL TopLayerIndexp
 
      ! .... Save other variables
-     DO l = 1, lm; 
- 
+     DO l = 1, lm;
+
        ! ... Maks l- into (i,j)-indexes
        i = l2i(l); j = l2j(l);
 
        DO k = k1, km;
-         ! ... At s-points  
+         ! ... At s-points
          salpp(k,l) = salp(k,l)
-         salp (k,l) = sal (k,l); 
+         salp (k,l) = sal (k,l);
          rhop (k,l) = densty_s ( salp(k,l), t0 ) - 1000.
        ENDDO
 
@@ -4907,7 +4907,7 @@ SUBROUTINE save
          ! ... At u- and v- points
          uhpp(k,l) = uhp(k,l)
          vhpp(k,l) = vhp(k,l)
-         upp (k,l) = up (k,l) 
+         upp (k,l) = up (k,l)
          vpp (k,l) = vp (k,l)
        ENDDO
 
@@ -4916,20 +4916,20 @@ SUBROUTINE save
          IF (hup(k,l)>ZERO)THEN
            uhp (k,l) = uh (k,l)
            up  (k,l) = uhp(k,l)/hup(k,l)
-           u   (k,l) = up (k,l) ! For output purposes  
+           u   (k,l) = up (k,l) ! For output purposes
          ELSE
            uhp (k,l) = 0.0
            up  (k,l) = 0.0
            u   (k,l) = 0.0
          ENDIF
-       ENDDO   
+       ENDDO
 
        DO k = k1, km;
          ! ... At v-points
          IF (hvp(k,l)>ZERO)THEN
            vhp (k,l) = vh (k,l)
            vp  (k,l) = vhp(k,l)/hvp(k,l)
-           v   (k,l) = vp (k,l) ! For output purposes 
+           v   (k,l) = vp (k,l) ! For output purposes
          ELSE
            vhp (k,l) = 0.0
            vp  (k,l) = 0.0
@@ -4939,11 +4939,11 @@ SUBROUTINE save
 
      END DO
 
-     !.....Recalculate vertical velocity wp to be used 
+     !.....Recalculate vertical velocity wp to be used
      !     in calcuation of velocities at next time step
      CALL continuity(2)
 
-     ! ... Save bndry. variables  
+     ! ... Save bndry. variables
      IF (nopen > 0) THEN
        uhEBpp = uhEBp; huEBpp = huEBp;
        uhWBpp = uhWBp; huWBpp = huWBp;
@@ -4953,14 +4953,14 @@ SUBROUTINE save
        uhWBp  = uhWB ; huWBp  = huWB ;
        vhNBp  = vhNB ; hvNBp  = hvNB ;
        vhSBp  = vhSB ; hvSBp  = hvSB ;
-     ENDIF 
+     ENDIF
 
      ! ... Save Turbulence variables
      IF (iturb>0) CALL save_2EqTVars
 
      ! ... Save tracers
      IF (ntr > 0) THEN
-      tracerpp = tracer; 
+      tracerpp = tracer;
      ENDIF
 
    CASE DEFAULT
@@ -5006,7 +5006,7 @@ SUBROUTINE settrap2
 
      ! ... Map 3D-(i,j) from 2D-l indexes
      i = l2i(l); j = l2j(l);
-      
+
      ! ... At s-points
      kms = kmz(i,j)
      DO k = k1, kms
@@ -5014,22 +5014,22 @@ SUBROUTINE settrap2
        rhop (k,l)=densty_s(salp(k,l),t0)-1000.
      ENDDO
 
-     ! ... At u-points    
+     ! ... At u-points
      IF (mask2d(i+1,j)) THEN
        kmx = MIN(kmz(i,j),kmz(i+1,j))
        DO k = k1, kmx
          IF (hup(k,l)>ZERO) THEN
            uhp (k,l) = 0.5*(uh(k,l) + uhpp(k,l))
-           up  (k,l) = uhp(k,l)/hup(k,l) 
+           up  (k,l) = uhp(k,l)/hup(k,l)
          ELSE
            uhp (k,l) = 0.0
-           up  (k,l) = 0.0 
+           up  (k,l) = 0.0
          ENDIF
        ENDDO
 
-       ! ... Redo near surface flux calcs. 
+       ! ... Redo near surface flux calcs.
        k = k1u(i,j);
-	  
+
        ! a. Wetting occurs from n+1/2 to n+1
        IF (hu  (k-1,l) > ZERO) THEN
          uhp(k,l) = uhp(k,l)+uh(k-1,l)/2.
@@ -5040,26 +5040,26 @@ SUBROUTINE settrap2
        IF (hupp(k-1,l) > ZERO) THEN
          uhp (k,l) = uhp (k,l)+uhpp(k-1,l)/2.
          up  (k,l) = uhp(k,l) / hup(k,l)
-       ENDIF	    	  
+       ENDIF
 
      ENDIF
-      
-     ! ... At v-points    
+
+     ! ... At v-points
      IF (mask2d(i,j+1)) THEN
        kmy = MIN(kmz(i,j),kmz(i,j+1))
        DO k = k1, kmy
          IF (hvp(k,l)>ZERO) THEN
            vhp (k,l) = 0.5*(vh(k,l) + vhpp(k,l))
-           vp  (k,l) = vhp(k,l)/hvp(k,l)   
+           vp  (k,l) = vhp(k,l)/hvp(k,l)
          ELSE
            vhp (k,l) = 0.0
-           vp  (k,l) = 0.0            
-         ENDIF	          
+           vp  (k,l) = 0.0
+         ENDIF
        ENDDO
 
-       ! ... Redo near surface flux calcs. 
+       ! ... Redo near surface flux calcs.
        k = k1v(i,j);
-	  
+
        ! a. Wetting occurs from n+1/2 to n+1
        IF (hv  (k-1,l) > ZERO) THEN
          vhp(k,l) = vhp(k,l)+ vh(k-1,l)/2.
@@ -5071,15 +5071,15 @@ SUBROUTINE settrap2
          vhp (k,l) = vhp (k,l)+vhpp(k-1,l)/2.
          vp  (k,l) = vhp (k,l) /  hvp (k,l)
        ENDIF
-	  
+
      ENDIF
 
-   ENDDO  
+   ENDDO
 
-   !.....Recalculate vertical velocity components to be used in 
+   !.....Recalculate vertical velocity components to be used in
    !     calculating horizontal velocity at next iteration
    CALL continuity(2)
-  
+
    ! ... Work with turbulence quantities (TurbModel)
    IF (iturb>0) CALL settrap2_2EqTVars
 
@@ -5113,7 +5113,7 @@ SUBROUTINE outr
                        & imon,iday,iyr,ihr
 
    !.....Output space-time domains, cell size & time step .................
-   WRITE (UNIT=i6,FMT=1) xl,yl,zl,idx,idy,idz,tl,idt, dzmin,zetainit 
+   WRITE (UNIT=i6,FMT=1) xl,yl,zl,idx,idy,idz,tl,idt, dzmin,zetainit
 
    ! ... Read parameters controlling solution algorithm .................
    WRITE (UNIT=i6,FMT=2) itrap,niter,ismooth,                            &
@@ -5220,11 +5220,11 @@ SUBROUTINE outt
                  & imon,iday,iyr,ihr
 
          IF ( i > 0 .AND. j > 0) THEN
-           kmzij = (kmz(i,j)-k1+1); 
-           hhsij =  hhs(i,j)      ; 
+           kmzij = (kmz(i,j)-k1+1);
+           hhsij =  hhs(i,j)      ;
          ELSE
-           kmzij = km-k1+1; 
-           hhsij = (km-1) * ddz; 
+           kmzij = km-k1+1;
+           hhsij = (km-1) * ddz;
          ENDIF
 
          IF (idt .GE. 0.01 .AND. ddz .GE. 0.01) THEN ! idt real
@@ -5248,7 +5248,7 @@ SUBROUTINE outt
                   & "ismooth =", I2, "  beta =", F6.3," niter =", I2/         &
                   & "iextrp =",  I2, "  f =", F7.4, "  tramp=", F9.1, 2X,     &
                   & "iupwind =", I2 )
-         WRITE (UNIT=i60, FMT=2)     
+         WRITE (UNIT=i60, FMT=2)
        2 FORMAT( 1X,"   time     ","  step     ","  zeta ","   depth   " &
                     "    u       ","  v      "," w       ",              &
                     "   Av       ","        Dv      ","  scalar    "," Tracers-> " )
@@ -5256,28 +5256,28 @@ SUBROUTINE outt
        3 FORMAT( 1X,"    hrs     ","   no      ","   cm       "," m    " &
                     "   cm/s   "  ,"   cm/s   " ,"  cm/s      " ,      &
                     " cm2/s      ","     cm2/s     ","  oC        ","  g/l   -> " )
-         
+
       END DO
    END IF
- 
-   !.....Output values at time step  n  to timefile(s).....
-   DO nn = 1, nnodes 
 
-      i = inode(nn); 
-      j = jnode(nn); 
-      i60 = i6 + nn; 
+   !.....Output values at time step  n  to timefile(s).....
+   DO nn = 1, nnodes
+
+      i = inode(nn);
+      j = jnode(nn);
+      i60 = i6 + nn;
 
       IF ( i > 0 .AND. j > 0) THEN
-        kmzij = kmz(i,j); 
+        kmzij = kmz(i,j);
       ELSE
-        kmzij = km; 
+        kmzij = km;
       ENDIF
 
       ! ... Map (i,j)- into l-index
       l = ij2l(i,j)
 
       IF (i > 0 .AND. j > 0) THEN
-        ! ... Initialize output variables to -99.  
+        ! ... Initialize output variables to -99.
         uout  = -99.0E-2 ! 10-2 since the output is cm /s
         vout  = -99.0E-2
         wout  = -99.0E-2
@@ -5285,10 +5285,10 @@ SUBROUTINE outt
         Dvout = -99.0E-4
         uhout = -99.0
         scout = -99.0
-        trout = -99.0   
+        trout = -99.0
         DO k  = k1, kmzij
-          IF (h(k,l)<=ZERO) CYCLE  
-          !uout(k)  = 0.5 * (u  (k,l) + u  (k,lWC(l))) 
+          IF (h(k,l)<=ZERO) CYCLE
+          !uout(k)  = 0.5 * (u  (k,l) + u  (k,lWC(l)))
           !vout(k)  = 0.5 * (v  (k,l) + v  (k,lSC(l)))
           !wout(k)  = 0.5 * (wp (k,l) + wp (k+1,l   ))
           uout(k)  = u (k, l)
@@ -5299,25 +5299,25 @@ SUBROUTINE outt
           uhout(k) = 0.5 * (uh (k,l) + uh (k,lWC(l)))
           scout(k) = sal(k,l)
           IF (ntr>0) THEN
-            DO it = 1, ntr 
+            DO it = 1, ntr
               trout(k,it) = tracer(k,l,it)
             ENDDO
           ENDIF
        END DO
      ELSE
         ! ... Initialize output variables to -99.
-        uout  = 0.E0 
+        uout  = 0.E0
         vout  = 0.E0
-        wout  = 0.E0        
+        wout  = 0.E0
         Dvout = 0.E0
         uhout = 0.E0
         scout = 0.E0
-        trout = 0.E0   
+        trout = 0.E0
         DO k  = k1, kmzij
-          nk = 0; 
+          nk = 0;
           DO l = 1,lm
-            IF (h(k,l)<=ZERO) CYCLE 
-            nk = nk + 1 
+            IF (h(k,l)<=ZERO) CYCLE
+            nk = nk + 1
             uout(k)  = uout(k)+u (k, l)
             vout(k)  = vout(k)+v (k, l)
             wout(k)  = wout(k)+wp(k, l)
@@ -5326,7 +5326,7 @@ SUBROUTINE outt
             uhout(k) = uhout(k)+0.5 * (uh (k,l) + uh (k,lWC(l)))
             scout(k) = scout(k)+sal(k,l)
             IF (ntr>0) THEN
-              DO it = 1, ntr 
+              DO it = 1, ntr
                 trout(k,it) = trout(k,it)+tracer(k,l,it)
               ENDDO
             ENDIF
@@ -5340,7 +5340,7 @@ SUBROUTINE outt
             uhout(k) = uhout(k)/nk
             scout(k) = scout(k)/nk
             IF (ntr>0) THEN
-              DO it = 1, ntr 
+              DO it = 1, ntr
                 trout(k,it) = trout(k,it)/nk
               ENDDO
             ENDIF
@@ -5353,7 +5353,7 @@ SUBROUTINE outt
             uhout(k) = -99.
             scout(k) = -99.
             IF (ntr>0) THEN
-              DO it = 1, ntr 
+              DO it = 1, ntr
                 trout(k,it) = -99.
               ENDDO
             ENDIF
@@ -5368,7 +5368,7 @@ SUBROUTINE outt
      ELSE
        WRITE (UNIT=i60, FMT=5) thrs, n, s(i,j), (zlevel(k+1) ,     &
             & uout (k), vout(k) , wout(k), Avout(k), Dvout(k),     &
-            & scout(k  ),                                          & 
+            & scout(k  ),                                          &
             & trout(k,1),                                          &
             & trout(k,2),                                          &
             & trout(k,3),                                          &
@@ -5383,7 +5383,7 @@ SUBROUTINE outt
             & trout(k,12),                                         &
             & trout(k,13),                                         &
             & trout(k,14),                                         &
-            & trout(k,15),                                         &	
+            & trout(k,15),                                         &
             & k = k1,kmzij)
      ENDIF
 
@@ -5392,7 +5392,7 @@ SUBROUTINE outt
    5 FORMAT(1X,F10.3,I10,2PF9.2,0PF9.2,2(2PF10.2),2PF9.4,2(4PF15.7),16(0PF15.7)/ &
 	                & ( 30X,0PF9.2,2(2PF10.2),2PF9.4,2(4PF15.7),16(0PF15.7)))
    END DO
-    
+
    !.....Compute CPU time spent in subroutine.....
    etime = TIMER(0.0)
    t_outt = t_outt + (etime - btime)
@@ -5404,30 +5404,30 @@ END SUBROUTINE outt
 SUBROUTINE outw
 !***********************************************************************
 !
-!  Purpose: To write the wind field provided to the model as boundary 
-!           condition 
+!  Purpose: To write the wind field provided to the model as boundary
+!           condition
 !
 !-----------------------------------------------------------------------
 
   !.....Local variables.....
-  CHARACTER (LEN = 10) :: wind_file 
-  INTEGER, PARAMETER   :: wind_id0 = 420 
+  CHARACTER (LEN = 10) :: wind_file
+  INTEGER, PARAMETER   :: wind_id0 = 420
   INTEGER :: wind_id
   INTEGER :: i, j, k, ios, istat, n_frames, k_out, m1,m2, kp, kb
   INTEGER, SAVE :: ipoints
-  REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array 
-  INTEGER :: year_out, day_out, mon_out 
+  REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array
+  INTEGER :: year_out, day_out, mon_out
   REAL    :: hour_out
 
-  ! ... Return if meteorological field is uniform - 
+  ! ... Return if meteorological field is uniform -
   IF ( ifsurfbc < 10 ) RETURN
 
   !..... Do only on first entry....
   IF( n == 0 ) THEN
 
-    ! Open spacefile on first entry and print specifications for reading the file 
+    ! Open spacefile on first entry and print specifications for reading the file
     n_frames = nts/MAX(iop,1)
-    wind_id = wind_id0 
+    wind_id = wind_id0
     wind_file = 'wfield.bnr'
     OPEN(unit=wind_id,file=wind_file,FORM='UNFORMATTED',IOSTAT=ios)
     IF(ios /= 0) THEN; PRINT *, "Error opening wind file ", ios; STOP; ENDIF
@@ -5440,14 +5440,14 @@ SUBROUTINE outw
       IF (.NOT. mask2d(i,j)  ) CYCLE
       ipoints = ipoints + 1
     END DO; END DO
-    WRITE(wind_id) ipoints  
+    WRITE(wind_id) ipoints
 
     ! ... Time stamp
     year_out = iyr
     mon_out  = imon
     day_out  = iday
     hour_out = ihr
-   
+
     ! ... Output sheets
     ALLOCATE( out_array ( ipoints, 4 ), STAT=istat )
     IF (istat /= 0) THEN; PRINT *, 'ERROR allocating space for out_array'; STOP; ENDIF
@@ -5456,52 +5456,52 @@ SUBROUTINE outw
       ! Ignore dry cells
       IF (.NOT. mask2d(i,j)) CYCLE
       ! Update counter
-      k_out = k_out + 1;        
-      ! Save wind stress components into output variable 
+      k_out = k_out + 1;
+      ! Save wind stress components into output variable
       out_array(k_out,1) = FLOAT(i)
-      out_array(k_out,2) = FLOAT(j) 
+      out_array(k_out,2) = FLOAT(j)
       out_array(k_out,3) = 0.0 ! Wind stress component in the EW direction
       out_array(k_out,4) = 0.0 ! Wind stress component in the NS direction
     END DO; END DO
 
     ! ... Id # for plane file
-    wind_id = wind_id0 
+    wind_id = wind_id0
     ! ... Print time stamp followed by the records
     WRITE(wind_id) n,year_out,mon_out,day_out,hour_out,          &
     &            ((out_array(m1,m2),m2=1,4),m1=1,k_out)
     DEALLOCATE (out_array)
-  
-  ! ... On successive time steps  
+
+  ! ... On successive time steps
   ELSE
 
     ! ... Time stamp
     year_out = iyr
     mon_out  = imon
     day_out  = iday
-    hour_out = ihr 
+    hour_out = ihr
 
     ! ... Output sheets
     ALLOCATE( out_array ( ipoints, 2 ), STAT=istat )
     IF (istat /= 0) THEN; PRINT *, 'ERROR allocating space for out_array'; STOP; ENDIF
-   
-    k_out = 0; 
+
+    k_out = 0;
     DO j = j1, jm; DO i = i1, im
       ! Ignore dry cells
       IF (.NOT. mask2d(i,j)) CYCLE
       ! Update counter
-      k_out = k_out + 1;        
+      k_out = k_out + 1;
       ! Save wind stress components into output variable
       out_array(k_out,1) = uair(i,j) ! wind component in the EW direction
       out_array(k_out,2) = vair(i,j) ! wind component in the NS direction
     END DO; END DO
 
     ! ... Id # for plane file
-    wind_id = wind_id0 
+    wind_id = wind_id0
     ! ... Print time stamp followed by the records
     WRITE(wind_id) n,year_out,mon_out,day_out,hour_out,          &
     &            ((out_array(m1,m2),m2=1,2),m1=1,k_out)
     DEALLOCATE (out_array)
-   
+
 END IF
 
 END SUBROUTINE outw
@@ -5516,12 +5516,12 @@ SUBROUTINE outv
 
 
    !.....Local variables.....
-   CHARACTER (LEN = 12) :: section_file 
-   INTEGER, PARAMETER   :: section_id0 = 900 
+   CHARACTER (LEN = 12) :: section_file
+   INTEGER, PARAMETER   :: section_id0 = 900
    INTEGER :: section_id, year_out, mon_out, day_out, i, j, k, l
    INTEGER :: m1, m2, ios, istat, n_frames, ipoints, k_out
    REAL    :: hour_out
-   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array 
+   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array
 
    !.....Open on first entry and print initial conditions ....
    IF( n == 0 ) THEN
@@ -5536,7 +5536,7 @@ SUBROUTINE outv
       OPEN(unit=section_id,file=section_file,FORM='UNFORMATTED',IOSTAT=ios)
       IF(ios /= 0) THEN
         PRINT *, "Error opening section file = ", j, ios; STOP
-      ENDIF 
+      ENDIF
       !... Write number of time slices to output file
       WRITE(section_id) n_frames
       ipoints = 0
@@ -5564,26 +5564,26 @@ SUBROUTINE outv
        i = xinode (k,m1)
        j = xjnode (k,m1)
        l = ij2l(i,j)
-       IF ( .NOT. mask2D(i,j)) CYCLE 
+       IF ( .NOT. mask2D(i,j)) CYCLE
        DO m2 = k1, kmz(i,j)
          k_out = k_out + 1
          out_array(k_out,1) = FLOAT(i )
          out_array(k_out,2) = FLOAT(j )
          out_array(k_out,3) = FLOAT(m1)
          out_array(k_out,4) = zlevel(m2+1)-hp(m2,l) ! FLOAT(m1)
-         out_array(k_out,5) = up  (m2,l) 
-         out_array(k_out,6) = vp  (m2,l) 
-         out_array(k_out,7) = wp  (m2,l) 
-         out_array(k_out,8) = salp(m2,l); 
-         IF (hp(m2,l)<= 0.) & 
+         out_array(k_out,5) = up  (m2,l)
+         out_array(k_out,6) = vp  (m2,l)
+         out_array(k_out,7) = wp  (m2,l)
+         out_array(k_out,8) = salp(m2,l);
+         IF (hp(m2,l)<= 0.) &
            out_array(k_out,8) = -99.;
          IF (ntr > 0) THEN
-           out_array(k_out,9) = tracerpp(m2,l,ntr); 
-             IF (hp(m2,l)<= 0.) & 
+           out_array(k_out,9) = tracerpp(m2,l,ntr);
+             IF (hp(m2,l)<= 0.) &
              out_array(k_out,9) = -99.;
-         ELSE            
+         ELSE
            out_array(k_out,9) = 0.5 * (Av (m2,l) + Av (m2+1,l))
-         ENDIF         
+         ENDIF
          out_array(k_out,10) = 0.5 * (Dv (m2,l) + Dv (m2+1,l))
        END DO
      END DO
@@ -5619,17 +5619,17 @@ SUBROUTINE outv
        IF ( .NOT. mask2D(i,j)) CYCLE
        DO m2 = k1, kmz(i,j)
          k_out = k_out + 1
-         out_array(k_out,1) = up  (m2,l) 
-         out_array(k_out,2) = vp  (m2,l) 
-         out_array(k_out,3) = wp  (m2,l) 
-         out_array(k_out,4) = salp(m2,l); 
+         out_array(k_out,1) = up  (m2,l)
+         out_array(k_out,2) = vp  (m2,l)
+         out_array(k_out,3) = wp  (m2,l)
+         out_array(k_out,4) = salp(m2,l);
          IF (hp(m2,l)<= 0.) &
            out_array(k_out,4) = -99.;
          IF (ntr > 0) THEN
-           out_array(k_out,5) = tracer(m2,l,ntr); 
+           out_array(k_out,5) = tracer(m2,l,ntr);
            IF (hp(m2,l)<= 0.) &
              out_array(k_out,5) = -99.;
-         ELSE            
+         ELSE
            out_array(k_out,5) = 0.5 * (Av (m2,l) + Av (m2+1,l))
          ENDIF
          out_array(k_out,6) = 0.5 * (Dv (m2,l) + Dv (m2+1,l))
@@ -5642,7 +5642,7 @@ SUBROUTINE outv
      &            ((out_array(m1,m2),m2=1,6),m1=1,ipoints)
      DEALLOCATE (out_array)
    END DO
-	
+
  END IF
 
 END SUBROUTINE outv
@@ -5651,19 +5651,19 @@ END SUBROUTINE outv
 SUBROUTINE CountSectionCells ( i1, ksection )
 !***********************************************************************
 !
-!  Purpose: To count wet points in a given X-section (ksection) 
+!  Purpose: To count wet points in a given X-section (ksection)
 !
 !  Revisions:
 !    Date            Programmer        Description of revision
 !    ----            ----------        -----------------------
-!  02/22/00          F.J. Rueda        Original f90 code    
-!  03/27/00          F.J. Rueda        Check for dry cells (not counted)  
+!  02/22/00          F.J. Rueda        Original f90 code
+!  03/27/00          F.J. Rueda        Check for dry cells (not counted)
 !
 !-----------------------------------------------------------------------
 !
 
  INTEGER, INTENT (inout) :: i1
- INTEGER, INTENT (in)    :: ksection 
+ INTEGER, INTENT (in)    :: ksection
 
  ! ... Local variables
  INTEGER :: count, i, j, k, m
@@ -5681,27 +5681,27 @@ SUBROUTINE CountSectionCells ( i1, ksection )
     count = count + kmz(i,j) - 1
  END DO
  i1 = count
- 
+
 END SUBROUTINE CountSectionCells
 
 !***********************************************************************
 SUBROUTINE outNB
 !***********************************************************************
 !
-!  Purpose: To write transport and scalar values at a cross section to a 
-!           binary file to be used as boundary conditions in nesting 
+!  Purpose: To write transport and scalar values at a cross section to a
+!           binary file to be used as boundary conditions in nesting
 !           procedure.
-!  FJR - 
+!  FJR -
 !
 !-----------------------------------------------------------------------
 
    !.....Local variables.....
    CHARACTER (LEN = 12) :: xfile, Ifile
    INTEGER :: nboid, m1, m2, ios, istat, ipts, ko, iboid
-   INTEGER :: i , j , k , l, kmx, kmy, js, je, is, ie, icl 
+   INTEGER :: i , j , k , l, kmx, kmy, js, je, is, ie, icl
    INTEGER :: ii, jj, kk, iis, iie, jjs, jje, kks, kke, nn
    REAL    :: dzi, uflow, uflowi, vflow, vflowi, dflow
-   REAL, ALLOCATABLE, DIMENSION(:,:) :: outvar 
+   REAL, ALLOCATABLE, DIMENSION(:,:) :: outvar
    INTEGER, PARAMETER:: iboid0 = 20
 
    ! ... Return if interior boundaries are not requested
@@ -5729,10 +5729,10 @@ SUBROUTINE outNB
 
        IF(ios /= 0) THEN
          PRINT *, "Error opening xfile = ", nn, ios; STOP
-       ENDIF 
+       ENDIF
        !... Write side of nested boundary (i.e. N, S, E or W)
        WRITE(nboid) isdNBO(nn)
-       !... Write time information (no. of frames and time between frames) 
+       !... Write time information (no. of frames and time between frames)
        WRITE(nboid) nfrNBO(nn)
        !... Write spatial information (no. of cells) & no. of tracers
        WRITE(nboid) iptNBO(nn), ntrNBO(nn)
@@ -5746,46 +5746,46 @@ SUBROUTINE outNB
      ipts = iptNBO(nn)
      ALLOCATE( outvar ( ipts, 5+ntr ), STAT=istat )
      IF (istat /= 0) CALL allocate_error (istat,30)
-   
+
      SELECT CASE (isdNBO(nn))
 
        ! East or West boundary
        CASE (1,3)
 
          ! Get i-, j- indexes for bdry. point
-         i  = isbcNBO(nn); 
-         js = jsbcNBO(nn); 
+         i  = isbcNBO(nn);
+         js = jsbcNBO(nn);
          je = jebcNBO(nn)
 
-         ! ... Assign variable values to cells within nested grid 
+         ! ... Assign variable values to cells within nested grid
          uflow = 0.0E0
          icl = 0
          DO j = js,je
            ! ... Get l- from (i,j)
            l   = ij2l(i,j)
            ! ... Indexes for fine-grid cells in coarse-grid grid cell
-           ii  = ((i-i1)+1)*xxNBO+i1-1 
+           ii  = ((i-i1)+1)*xxNBO+i1-1
            jjs = ((j-j1)  )*xxNBO+j1
            jje = ((j-j1)+1)*xxNBO+j1-1
            kmx = kmz(i,j)
-           DO jj = jjs, jje 
+           DO jj = jjs, jje
              DO k = k1, kmx
                icl = icl + 1
                IF (icl > ipts) THEN
                  PRINT *, ' STOP - Counters in SUBROUTINE outNB do not agree'
                  STOP
-               ENDIF 
+               ENDIF
                outvar(icl,1) = FLOAT(ii)
-               outvar(icl,2) = FLOAT(jj) 
+               outvar(icl,2) = FLOAT(jj)
                outvar(icl,3) = FLOAT(k )
-               outvar(icl,4) = uh (k,l ) 
-               outvar(icl,5) = sal(k,l ) 
+               outvar(icl,4) = uh (k,l )
+               outvar(icl,5) = sal(k,l )
                IF (ntr > 0) THEN
                  outvar(icl,6:5+ntr) = tracer(k,l,1:ntr)
                ENDIF
                uflow = uflow + uh(k,l)
              ENDDO
-           ENDDO         
+           ENDDO
          ENDDO
          dzi = 0.0E0
          DO i = i1,isbcNBO(nn);
@@ -5800,19 +5800,19 @@ SUBROUTINE outNB
 
        ! North or South boundaries
        CASE (2,4)
-    
+
          ! Get i-, j- indexes for bdry. point
-         j  = jsbcNBO(nn); 
-         is = isbcNBO(nn); 
+         j  = jsbcNBO(nn);
+         is = isbcNBO(nn);
          ie = iebcNBO(nn)
-    
-         ! ... Assign variable values to cells within nested grid 
+
+         ! ... Assign variable values to cells within nested grid
          icl = 0; uflow = 0.0E0
          DO i = is,ie
            ! ... Get l- from (i,j)
            l   = ij2l(i,j)
-           ! ... Indexes for fine-grid cells within coarse-grid grid cell 
-           jj  = ((j-j1)+1)*xxNBO+j1-1 
+           ! ... Indexes for fine-grid cells within coarse-grid grid cell
+           jj  = ((j-j1)+1)*xxNBO+j1-1
            iis = ((i-i1)  )*xxNBO+i1
            iie = ((i-i1)+1)*xxNBO+i1-1
            kmy = kmz(i,j)
@@ -5822,18 +5822,18 @@ SUBROUTINE outNB
                IF (icl > ipts) THEN
                  PRINT *, ' STOP - Counters in SUBROUTINE outNB do not agree'
                  STOP
-               ENDIF 
+               ENDIF
                outvar(icl,1) = FLOAT(ii)
-               outvar(icl,2) = FLOAT(jj) 
+               outvar(icl,2) = FLOAT(jj)
                outvar(icl,3) = FLOAT(k )
-               outvar(icl,4) = vh (k,l ) 
-               outvar(icl,5) = sal(k,l ) 
+               outvar(icl,4) = vh (k,l )
+               outvar(icl,5) = sal(k,l )
                IF (ntr > 0) THEN
                  outvar(icl,6:5+ntr) = tracer(k,l,1:ntr)
                ENDIF
                uflow = uflow + vh(k,l)
              ENDDO
-           ENDDO         
+           ENDDO
          ENDDO
 
          ! ... Water Surface Elevation --> mass
@@ -5849,7 +5849,7 @@ SUBROUTINE outNB
          ENDDO
 
      END SELECT
- 
+
      ! ... Double check whether icl = ipts
      IF ( icl .NE. ipts) THEN
        PRINT *, ' STOP - Counters in SUBROUTINE outNB do not agree'
@@ -5861,8 +5861,8 @@ SUBROUTINE outNB
      iboid = iboid0 + nn
 
      ! ... Write variables to nesting boundary files
-     IF((MOD(n,MAX(ioNBO,1)) == 0)) THEN 
-       IF (n == 0 ) THEN     
+     IF((MOD(n,MAX(ioNBO,1)) == 0)) THEN
+       IF (n == 0 ) THEN
          WRITE(nboid) thrs,((outvar(m1,m2),m2=1,5+ntr),m1=1,ipts)
        ELSE
          WRITE(nboid) thrs,((outvar(m1,m2),m2=4,5+ntr),m1=1,ipts)
@@ -5872,7 +5872,7 @@ SUBROUTINE outNB
      DEALLOCATE (outvar)
 
      ! ... Mass Balance Check
-     WRITE (UNIT=iboid, FMT='(3E20.11)') thrs, uflow, dzi*dx*dy 
+     WRITE (UNIT=iboid, FMT='(3E20.11)') thrs, uflow, dzi*dx*dy
 
    ENDDO
 
@@ -5882,17 +5882,17 @@ END SUBROUTINE outNB
 SUBROUTINE FindCellsNBO ( ix, nn )
 !***********************************************************************
 !
-!  Purpose: To count wett cells ix in a nested grid within a given 
+!  Purpose: To count wett cells ix in a nested grid within a given
 !           X-section nn
 !
 !-----------------------------------------------------------------------
 
  ! ... Arguments
  INTEGER, INTENT (inout) :: ix
- INTEGER, INTENT (in)    :: nn 
+ INTEGER, INTENT (in)    :: nn
 
  ! ... Local variables
- INTEGER :: count, i, j, k, l, kmx, kmy, js, je, is, ie 
+ INTEGER :: count, i, j, k, l, kmx, kmy, js, je, is, ie
 
  SELECT CASE (isdNBO(nn))
 
@@ -5900,12 +5900,12 @@ SUBROUTINE FindCellsNBO ( ix, nn )
    CASE (1,3)
 
      ! Get i-, j- indexes for bdry. point
-     i  = isbcNBO(nn); 
-     js = jsbcNBO(nn); 
+     i  = isbcNBO(nn);
+     js = jsbcNBO(nn);
      je = jebcNBO(nn);
 
      ! Make sure i,j locations are wett cells
-     DO j = js, je   
+     DO j = js, je
        IF ( .NOT. mask2d(i,j) ) THEN
          PRINT *, "  "
          PRINT *, " ****STOP - EW nesting bdry. DRY"
@@ -5913,7 +5913,7 @@ SUBROUTINE FindCellsNBO ( ix, nn )
        END IF
      ENDDO
 
-     ! ... Count of No.cells at boundary of nested grid 
+     ! ... Count of No.cells at boundary of nested grid
      count = 0;
      DO j = js,je
        kmx = kmz(i,j)
@@ -5925,31 +5925,31 @@ SUBROUTINE FindCellsNBO ( ix, nn )
    CASE (2,4)
 
      ! ... Get i-, j- indexes for bdry. point
-     j  = jsbcNBO(nn); 
-     is = isbcNBO(nn); 
+     j  = jsbcNBO(nn);
+     is = isbcNBO(nn);
      ie = iebcNBO(nn);
-     
+
      ! ... Make sure i,j locations are wett cells
-     DO i = is, ie   
+     DO i = is, ie
        IF ( .NOT. mask2d(i,j) ) THEN
          PRINT *, "  "
          PRINT *, " ****STOP - NS nesting bdry. DRY "
-         STOP 
+         STOP
        END IF
      ENDDO
 
-     ! ... Count of No.cells at boundary of nested grid 
+     ! ... Count of No.cells at boundary of nested grid
      count = 0;
      DO i = is, ie
        kmy = kmz(i,j)
-       count = count + (kmy-k1+1) 
+       count = count + (kmy-k1+1)
      ENDDO
-     count = count * xxNBO   
+     count = count * xxNBO
 
- END SELECT  
+ END SELECT
  ix = count
 
- 
+
 END SUBROUTINE FindCellsNBO
 
 !***********************************************************************
@@ -5961,12 +5961,12 @@ SUBROUTINE outh
 !-----------------------------------------------------------------------
 
    !.....Local variables.....
-   CHARACTER (LEN = 10) :: plane_file 
-   INTEGER, PARAMETER   :: plane_id0 = 800 
+   CHARACTER (LEN = 10) :: plane_file
+   INTEGER, PARAMETER   :: plane_id0 = 800
    INTEGER :: plane_id
    INTEGER :: i, j, k, l, ios, istat, n_frames, ipoints , k_out, m1,m2, kp, kb
-   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array 
-   INTEGER :: year_out, day_out, mon_out 
+   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array
+   INTEGER :: year_out, day_out, mon_out
    REAL    :: hour_out
 
    !.....Open spacefile on first entry and print initial conditions ....
@@ -5983,13 +5983,13 @@ SUBROUTINE outh
        END IF
        ! ... Open file to output solution
        plane_id = plane_id0 + j
-       plane_file = "plane_    " 
+       plane_file = "plane_    "
        IF ( p_out(j) < 10 ) WRITE ( plane_file(7:10), FMT='(I1,"   ")' ) p_out(j)
        IF(( p_out(j) >= 10 ) .AND. ( p_out(j) < 100)) &
        &                    WRITE ( plane_file(7:10), FMT='(I2,"  " )' ) p_out(j)
        IF ( p_out(j) > 100) WRITE ( plane_file(7:10), FMT='(I3," "  )' ) p_out(j)
        OPEN(unit=plane_id,file=plane_file,FORM='UNFORMATTED',IOSTAT=ios)
-       IF(ios /= 0) PRINT *, "Error opening plane file = ", p_out(j), ios 
+       IF(ios /= 0) PRINT *, "Error opening plane file = ", p_out(j), ios
        !... Write number of time slices to output file
        WRITE(plane_id) n_frames
        !... Find & write number of wett cells in the plane
@@ -6004,7 +6004,7 @@ SUBROUTINE outh
      mon_out  = imon
      day_out  = iday
      hour_out = ihr
-  
+
      ! ... Output planes
      DO k = 1, n_planes
 
@@ -6017,7 +6017,7 @@ SUBROUTINE outh
        kp = p_out(k)
        k_out = 0
 
-       ! ... Bottom cell plane 
+       ! ... Bottom cell plane
        IF ( kp > km ) THEN
          DO j = j1, jm; DO i = i1, im
            ! ... Ignore dry cells
@@ -6025,11 +6025,11 @@ SUBROUTINE outh
            ! ... Determine k- & l- indexes for output cell
            kb = kmz (i,j)
            l  = ij2l(i,j)
-           ! ... Define output variables 
+           ! ... Define output variables
            k_out = k_out + 1
            out_array(k_out,1) = FLOAT(i)
-           out_array(k_out,2) = FLOAT(j) 
-           out_array(k_out,3) = up (kb,l) 
+           out_array(k_out,2) = FLOAT(j)
+           out_array(k_out,3) = up (kb,l)
            out_array(k_out,4) = vp (kb,l)
            out_array(k_out,5) = wp (kb,l)
            out_array(k_out,6) = salp(kb,l)
@@ -6039,8 +6039,8 @@ SUBROUTINE outh
            out_array(k_out,7) = s(i,j)
            !out_array(k_out,8) = hhs(i,j)
          END DO; END DO
-       ! ... Interior plane 
-       ELSE 
+       ! ... Interior plane
+       ELSE
          DO j = j1, jm; DO i = i1, im
            ! Ignore dry cells
            IF (.NOT. mask2d(i,j)) CYCLE
@@ -6048,11 +6048,11 @@ SUBROUTINE outh
            ! ... Determine k- & l- indexes for output cell
            kb = kp
            l  = ij2l(i,j)
-           ! ... Define output variables 
+           ! ... Define output variables
            k_out = k_out + 1
            out_array(k_out,1) = FLOAT(i)
-           out_array(k_out,2) = FLOAT(j) 
-           out_array(k_out,3) = up (kb,l) 
+           out_array(k_out,2) = FLOAT(j)
+           out_array(k_out,3) = up (kb,l)
            out_array(k_out,4) = vp (kb,l)
            out_array(k_out,5) = wp (kb,l)
            out_array(k_out,6) = salp(kb,l)
@@ -6093,7 +6093,7 @@ SUBROUTINE outh
        kp = p_out(k)
        k_out = 0
 
-       ! ... Bottom cell plane 
+       ! ... Bottom cell plane
        IF ( kp > km ) THEN
          DO j = j1, jm; DO i = i1, im
            ! ... Ignore dry cells
@@ -6101,7 +6101,7 @@ SUBROUTINE outh
            ! ... Determine k- & l- indexes for output cell
            kb = kmz (i,j)
            l  = ij2l(i,j)
-           ! ... Define output variables 
+           ! ... Define output variables
            k_out = k_out + 1
            out_array(k_out,3) = up (kb,l) !+ up(kb,lWC(l)))/2.
            out_array(k_out,4) = vp (kb,l) !+ vp(kb,lSC(l)))/2.
@@ -6111,10 +6111,10 @@ SUBROUTINE outh
            !out_array(k_out,7) = 0.5*(Av(kb,l)+Av(kb+1,l))
            out_array(k_out,8) = 0.5*(Dv(kb,l)+Dv(kb+1,l))
            out_array(k_out,7) = s(i,j)
-           !out_array(k_out,8) = hhs(i,j)        
+           !out_array(k_out,8) = hhs(i,j)
          END DO; END DO
-       ! ... Interior plane 
-       ELSE 
+       ! ... Interior plane
+       ELSE
          DO j = j1, jm; DO i = i1, im
            ! Ignore dry cells
            IF (.NOT. mask2d(i,j)) CYCLE
@@ -6122,12 +6122,12 @@ SUBROUTINE outh
            ! ... Determine k- & l- indexes for output cell
            kb = kp
            l  = ij2l(i,j)
-           ! ... Define output variables 
+           ! ... Define output variables
            k_out = k_out + 1
            out_array(k_out,3) = up (kb,l) !+ up(kb,lWC(l)))/2.
            out_array(k_out,4) = vp (kb,l) !+ vp(kb,lSC(l)))/2.
            out_array(k_out,5) = wp (kb,l) !+ wp(kb+1,  l ))/2.
-           out_array(k_out,6) = salp(kb,l); 
+           out_array(k_out,6) = salp(kb,l);
            IF(hp(kb,l)<=ZERO) out_array(k_out,6) = -99.
            !out_array(k_out,7) = 0.5*(Av(kb,l)+Av(kb+1,l))
            out_array(k_out,8) = 0.5*(Dv(kb,l)+Dv(kb+1,l))
@@ -6151,13 +6151,13 @@ END SUBROUTINE outh
 SUBROUTINE CountPlaneCells ( count, kplane )
 !***********************************************************************
 !
-!  Purpose: To count wet points in a given kplane layer 
+!  Purpose: To count wet points in a given kplane layer
 !
 !-----------------------------------------------------------------------
 
  ! ... Arguments
  INTEGER, INTENT (inout) :: count
- INTEGER, INTENT (in)    :: kplane 
+ INTEGER, INTENT (in)    :: kplane
 
  ! ... Local variables
  INTEGER :: i, j
@@ -6174,11 +6174,11 @@ SUBROUTINE CountPlaneCells ( count, kplane )
    DO j = j1, jm; DO i = i1, im
      ! Ignore dry cells
      IF (.NOT. mask2d(i,j)  ) CYCLE
-     IF ( kmz(i,j) < kplane ) CYCLE; 
+     IF ( kmz(i,j) < kplane ) CYCLE;
        count = count + 1
    END DO; END DO
  END IF
- 
+
 END SUBROUTINE CountPlaneCells
 
 !***********************************************************************
@@ -6190,15 +6190,15 @@ SUBROUTINE outz
 !-----------------------------------------------------------------------
 
    !.....Local variables.....
-   CHARACTER (LEN = 11) :: tracer_file 
-   CHARACTER (LEN = 13) :: tracerbc_file 
-   INTEGER, PARAMETER   :: tracer_id0 = 1200 
+   CHARACTER (LEN = 11) :: tracer_file
+   CHARACTER (LEN = 13) :: tracerbc_file
+   INTEGER, PARAMETER   :: tracer_id0 = 1200
    INTEGER, PARAMETER   :: tracerbc_id0 = 1400
    INTEGER :: tracer_id, tracerbc_id
    INTEGER :: i, j, k, l, k_t,ios, istat, n_frames,  k_out, m1,m2
    INTEGER, SAVE :: ipoints
-   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array 
-   INTEGER :: year_out, day_out, mon_out 
+   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array
+   INTEGER :: year_out, day_out, mon_out
    REAL    :: hour_out
    INTEGER:: jj
    CHARACTER(LEN=24) :: fmt
@@ -6206,16 +6206,16 @@ SUBROUTINE outz
    IF ( ntr <= 0 ) RETURN
 
    !.....Open spacefile on first entry and print initial conditions ....
-   IF( n == 0 ) THEN 
-    
+   IF( n == 0 ) THEN
+
      ipoints = 0
      DO l = 1, lm
         i = l2i(l); j = l2j(l)
         DO k = k1, kmz(i,j)
-           ipoints = ipoints + 1; 
+           ipoints = ipoints + 1;
         ENDDO
      ENDDO
- 
+
      DO j = 1, ntr
        n_frames = nts/MAX(iotr,1)
        tracer_id = tracer_id0 + j
@@ -6224,7 +6224,7 @@ SUBROUTINE outz
        IF ((j >=10 ) .AND. (j < 100)) WRITE ( tracer_file(8:11), FMT='(I2,"  ")' ) j
        IF ( j >100 ) WRITE ( tracer_file(8:11), FMT='(I3," ")' ) j
        OPEN(unit=tracer_id,file=tracer_file,FORM='UNFORMATTED',IOSTAT=ios)
-       IF(ios /= 0) THEN; PRINT *, "Error opening tracer file = ", j, ios;STOP;ENDIF 
+       IF(ios /= 0) THEN; PRINT *, "Error opening tracer file = ", j, ios;STOP;ENDIF
        !... Write number of time slices to output file
        WRITE(tracer_id) n_frames
        WRITE(tracer_id) ipoints
@@ -6241,22 +6241,22 @@ SUBROUTINE outz
        PRINT *, 'ERROR allocating space in output_tracer'
        STOP
      ENDIF
-  
+
      ! ... Output tracer concentrations
      DO k_t = 1, ntr
         k_out = 0
-        ! ... Assign values to the output array 
-        DO j = j1, jm; DO i = i1, im; 
+        ! ... Assign values to the output array
+        DO j = j1, jm; DO i = i1, im;
              IF (.NOT. mask2d(i,j)) CYCLE
              l = ij2l(i,j)
              DO k = k1, kmz(i,j)
              k_out = k_out + 1
              out_array(k_out,1) = FLOAT(i)
-             out_array(k_out,2) = FLOAT(j) 
+             out_array(k_out,2) = FLOAT(j)
              out_array(k_out,3) = FLOAT(k)
              out_array(k_out,4) = tracer(k,l,k_t) * h(k,l)
              out_array(k_out,5) = tracer(k,l,k_t) ! Trazador ACC
-             END DO; 
+             END DO;
         END DO; END DO
         ! ... Id # for plane file
         tracer_id = tracer_id0 + k_t
@@ -6280,19 +6280,19 @@ SUBROUTINE outz
        PRINT *, 'ERROR allocating space in output_tracer'
        STOP
      ENDIF
-  
+
      ! ... Output tracer concentrations
      DO k_t = 1, ntr
         k_out = 0
-        ! ... Assign values to the output array 
-        DO j = j1, jm; DO i = i1, im; 
+        ! ... Assign values to the output array
+        DO j = j1, jm; DO i = i1, im;
              IF (.NOT. mask2d(i,j)) CYCLE
              l = ij2l(i,j)
              DO k = k1, kmz(i,j)
              k_out = k_out + 1
              out_array(k_out,1) = tracer(k,l,k_t) * h(k,l)
              out_array(k_out,2) = tracer(k,l,k_t)  ! Trazador ACC
-             END DO; 
+             END DO;
         END DO; END DO
         ! ... Id # for plane file
         tracer_id = tracer_id0 + k_t
@@ -6314,27 +6314,27 @@ SUBROUTINE outp
 !
 !  Purpose: To write the complete solution in the computational domain
 !           The resulting file is used to drive particle tracking
-!           simulations with PTRACK-TOOL. 
+!           simulations with PTRACK-TOOL.
 !-----------------------------------------------------------------------
 
    !.....Local variables.....
-   CHARACTER (LEN = 16) :: ptrack_file 
-   INTEGER, PARAMETER   :: ptrack_id = 1002 
+   CHARACTER (LEN = 16) :: ptrack_file
+   INTEGER, PARAMETER   :: ptrack_id = 1002
    INTEGER              :: i, j, k, l, ios, istat, Noframes, m1, m2,  &
                            kout, year_out, day_out, mon_out
    REAL                 :: hour_out
    INTEGER, SAVE        :: ipoints
-   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array 
+   REAL, ALLOCATABLE, DIMENSION(:,:) :: out_array
 
    IF( n == 0 ) THEN
 
      ! ... Determine No. of frames to output & No. of interior points
-     Noframes = nts/MAX(apxml,1) 
+     Noframes = nts/MAX(apxml,1)
      ipoints = 0
      DO l = 1, lm
         i = l2i(l); j = l2j(l)
         DO k = k1, kmz(i,j)
-           ipoints = ipoints + 1; 
+           ipoints = ipoints + 1;
         ENDDO
      ENDDO
 
@@ -6355,7 +6355,7 @@ SUBROUTINE outp
      day_out  = iday
      hour_out = ihr
 
-     ALLOCATE( out_array ( ipoints, 8 ), STAT=istat )
+     ALLOCATE( out_array ( ipoints, 9 ), STAT=istat )
      IF (istat /= 0) THEN;
        PRINT *, 'ERROR allocating space in output routine for PTRACK'
        STOP
@@ -6363,25 +6363,26 @@ SUBROUTINE outp
 
      ! ... Output tracer concentrations
      kout = 0
-     ! ... Assign values to the output array 
-     DO j = j1, jm; DO i = i1, im; 
+     ! ... Assign values to the output array
+     DO j = j1, jm; DO i = i1, im;
        IF (.NOT. mask2d(i,j)) CYCLE
        l = ij2l(i,j)
        DO k = k1, kmz(i,j)
          kout = kout + 1
          out_array(kout,1) = FLOAT(i)
-         out_array(kout,2) = FLOAT(j) 
+         out_array(kout,2) = FLOAT(j)
          out_array(kout,3) = FLOAT(k)
          out_array(kout,4) = hp (k,l)
          out_array(kout,5) = up (k,l)
          out_array(kout,6) = vp (k,l)
          out_array(kout,7) = wp (k,l)
          out_array(kout,8) = Dv (k,l)
-       END DO; 
+         out_array(kout,9) = salp (k,l)
+       END DO;
      END DO; END DO
      ! ... Print time stamp followed by the records
      WRITE(ptrack_id) n,year_out,mon_out, day_out,hour_out,  &
-     &              ((out_array(m1,m2),m2=1,8),m1=1,ipoints)
+     &              ((out_array(m1,m2),m2=1,9),m1=1,ipoints)
      DEALLOCATE (out_array)
 
  ELSE
@@ -6392,7 +6393,7 @@ SUBROUTINE outp
      day_out  = iday
      hour_out = ihr
 
-     ALLOCATE( out_array ( ipoints, 5 ), STAT=istat )
+     ALLOCATE( out_array ( ipoints, 6 ), STAT=istat )
      IF (istat /= 0) THEN;
 
        PRINT *, 'ERROR allocating space in output routine for PTRACK'
@@ -6401,8 +6402,8 @@ SUBROUTINE outp
 
      ! ... Output tracer concentrations
      kout = 0
-     ! ... Assign values to the output array 
-     DO j = j1, jm; DO i = i1, im; 
+     ! ... Assign values to the output array
+     DO j = j1, jm; DO i = i1, im;
        IF (.NOT. mask2d(i,j)) CYCLE
        l = ij2l(i,j)
        DO k = k1, kmz(i,j)
@@ -6412,11 +6413,12 @@ SUBROUTINE outp
          out_array(kout,3) = vp(k,l)
          out_array(kout,4) = wp(k,l)
          out_array(kout,5) = Dv(k,l)
-       END DO; 
+         out_array(kout,6) = salp (k,l)
+       END DO;
      END DO; END DO
      ! ... Print time stamp followed by the records
      WRITE(ptrack_id) n,year_out,mon_out, day_out,hour_out,  &
-     &              ((out_array(m1,m2),m2=1,5),m1=1,ipoints)
+     &              ((out_array(m1,m2),m2=1,6),m1=1,ipoints)
      DEALLOCATE (out_array)
 
  END IF
@@ -6429,12 +6431,12 @@ SUBROUTINE outs
 !
 !  Purpose: To write ascii output in xml format to a file used for
 !           velocity and particle-tracking animations with the Gr
-!           application. The file, called 'spacefile.xml', is 
+!           application. The file, called 'spacefile.xml', is
 !           essentially a header file for the sequential binary files
 !           (spacefile3d.bin  and  spacefile2d.bin) written out in
 !           SUB outs_bin. The binary files contain the 2d and 3d data
-!           from all the wet spatial nodes in the solution at 
-!           snapshots in time. 
+!           from all the wet spatial nodes in the solution at
+!           snapshots in time.
 !
 !-----------------------------------------------------------------------
 
@@ -6452,9 +6454,9 @@ SUBROUTINE outs
    CHARACTER(LEN=15) :: output_file3d_bin= "spacefile3d.bin"
    INTEGER, DIMENSION(8), SAVE :: values
    LOGICAL, SAVE :: first_entry = .TRUE.
-     
+
    !               -----First entry into subroutine-----
-   
+
    IF ( first_entry ) THEN
 
       ! ... Only allowed if layers are of uniform thickness
@@ -6468,7 +6470,7 @@ SUBROUTINE outs
       first_entry = .FALSE.
       OPEN ( UNIT=i96, FILE=output_file_xml, IOSTAT=ios )
       IF(ios /= 0) CALL open_error ( "Error opening "//output_file_xml, ios )
-      
+
       !.....Open the binary spacefiles.....
       OPEN ( UNIT=i97, FILE=output_file2d_bin, FORM='UNFORMATTED',        &
 	      &   ACCESS='SEQUENTIAL', IOSTAT=ios )
@@ -6478,10 +6480,10 @@ SUBROUTINE outs
 	      &   ACCESS='SEQUENTIAL', IOSTAT=ios )
       IF(ios /= 0) CALL open_error ( "Error opening "//output_file3d_bin, &
          & ios )
-      
+
       !.....Get date and time of run for insertion into spacefile.xml.....
       CALL date_and_time ( date, time, zone, values )
-                  
+
       !.....Output titles and run parameters into header records of the xml spacefile.....
       WRITE (UNIT=i96, FMT='("<?xml version=""1.0""?>")' )
       WRITE (UNIT=i96, FMT='(1X)' )
@@ -6525,7 +6527,7 @@ SUBROUTINE outs
          &  ihr2, imin2, isec2, TRIM(ch_idt)
       CALL compute_date ( 0.0 )     ! reset date to start time of run - idt real
       !CALL compute_date ( 0 )     ! reset date to start time of run ! idt real
-         
+
       !.....Output header records for 2-D variables into the xml spacefile.....
       WRITE (UNIT=i96, FMT='(1X)' )
       WRITE (UNIT=i96, FMT='("      <obj class=""gov.usgs.gr.GrObjectContainer""", &
@@ -6539,11 +6541,11 @@ SUBROUTINE outs
          &                                " numDimensions=", A, ">")' )            &
          &                                TRIM(ch_numdim_2d)
       WRITE (UNIT=i96, FMT='("            <dim num=""0"" title=""Zeta"" units=""met&
-         &ers"" unitScale=""0.0001""/>")' )      
+         &ers"" unitScale=""0.0001""/>")' )
       WRITE (UNIT=i96, FMT='(1X)' )
       WRITE (UNIT=i96, FMT='("         </dataseries>")' )
-      WRITE (UNIT=i96, FMT='("      </obj>")' )    
-           
+      WRITE (UNIT=i96, FMT='("      </obj>")' )
+
       !.....Output header records for 3-D variables into the xml spacefile.....
       WRITE (UNIT=i96, FMT='(1X)' )
       WRITE (UNIT=i96, FMT='("      <obj class=""gov.usgs.gr.GrObjectContainer""", &
@@ -6559,25 +6561,25 @@ SUBROUTINE outs
       WRITE(UNIT=i96, FMT='("            <dim num=""0"" title=""u"" ",  &
          & "units=""m/s"" unitScale=""0.0001""/>"    )' )
       WRITE(UNIT=i96, FMT='("            <dim num=""1"" title=""v"" ",  &
-         & "units=""m/s"" unitScale=""0.0001""/>"    )' )   
+         & "units=""m/s"" unitScale=""0.0001""/>"    )' )
       WRITE (UNIT=i96, FMT='("            <dim num=""2"" title=""w"" ",  &
          & "units=""m/s"" unitScale=""0.00001""/>"  )' )
       WRITE (UNIT=i96, FMT='("            <dim num=""3"" title=""dz"" ", &
          & "units=""m**2/s"" unitScale=""0.0001""/>" )' )
       WRITE (UNIT=i96, FMT='(1X)' )
-      
+
       !.....Output closing xml element end tags to spacefile.xml.....
       WRITE (UNIT=i96, FMT='("         </dataseries>")' )
       WRITE (UNIT=i96, FMT='("      </obj>")' )
       WRITE (UNIT=i96, FMT='("   </obj>")' )
       WRITE (UNIT=i96, FMT='("</gov.usgs.gr>")' )
       WRITE (UNIT=i96, FMT='(1X)' )
-      
+
    END IF
-         
-         
-   !              -----Entry into subroutine at time step n----- 
-   
+
+
+   !              -----Entry into subroutine at time step n-----
+
    !.....Do not write outout to spacefiles for
    !     first 'itspf' seconds of the simulation.....
    IF (its >= itspf) THEN
@@ -6589,12 +6591,12 @@ SUBROUTINE outs
          !.....Compute time variables in double precision for output.....
          thrs_dpv  = REAL( its, dpv )/3600.0_dpv     ! time in hours
          tdays_dpv = thrs_dpv/24.0_dpv + begind      ! time in Julian days
-   
+
          !.....Convert certain variables to CHARACTER values for printing.....
          ch_thrs_dpv = double_to_char(thrs_dpv,4,1)
          ch_tdays_dpv = double_to_char(tdays_dpv,6,1)
          ch_n = int_to_char(n,1)
-      
+
          !.....Output xml comment statements with time stamps.....
          WRITE (UNIT=i96, FMT=2) TRIM(ch_thrs_dpv),            &
             &                    TRIM(ch_n),                   &
@@ -6610,9 +6612,9 @@ SUBROUTINE outs
          WRITE (UNIT=i96, FMT='( "<!-- w     in cm/s * 1000  -->" )' )
          WRITE (UNIT=i96, FMT='( "<!-- dz    in cm**2/s      -->" )' )
          WRITE (UNIT=i96, FMT='(" ")')
-      
+
       END IF
-   
+
       !.....Choose between ascii and binary output for raw data.....
       CALL outs_bin  ! Output data for one time step to binary spacefiles
 
@@ -6629,15 +6631,15 @@ SUBROUTINE outs_bin
 !           two files are: spacefile3d.bin and spacefile2d.bin.  3-D
 !           variables are stored in the '3d' file and 2-d variables in
 !           the '2d' file.  The ordering of nodes written to the file
-!           must agree with the  si3d_bathy.xml  file written out in 
+!           must agree with the  si3d_bathy.xml  file written out in
 !           SUB outg.  The velocities written to the file are taken from
 !           the faces of the grid cell control volumes.  The two unformatted
 !           files written to in this subroutine are sequential. They are
-!           written as 'streaming' data (no record breaks in the file) using 
+!           written as 'streaming' data (no record breaks in the file) using
 !           the 'little-endian' bit order for the storage layout. The data
-!           values themselves are stored as 2-byte integers. Each 
+!           values themselves are stored as 2-byte integers. Each
 !           call to the subroutine outputs one time step of data to
-!           the spacefiles.  The CALL and file OPEN statements for this 
+!           the spacefiles.  The CALL and file OPEN statements for this
 !           subroutine are within SUB outs_xml.
 !
 !-----------------------------------------------------------------------
@@ -6652,7 +6654,7 @@ SUBROUTINE outs_bin
      PRINT *, '*******  Please revise your input files   *************'
      STOP
    ENDIF
-   
+
    !.....Output zeta values at time step  n  to spacefile2d.bin.....
    ! Loop over all nodes
    DO j = j1, jm
@@ -6660,11 +6662,11 @@ SUBROUTINE outs_bin
       ! Ignore dry cells
       IF (.NOT. mask2d(i,j)) CYCLE
       ! Convert zeta to 2-byte integer in meters*10000.
-      int2_zeta = NINT(s(i,j)*1.E4, int2)  
+      int2_zeta = NINT(s(i,j)*1.E4, int2)
       WRITE (UNIT=i97) int2_zeta
       END DO
    END DO
-      
+
    !.....Output velocity values at time step  n  to spacefile3d.bin.....
    ! Loop over all nodes
    DO j = j1, jm
@@ -6686,15 +6688,15 @@ SUBROUTINE outs_bin
          END DO
       END DO
    END DO
-   
+
 END SUBROUTINE outs_bin
 
 !***********************************************************************
 SUBROUTINE outg ( h4 )
 !***********************************************************************
 !
-!  Purpose: To process and output bathymetry to a file for use in graphics 
-!           post-processing and particle tracking. The bathymetry output by 
+!  Purpose: To process and output bathymetry to a file for use in graphics
+!           post-processing and particle tracking. The bathymetry output by
 !           this subroutine is processed from the original bathymetry
 !           read into the program in SUB bathy.  The processed bathymetry
 !           is similar to that processed in SUB bathy for the actual
@@ -6706,18 +6708,18 @@ SUBROUTINE outg ( h4 )
 !           points of each (i,j) cell are stored in h44 with the following
 !           numbering system:
 !                               4      3
-!                                *----* 
+!                                *----*
 !                                |    |
 !                                *----*
 !                               1      2
-!           This subroutine is called from within SUB bathy. 
+!           This subroutine is called from within SUB bathy.
 !
 !  Dummy argument:
 !  h4 = Bathymetry pointer array to be processed. A single depth is defined
 !       at each cell corner. Prior to being passed into this subroutine,
 !       the array h4 has already been modified in SUB bathy (from the
-!       original model input bathymetry array) by correcting the datum 
-!       and adding a fictitious row/column of depths around the grid. The 
+!       original model input bathymetry array) by correcting the datum
+!       and adding a fictitious row/column of depths around the grid. The
 !       dimensions of h4 are (0:im1,0:jm1).
 !
 !-----------------------------------------------------------------------
@@ -6744,7 +6746,7 @@ SUBROUTINE outg ( h4 )
    !.....Allocate space for the processed bathymetry array h44.....
    ALLOCATE ( h44(1:im1, 1:jm1, 4), stat=istat )
    IF (istat /= 0) CALL allocate_error ( istat, 27 )
-   
+
    ! ... Only allowed if layers are of uniform thickness
    IF ( ibathyf < 0 ) THEN
      PRINT *, 'STOP - Output to xml files only allowed for ibathyf > 0'
@@ -6762,7 +6764,7 @@ SUBROUTINE outg ( h4 )
    yglobal  = 0.0  !    fictitious cell (1,1)
    zglobal  = 0.0  ! zglobal is just a vertical datum adjustment
    rotation = 0.0  ! measured in degrees counterclockwise from North
-   
+
    !.....Convert variables for .xml header records to characters.....
    ch_xglobal  = real_to_char(xglobal,1,0)
    ch_yglobal  = real_to_char(yglobal,1,0)
@@ -6876,7 +6878,7 @@ SUBROUTINE outg ( h4 )
    WRITE (UNIT=i90, FMT='("       runTitle=""",      A, """" )' ) TRIM(title)
    WRITE (UNIT=i90, FMT='("       runNumber=""", A8,A4, """" )' ) date,time(1:4)
    WRITE (UNIT=i90, FMT='("       xSpacing=",A," ySpacing=",A," zSpacing=",A, &
-      &  " rotation=", A, ">")' ) TRIM(ch_idx),                               & 
+      &  " rotation=", A, ">")' ) TRIM(ch_idx),                               &
       &                           TRIM(ch_idy),                               &
       &                           TRIM(ch_idz),                               &
       &                           TRIM(ch_rotation)
@@ -6913,7 +6915,7 @@ SUBROUTINE outg ( h4 )
       WRITE (UNIT=i90, FMT='(1X)' )
    END IF
 
-   ! Output header information for bathymetry dataseries      
+   ! Output header information for bathymetry dataseries
    WRITE (UNIT=i90, FMT='("<!-- Bathymetry data series -->")' )
    WRITE (UNIT=i90, FMT='("  <dataseries title=""Bathymetry""",  &
       &                     " numDimensions=""7"">")' )
@@ -6935,13 +6937,13 @@ SUBROUTINE outg ( h4 )
          WRITE (UNIT=i90, FMT='(3I5,4F8.1)' ) i,j,(kmz(i,j)-1),(h44(i,j,k), k=1,4)
       END DO
    END DO
-   
+
    !.....Output closing xml element end tags.....
    WRITE (UNIT=i90, FMT='("   </dataseries>")' )
    WRITE (UNIT=i90, FMT='(1X)' )
    WRITE (UNIT=i90, FMT='("  </obj>")' )   ! End bathymetry object
    WRITE (UNIT=i90, FMT='("</gov.usgs.gr>")' )
-     
+
    !.....Deallocate h44 pointer array.....
    DEALLOCATE ( h44 )
 
@@ -6958,7 +6960,7 @@ FUNCTION int_to_char ( ivalue, noquote )
 !
 !  More details:
 !     The quotemarks are placed around the value for use in xml formatted
-!     output files. The character string that is returned from this routine 
+!     output files. The character string that is returned from this routine
 !     can easily be processed with the TRIM function to remove any
 !     trailing blanks.  The length of the returned sting (10 characters)
 !     was chosen somewhat arbitrarily.
@@ -6969,7 +6971,7 @@ FUNCTION int_to_char ( ivalue, noquote )
 !            number within the character string or not. ( 1--> no quotes,
 !            0--> quotes )
 !
-!  Result variable: 
+!  Result variable:
 !  int_to_char = A 10-character string variable with the character
 !                representation of the integer number. The non-blank
 !                characters in the string are left-justified.
@@ -6992,12 +6994,12 @@ FUNCTION int_to_char ( ivalue, noquote )
    ELSE
       WRITE ( string, FMT='(I8,A)' ) ivalue, q
    END IF
- 
-   !.....Add a leading quotemark if requested 
+
+   !.....Add a leading quotemark if requested
    !     and left-justify the result variable.....
    IF (noquote == 1) THEN
       int_to_char = ADJUSTL(string)//blank
-   ELSE 
+   ELSE
       int_to_char = q//ADJUSTL(string)
    END IF
 
@@ -7010,7 +7012,7 @@ FUNCTION real_to_char ( value, nd, noquote )
 !
 !  Purpose: To convert a real value into a 14-character string. Quotes
 !           around the number are added if noquote=0. The value is placed
-!           in as readable a format as possible considering its range.  An 
+!           in as readable a format as possible considering its range.  An
 !           exponential format is used for very large or very small numbers.
 !           Otherwise, the routine will use "nd" decimal places of accuracy.
 !           The returned string has no leading blanks. Typically the string
@@ -7025,7 +7027,7 @@ FUNCTION real_to_char ( value, nd, noquote )
 !
 !  More details:
 !     The quotemarks are placed around the value for use in xml formatted
-!     output files. The character string that is returned from this routine 
+!     output files. The character string that is returned from this routine
 !     can easily be processed with the TRIM function to remove any
 !     trailing blanks.  The length of the returned sting (14 characters)
 !     was chosen somewhat arbitrarily.
@@ -7033,13 +7035,13 @@ FUNCTION real_to_char ( value, nd, noquote )
 !  Dummy argument:
 !  value = A real number.
 !  nd = An integer number specifying the number of decimal places to use in
-!       the character representation of the real number. (Must be in the 
+!       the character representation of the real number. (Must be in the
 !       range: 0<nd<10)
 !  noquote = Parameter indicating whether quotes are placed around the
 !            number within the character string or not. ( 1--> no quotes,
 !            0--> quotes )
 !
-!  Result variable: 
+!  Result variable:
 !  real_to_char = A 14-character string variable with the character
 !                 representation of the real number enclosed in
 !                 quotemarks. The non-blank characters in the string
@@ -7054,12 +7056,12 @@ FUNCTION real_to_char ( value, nd, noquote )
 
    !.....Local variables.....
    CHARACTER :: q = '"'
-   CHARACTER :: blank = " "   
+   CHARACTER :: blank = " "
    CHARACTER(LEN=13) :: string = "             "
    CHARACTER(LEN=13) :: fmt    = "             "
 
    !.....Select proper format and include a trailing quotemark.....
-   IF ( noquote == 0 ) THEN 
+   IF ( noquote == 0 ) THEN
       IF ( value > 9999999. ) THEN
          fmt = '(ES12.5,"""")'
       ELSE IF ( value < -999999. ) THEN
@@ -7068,13 +7070,13 @@ FUNCTION real_to_char ( value, nd, noquote )
          WRITE ( fmt, FMT='( "(" , "F12." , I1 , "," , """""""""", ") " )' ) nd
       ELSE IF ( ABS(value) < 0.01 ) THEN
          fmt = '(ES12.5,"""")'
-      ELSE 
+      ELSE
          WRITE ( fmt, FMT='( "(" , "F12." , I1 , "," , """""""""", ") " )' ) nd
       END IF
    END IF
-   
+
    !.....Select proper format and do not include a trailing quotemark.....
-   IF ( noquote /= 0 ) THEN 
+   IF ( noquote /= 0 ) THEN
       IF ( value > 9999999. ) THEN
          fmt = '(ES12.5," ")'
       ELSE IF ( value < -999999. ) THEN
@@ -7083,14 +7085,14 @@ FUNCTION real_to_char ( value, nd, noquote )
          WRITE ( fmt, FMT='( "(" , "F12." , I1 , "," , """ """, ") " )' ) nd
       ELSE IF ( ABS(value) < 0.01 ) THEN
          fmt = '(ES12.5," ")'
-      ELSE 
+      ELSE
          WRITE ( fmt, FMT='( "(" , "F12." , I1 , "," , """ """, ") " )' ) nd
       END IF
    END IF
 
    !.....Write the real number to an internal file.....
    WRITE ( string, fmt ) value
- 
+
    !.....Add a leading quotemark if requested
    !     and left-justify the result variable.....
    IF (noquote == 1) THEN
@@ -7123,7 +7125,7 @@ FUNCTION double_to_char ( value_dpv, nd, noquote )
 !
 !  More details:
 !     The quotemarks are placed around the value for use in xml formatted
-!     output files. The character string that is returned from this routine 
+!     output files. The character string that is returned from this routine
 !     can easily be processed with the TRIM function to remove any
 !     trailing blanks.  The length of the returned sting (20 characters)
 !     was chosen somewhat arbitrarily.
@@ -7131,13 +7133,13 @@ FUNCTION double_to_char ( value_dpv, nd, noquote )
 !  Dummy argument:
 !  value_dpv = A real number of KIND(1.0D0).
 !  nd = An integer number specifying the number of decimal places to use in
-!       the character representation of the real number. (Must be in the 
+!       the character representation of the real number. (Must be in the
 !       range: 0<nd<10)
 !  noquote = Parameter indicating whether quotes are placed around the
 !            number within the character string or not. ( 1--> no quotes,
 !            0--> quotes )
 !
-!  Result variable: 
+!  Result variable:
 !  double_to_char = A 20-character string variable with the character
 !                   representation of the double precision number enclosed
 !                   in quotemarks. The non-blank characters in the string
@@ -7153,12 +7155,12 @@ FUNCTION double_to_char ( value_dpv, nd, noquote )
 
    !.....Local variables.....
    CHARACTER :: q = '"'
-   CHARACTER :: blank = " "   
+   CHARACTER :: blank = " "
    CHARACTER(LEN=19) :: string = "                   "
    CHARACTER(LEN=14) :: fmt    = "              "
 
    !.....Select proper format and include a trailing quotemark.....
-   IF ( noquote == 0 ) THEN 
+   IF ( noquote == 0 ) THEN
       IF ( value_dpv > 9999999. ) THEN
          fmt = '(ES18.11,"""")'
       ELSE IF ( value_dpv < -999999. ) THEN
@@ -7167,13 +7169,13 @@ FUNCTION double_to_char ( value_dpv, nd, noquote )
          WRITE ( fmt, FMT='( "(" , "F18." , I1 , "," , """""""""", ")  " )' ) nd
       ELSE IF ( ABS(value_dpv) < 0.01 ) THEN
          fmt = '(ES18.11,"""")'
-      ELSE 
+      ELSE
          WRITE ( fmt, FMT='( "(" , "F18." , I1 , "," , """""""""", ")  " )' ) nd
       END IF
    END IF
-   
+
    !.....Select proper format and do not include a trailing quotemark.....
-   IF ( noquote /= 0 ) THEN 
+   IF ( noquote /= 0 ) THEN
       IF ( value_dpv > 9999999. ) THEN
          fmt = '(ES18.11," ")'
       ELSE IF ( value_dpv < -999999. ) THEN
@@ -7182,14 +7184,14 @@ FUNCTION double_to_char ( value_dpv, nd, noquote )
          WRITE ( fmt, FMT='( "(" , "F18." , I1 , "," , """ """, ") "  )' ) nd
       ELSE IF ( ABS(value_dpv) < 0.01 ) THEN
          fmt = '(ES18.11," ")'
-      ELSE 
+      ELSE
          WRITE ( fmt, FMT='( "(" , "F18." , I1 , "," , """ """, ") "  )' ) nd
       END IF
    END IF
 
    !.....Write the double precision number to an internal file.....
    WRITE ( string, fmt ) value_dpv
- 
+
    !.....Add a leading quotemark if requested
    !     and left-justify the result variable.....
    IF (noquote == 1) THEN
@@ -7205,7 +7207,7 @@ SUBROUTINE nodech ( i, j, nodeno, nchar )
 !***********************************************************************
 !
 !  Purpose: To convert the node number where model time series output is
-!           desired to a character variable. 
+!           desired to a character variable.
 !
 !  Dummy arguments:
 !  i,j    = x and y node mumbers expressed as integers (maximum allowable
@@ -7330,7 +7332,7 @@ SUBROUTINE cputimes
    PRINT '(A, F10.3, A)', " t_exmom  =", t_exmom,  " seconds"
    PRINT '(A, F10.3, A)', " t_matmom =", t_matmom, " seconds"
   !PRINT '(A, F10.3, A)', "   t_trid =", t_trid,   " seconds"
-   PRINT '(A, F10.3, A)', " t_matcon =", t_matcon, " seconds" 
+   PRINT '(A, F10.3, A)', " t_matcon =", t_matcon, " seconds"
 
    PRINT '(A, F10.3, A)', " t_solver =", t_solver, " seconds"
    PRINT '(A, F10.3, A)', " t_vel    =", t_vel,    " seconds"
@@ -7340,7 +7342,7 @@ SUBROUTINE cputimes
    PRINT '(A, F10.3, A)', " t_outt   =", t_outt ,  " seconds"
    PRINT '(A, F10.3, A)', " t_save   =", t_save ,  " seconds"
    PRINT '(A, F10.3, A)', " t_setmask=", t_setmask," seconds"
-   PRINT '(A, F10.3, A)', " tot_subs =", tot_subs, " seconds" 
+   PRINT '(A, F10.3, A)', " tot_subs =", tot_subs, " seconds"
    PRINT '(A)' , " "
 
 END SUBROUTINE cputimes
@@ -7389,8 +7391,8 @@ SUBROUTINE check_stopfile
 !           during the execution of the program.  The value of 'istop'
 !           is initialized to zero.  If during the execution of the
 !           program the value of 'istop' is manually reset to 1, the
-!           program will close all files and immediately terminate 
-!           execution of the simulation. 
+!           program will close all files and immediately terminate
+!           execution of the simulation.
 !
 !  Revisions:
 !    Date            Programmer        Description of revision
@@ -7416,7 +7418,7 @@ SUBROUTINE check_stopfile
 
    !.....Read the value of istop.....
    READ (UNIT=i83, FMT='(8X, I2)' ) istop
-   
+
    !.....Stop execution of program if istop=1.....
    IF ( istop == 1 ) THEN
       CLOSE (UNIT=i83, STATUS="DELETE")  ! Close and delete stop file
@@ -7428,9 +7430,9 @@ SUBROUTINE check_stopfile
       STOP
    END IF
 
-   !.....Close the stop file..... 
+   !.....Close the stop file.....
    IF ( n <  nts ) THEN
-      CLOSE (UNIT=i83)   ! Close stop file every time step for PC 
+      CLOSE (UNIT=i83)   ! Close stop file every time step for PC
    ELSE
       CLOSE (UNIT=i83, STATUS="DELETE")   ! Delete file when n=nts
    END IF
@@ -7453,7 +7455,7 @@ SUBROUTINE compute_date ( itime_sec )
 !                                    (Saved during the previous call to
 !                                    the subroutine.)
 !     iyr ,imon ,iday ,ihr ,isec  -- New date and time.
-!                                    (Computed in the subroutine and 
+!                                    (Computed in the subroutine and
 !                                    returned to the calling program.)
 !     doy, doyp                   -- New & previous times (fractional julian day)
 !
@@ -7499,7 +7501,7 @@ SUBROUTINE compute_date ( itime_sec )
         doy  = SUM(month(1:imon0-1))+iday0+FLOAT(ihr)/2400.
       ENDIF
       RETURN
- 
+
    END IF
 
    ! ... Store previous values for day of year doy
@@ -7508,9 +7510,9 @@ SUBROUTINE compute_date ( itime_sec )
    !.....Compute new date.....
    isecp = isecp + itime_sec
    IF (isecp < 86400) THEN
-      isec = isecp; 
-      hrs  = isec/3600.; 
-      ihrp = NINT(hrs*100.); 
+      isec = isecp;
+      hrs  = isec/3600.;
+      ihrp = NINT(hrs*100.);
       ihr  = ihrp
       !doy  = doyp + FLOAT(itime_sec)/86400. ! idt real
       doy  = doyp +       (itime_sec)/86400. ! idt real
@@ -7520,7 +7522,7 @@ SUBROUTINE compute_date ( itime_sec )
    !isecp = MOD(isecp,86400); isec = isecp  ! idt real
    isecp = MOD(isecp,86400.); isec = isecp  ! idt real
    hrs   = isec/3600.
-   ihrp  = NINT(hrs*100.); 
+   ihrp  = NINT(hrs*100.);
    ihr = ihrp
    ! Take care of leap year
    IF (imonp == 2) THEN
@@ -7576,8 +7578,8 @@ LOGICAL FUNCTION leap_year ( iyear )
 !
 !  (Note: Formally, a leap year must be divisible by 4 but not by 100,
 !         or it must be divisible by 400.  For this subroutine, I only
-!         check if a year is divisible by 4.) 
-! 
+!         check if a year is divisible by 4.)
+!
 !  Revisions:
 !    Date            Programmer        Description of revision
 !    ----            ----------        -----------------------
@@ -7595,7 +7597,7 @@ END FUNCTION leap_year
   SUBROUTINE OutScalarEnergyBalance
 !************************************************************************
 !
-!  Purpose: To output mass & energy existing at the basin 
+!  Purpose: To output mass & energy existing at the basin
 !           scale.
 !
 !  Revisions:
@@ -7618,45 +7620,45 @@ END FUNCTION leap_year
       IF(ios /= 0) PRINT *, "Error opening "//flux_file
       ShearCum = 0.0
       BuocyCum = 0.0
-      DisspCum = 0.0      
+      DisspCum = 0.0
    END IF
 
    ! ... Heat & Oxygen in the domain
    HeatB = 0.0E0
    OxygB = 0.0E0
-   DO l = 1, lm;  
+   DO l = 1, lm;
      i = l2i(l); j = l2j(l);
      kms = kmz(i,j)
      k1s = k1z(i,j)
      DO k = k1s, kms
-       HeatB = HeatB+sal   (k,l    )*h(k,l)       
+       HeatB = HeatB+sal   (k,l    )*h(k,l)
        IF (ntr > 0) & ! Change the condition iopss to ntr > 0
-       OxygB = OxygB+tracer(k,l,ntr)*h(k,l)       
+       OxygB = OxygB+tracer(k,l,ntr)*h(k,l)
       END DO
-   END DO; 
+   END DO;
 
 
    ! ... Basin scale potential energy
    PotE = 0.0
-   DO l = 1, lm;  
+   DO l = 1, lm;
      i = l2i(l); j = l2j(l);
      kms = kmz(i,j)
      k1s = k1z(i,j)
      elev = hhs(i,j)-h(kms,l)/2.
      rijk = densty_s(salp(kms,l),0.0)+1000.
-     PotE = PotE + rijk*g*elev*h(kms,l) 
+     PotE = PotE + rijk*g*elev*h(kms,l)
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
        elev = elev + (hp(k+1,l)+hp(k,l))/2.
        rijk = densty_s(salp(k,l),0.0)+1000.
-       PotE = PotE + rijk*g*elev*hp(k,l)             
+       PotE = PotE + rijk*g*elev*hp(k,l)
      END DO
    END DO;
    PotE = PotE*dx*dy
 
    ! ... Basin scale kinetic energy
    KinE = 0.0
-   DO l = 1, lm;  
+   DO l = 1, lm;
      i = l2i(l); j = l2j(l);
      kms = kmz(i,j)
      k1s = k1z(i,j)
@@ -7665,21 +7667,21 @@ END FUNCTION leap_year
      vijk = (vp(kms,l) + vp(kms  ,lSC(l)))/2.
      wijk = (wp(kms,l) + wp(kms+1,    l ))/2.
      rijk = densty_s(salp(kms,l),0.0)+1000.
-     KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(kms,l) 
+     KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(kms,l)
      IF (k1s == kms) CYCLE
      DO k = kms-1, k1s, -1
        uijk = (up(k,l) + up(k  ,lWC(l)))/2.
        vijk = (vp(k,l) + vp(k  ,lSC(l)))/2.
        wijk = (wp(k,l) + wp(k+1,    l ))/2.
        rijk = densty_s(salp(k,l),0.0)+1000.
-       KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(k,l) 
+       KinE = KinE + 0.5*rijk*(uijk**2.+vijk**2.+wijk**2.)*h(k,l)
      END DO
    END DO;
    KinE = KinE*dx*dy;
 
    WRITE (UNIT=i899, FMT='(9E20.11)') thrs, HeatB, OxygB, &
                                       PotE, KinE, TKinE,  &
-                                      ShearCum, BuocyCum, DisspCum 
+                                      ShearCum, BuocyCum, DisspCum
 
    ! ... Set to zero integral variables
    ShearCum = 0.0
@@ -7718,7 +7720,7 @@ SUBROUTINE exTracer  (nt)
    ! ... Constants used in solution
    twodt1 = twodt*tz
 
-   ! ... Calculate hdxpp & hdypp arrays for diffusion terms & 
+   ! ... Calculate hdxpp & hdypp arrays for diffusion terms &
    hdxpp = 0.0; hdypp = 0.0;
    DO l = 1, lm
 
@@ -7734,7 +7736,7 @@ SUBROUTINE exTracer  (nt)
         hdxpp(k,l) = Ax0*hupp(k,l)
         hdypp(k,l) = Ay0*hvpp(k,l)
       ENDDO
-                        
+
    END DO
 
    ! ... Calculate vertical settling velocity
@@ -7748,35 +7750,35 @@ SUBROUTINE exTracer  (nt)
    ! ... Initialize ex & flux arrays to zeros
    ex = 0.0; fluxX= 0.0; fluxY = 0.0; fluxZ = 0.0;
 
-   DO l = 1, lm; 
+   DO l = 1, lm;
 
      ! ... Map l- into (i,j)-indexes .........................
      i = l2i(l); j = l2j(l);
-	 
+
      ! ... Retrieve top & bottom wet sal-pts .................
      kms = kmz(i,j)
      k1s = k1z(i,j)
- 
+
      DO k = k1s, kms;
-	    
+
        ! ... EW fluxes .......................................
        IF (hup(k,l)> ZERO) THEN
 
-         ! ... Velocities at time n+1/2  
+         ! ... Velocities at time n+1/2
          vel  = (uhpp(k,l) + uh(k,l))/2.
 
          ! ... Define stencil for scalar transport
-         ss(2)  = tracerpp(k,    l ,nt); 
-         ss(3)  = tracerpp(k,lEC(l),nt); 
-         IF (hpp(k,lWC(l))<=ZERO)THEN; ss(1)=ss(2); 
-           ELSE; ss(1)=tracerpp(k,lWC(l),nt); ENDIF           
+         ss(2)  = tracerpp(k,    l ,nt);
+         ss(3)  = tracerpp(k,lEC(l),nt);
+         IF (hpp(k,lWC(l))<=ZERO)THEN; ss(1)=ss(2);
+           ELSE; ss(1)=tracerpp(k,lWC(l),nt); ENDIF
          IF (hpp(k,lEC(lEC(l)))<=ZERO)THEN; ss(4)=ss(3);
            ELSE; ss(4)=tracerpp(k,lEC(lEC(l)),nt); ENDIF
 
          ! ... Calculate Cf factor to use in flux calculations
          gamma1 = -SIGN (1., vel)
-         C_f    = 0.0; 
-         IF (ss(3) - ss(2) /= 0 ) THEN 
+         C_f    = 0.0;
+         IF (ss(3) - ss(2) /= 0 ) THEN
            ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))
            ! MC flux limiter (VanLeer, 1977)
            !C_f   = MAX(0., MIN( 2*ratio, (1+ratio)/2., 2. ))
@@ -7793,29 +7795,29 @@ SUBROUTINE exTracer  (nt)
        ! ... NS fluxes .......................................
        IF (hvp(k,l)> ZERO) THEN
 
-         ! ... Velocities at time n+1/2  
+         ! ... Velocities at time n+1/2
          vel  = (vhpp(k,l) + vh(k,l))/2.
-          
-         ! ... Define stencil for scalar transport
-         ss(2)  = tracerpp(k,        l  ,nt ); 
-         ss(3)  = tracerpp(k,    lNC(l) ,nt ); 
-         IF (hpp(k,lSC(l))<=ZERO)THEN; ss(1)=ss(2); 
-           ELSE; ss(1)=tracerpp(k,lSC(l),nt); ENDIF           
 
-         IF (hpp(k,lNC(lNC(l)))<=ZERO)THEN; ss(4)=ss(3); 
+         ! ... Define stencil for scalar transport
+         ss(2)  = tracerpp(k,        l  ,nt );
+         ss(3)  = tracerpp(k,    lNC(l) ,nt );
+         IF (hpp(k,lSC(l))<=ZERO)THEN; ss(1)=ss(2);
+           ELSE; ss(1)=tracerpp(k,lSC(l),nt); ENDIF
+
+         IF (hpp(k,lNC(lNC(l)))<=ZERO)THEN; ss(4)=ss(3);
            ELSE; ss(4)=tracerpp(k,lNC(lNC(l)),nt); ENDIF
 
          ! ... Calculate Cf factor to use in flux calculations
-         C_f    = 0.0; ! Default value is for upwinding 
+         C_f    = 0.0; ! Default value is for upwinding
          gamma1 = -SIGN (1., vel)
-         IF (ss(3) - ss(2) /= 0 ) THEN 
+         IF (ss(3) - ss(2) /= 0 ) THEN
            ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))
            ! MC flux limiter (VanLeer, 1977)
            !C_f   = MAX(0., MIN( 2*ratio, (1+ratio)/2., 2. ))
            ! ... Roe's Superbee Limiter
            C_f = MAX(0., MIN(1.,2.*ratio),MIN(2.,ratio))
          ENDIF
- 
+
          ! ... Calculate fluxes at y-faces
          fluxY(k,l) = vel/2.*(ss(3)+ss(2))- &
          & ((1.-C_f)*ABS(vel)+vel**2.*twodt1/dx*C_f)*(ss(3)-ss(2))/2.
@@ -7823,25 +7825,25 @@ SUBROUTINE exTracer  (nt)
        ENDIF
 
        ! ... UD fluxes .......................................
-       IF (hp(k-1,l)> ZERO) THEN         
+       IF (hp(k-1,l)> ZERO) THEN
 
          ! ... Velocities at time n+1/2 (include settling velocity)
-         vel  = wp(k,l) - vsettle; IF (k == k1s) vel = 0.0; 
+         vel  = wp(k,l) - vsettle; IF (k == k1s) vel = 0.0;
 
          ! ... Define stencil for scalar transport
-         ss(2)  = tracerpp(k,l,nt); 
-         ss(3)  = tracerpp(k-1,l,nt)  
+         ss(2)  = tracerpp(k,l,nt);
+         ss(3)  = tracerpp(k-1,l,nt)
          IF(hpp(k-2,l)<=ZERO)THEN;ss(4)=ss(3);
-           ELSE;ss(4)=tracerpp(k-2,l,nt);ENDIF      
+           ELSE;ss(4)=tracerpp(k-2,l,nt);ENDIF
          IF(hpp(k+1,l)<=ZERO)THEN;ss(1)=ss(2);
-           ELSE;ss(1)=tracerpp(k+1,l,nt);ENDIF;  
-         ! ... Calculate ratio of slope of solution across interfaces & 
+           ELSE;ss(1)=tracerpp(k+1,l,nt);ENDIF;
+         ! ... Calculate ratio of slope of solution across interfaces &
          !     estimate flux limiter
          C_f = 1.0 ! Default method is Lax-Wendroff
          gamma1 = -SIGN (1., vel)
-         IF (ss(3) - ss(2) /= 0 ) THEN 
-           ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))  
-           ! MC flux limiter (VanLeer, 1977)   
+         IF (ss(3) - ss(2) /= 0 ) THEN
+           ratio =(ss(3+gamma1)-ss(2+gamma1))/(ss(3)-ss(2))
+           ! MC flux limiter (VanLeer, 1977)
            ! C_f   = MAX(0., MIN( 2*ratio, (1+ratio)/2., 2. ))
            ! ... Roe's Superbee Limiter
            C_f = MAX(0., MIN(1.,2.*ratio),MIN(2.,ratio))
@@ -7854,20 +7856,20 @@ SUBROUTINE exTracer  (nt)
 
        ENDIF
 
-     ENDDO; 
-   ENDDO; 
+     ENDDO;
+   ENDDO;
 
    ! ... Update ex array with divergence of advective fluxes & diffusion
-   DO l = 1, lm; 
+   DO l = 1, lm;
 
      ! ... Map l- into (i,j)-indexes .........................
      i = l2i(l); j = l2j(l);
-	 
+
      ! ... Retrieve top & bottom wet sal-pts .................
      kms = kmz(i,j)
      k1s = k1z(i,j)
- 
-     DO k = k1s, kms;	   
+
+     DO k = k1s, kms;
 
        !.....Horizontal diffusion.....
        hd= (hdxpp(k,    l )*(tracerpp(k,lEC(l),nt) - tracerpp(k,    l ,nt))       &
@@ -7875,12 +7877,12 @@ SUBROUTINE exTracer  (nt)
          &+(hdypp(k,    l )*(tracerpp(k,lNC(l),nt) - tracerpp(k,    l ,nt))       &
          & -hdypp(k,lSC(l))*(tracerpp(k,    l ,nt) - tracerpp(k,lSC(l),nt)))/dydy
 
-       ex(k,l) =   hpp(k,l)*tracerpp(k,l,nt)/twodt1   & 
+       ex(k,l) =   hpp(k,l)*tracerpp(k,l,nt)/twodt1   &
                 - (fluxX(k,l) - fluxX(k,lWC(l))) / dx &
                 - (fluxY(k,l) - fluxY(k,lSC(l))) / dy &
                 - (fluxZ(k,l) - fluxZ(k+1,l   )) + hd * ihd
 
-     ENDDO; 
+     ENDDO;
    ENDDO
 
    ! ... Modify explicit term to account for flow boundary conditions
@@ -7928,17 +7930,17 @@ SUBROUTINE ImTracer (nt)
    !.....Loop over interior sal-pts to solve for
    !     matrix from the active scalar equation.....
    DO l = 1, lm
-            
+
       ! ... 3D-(i,j) indexes for l
       i = l2i(l); j = l2j(l);
-            
+
       !.....Compute top & bottom layer numbers & No. of layers ....
       kms = kmz(i,j)
       k1s = k1z(i,j)
       nwlayers = (kms-k1s)+1
 
       ! ... Define layer thikness at time n - The corrections for
-      !     surface and recently submerged cells are needed to 
+      !     surface and recently submerged cells are needed to
       !     keep mass conservation
       hn(k1s+1:kms) = h(k1s+1:kms,l)
       hn(k1s      ) = twodt1*wp(k1s,l)+hpp(k1s,l)
@@ -7948,14 +7950,14 @@ SUBROUTINE ImTracer (nt)
 
       !.....Calculate active scalar for case of a single layer.....
       SELECT CASE (nwlayers)
-      CASE (1)   
+      CASE (1)
 
         aa( 2,k1s) = hn(k1s)/twodt1
         ds(   k1s) = ex(k1s,l) + sourcesink(k1s,l,nt)
-        ! ... Include the effect of Sediment Oxygen Demand 
-        !     on bottom cell (Note: dims. MT^-1L^-2, same as ds)          
+        ! ... Include the effect of Sediment Oxygen Demand
+        !     on bottom cell (Note: dims. MT^-1L^-2, same as ds)
         IF ( iopss > 0 .AND. nt == ntr) THEN
-           ds(k1s) = ds(k1s) - k4sod 
+           ds(k1s) = ds(k1s) - k4sod
         ENDIF
         tracer(k1s,l,nt) = ds(k1s  )/aa(2,k1s)
 
@@ -7971,8 +7973,8 @@ SUBROUTINE ImTracer (nt)
          aa(1,k1s)       =  0.0
          ! Define center diagonal terms
          aa(2,k1s:kms)   =  hn(k1s:kms)/twodt1-aa(1,k1s:kms)-aa(3,k1s:kms)
-     
-         !.....form r.h.s. matrix [ds]..... 
+
+         !.....form r.h.s. matrix [ds].....
          DO k = k1s, kms
             ds(k) = ex(k,l) + sourcesink(k,l,nt)
          ENDDO
@@ -7989,19 +7991,19 @@ SUBROUTINE ImTracer (nt)
                ds(k)=ds(k)+Qsource*Osource     ! kg/m2/s = conc.* thickness / time
              ENDDO
            ENDDO
-		   ! ... Include SOD when modelling oxygen plumes - 
+		   ! ... Include SOD when modelling oxygen plumes -
 		   IF (nt == ntr) ds(kms) = ds(kms) - k4sod
-		    
+
          ENDIF
 
 		 !.....Solve tridiagonal system for the
          !     vertical distribution of active scalar.....
          CALL trid1 (aa, ds, sal1, k1s, kms, km1, nwlayers)
- 
+
          !.....Define scalars at new time step....
          tracer(k1s:kms  ,l,nt) = sal1(1:nwlayers)
-         tracer(k1 :k1s-1,l,nt) = sal1(1         ) 
-         
+         tracer(k1 :k1s-1,l,nt) = sal1(1         )
+
       END SELECT
 
    !.....End loop over scalar-pts.....
@@ -8019,7 +8021,7 @@ SUBROUTINE PointSourceSinkInput
 !
 !  Purpose: This routine is called at the beginning of the program
 !           to open any files with data for point sources/sinks - it will
-!           read the time series data and assign the initial values at time t=0.  
+!           read the time series data and assign the initial values at time t=0.
 !
 !------------------------------------------------------------------------
 
@@ -8027,35 +8029,35 @@ SUBROUTINE PointSourceSinkInput
    INTEGER :: i, j, k, l, nn, itr, ios, istat, nptspss, ncdev
    CHARACTER(LEN=14) :: pssfmt, pssfile
 
-   ! ... Allocate space for device characteristics           
+   ! ... Allocate space for device characteristics
    ALLOCATE (  ptype (npssdev), &               ! Type of device simulated
                dfL   (npssdev), &               ! Length of diffuser (not allways used)
                pdt   (npssdev), &               ! Update frequency of forcing variables
                diammb(npssdev), &               ! Initial diameter of bubbles
                lambda(npssdev), &               ! Half-width of the plume
-               idetr (npssdev), & 
-               STAT = istat)   
+               idetr (npssdev), &
+               STAT = istat)
    IF (istat /= 0) CALL allocate_error ( istat, 22 )
 
 
-   ! ... Allocate space for input information on forcing variables pss - 
+   ! ... Allocate space for input information on forcing variables pss -
    ALLOCATE (  flpss (npssdev), scpss (npssdev), &
-               uEpss (npssdev), uWpss (npssdev), & 
-			   vNpss (npssdev), vSpss (npssdev), & 
+               uEpss (npssdev), uWpss (npssdev), &
+			   vNpss (npssdev), vSpss (npssdev), &
                qthrs (npssdev), STAT = istat)
    IF (istat /= 0) CALL allocate_error ( istat, 22 )
    IF (ntr > 0) THEN
-      ALLOCATE (trpss (npssdev,ntr), STAT=istat) 
+      ALLOCATE (trpss (npssdev,ntr), STAT=istat)
       IF (istat /= 0) CALL allocate_error ( istat, 23 )
    ENDIF
 
    ! ... Allocate space for variables holding column information
    ALLOCATE (  kdetr (iopss), STAT = istat)
    IF (istat /= 0) CALL allocate_error ( istat, 24 )
-    
+
    !               -----Read files with pss data-----
 
-   ! ----Loop over npssdev to Open & read files with pss data-----  
+   ! ----Loop over npssdev to Open & read files with pss data-----
    DO nn = 1, npssdev
 
       ! ... Construct file name (beware that nopen cannot be > 99)
@@ -8091,8 +8093,8 @@ SUBROUTINE PointSourceSinkInput
       SELECT CASE (ptype(nn))
 
       ! ************** Section boundary inflows **************
-      CASE (-2)  
-        
+      CASE (-2)
+
 
         ! Read how water is detrained at east face
         READ (UNIT=i52, FMT='(A)', IOSTAT=ios) commentline
@@ -8106,7 +8108,7 @@ SUBROUTINE PointSourceSinkInput
         ! Read how water is detrained at north face
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) vNpss(nn)
         IF (ios /= 0) CALL input_error ( ios, 49 )
- 
+
         ! Read how water is detrained at south face
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) vSpss(nn)
         IF (ios /= 0) CALL input_error ( ios, 49 )
@@ -8124,20 +8126,20 @@ SUBROUTINE PointSourceSinkInput
         END DO
 
         ! ... Assign initial values to forcing variables
-        flpss (nn) = varspss(nn,1,1) ! Flow rate 
+        flpss (nn) = varspss(nn,1,1) ! Flow rate
         scpss (nn) = varspss(nn,2,1) ! Active scalar concentration (temp.)
         IF (ntr > 0) THEN
           DO itr = 1, ntr
-            trpss(nn,itr) = varspss(nn,2+itr,1) ! Tracer load 
+            trpss(nn,itr) = varspss(nn,2+itr,1) ! Tracer load
           ENDDO
         ENDIF
 
-        ! ... Set idetr to 1 - (default value) 
-        idetr(nn) = 1.; 
+        ! ... Set idetr to 1 - (default value)
+        idetr(nn) = 1.;
 
       ! *************** Cell inflows ***********************
-      CASE (-1)   
-        
+      CASE (-1)
+
         ! Read how water is detrained at east face
         READ (UNIT=i52, FMT='(A)', IOSTAT=ios) commentline
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) uEpss(nn)
@@ -8150,7 +8152,7 @@ SUBROUTINE PointSourceSinkInput
         ! Read how water is detrained at north face
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) vNpss(nn)
         IF (ios /= 0) CALL input_error ( ios, 50 )
- 
+
         ! Read how water is detrained at south face
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) vSpss(nn)
         IF (ios /= 0) CALL input_error ( ios, 50 )
@@ -8168,36 +8170,36 @@ SUBROUTINE PointSourceSinkInput
         END DO
 
         ! ... Assign initial values to forcing variables
-        flpss (nn) = varspss(nn,1,1) ! Flow rate 
+        flpss (nn) = varspss(nn,1,1) ! Flow rate
         scpss (nn) = varspss(nn,2,1) ! Active scalar concentration (temp.)
         IF (ntr > 0) THEN
           DO itr = 1, ntr
-            trpss(nn,itr) = varspss(nn,2+itr,1) ! Tracer load 
+            trpss(nn,itr) = varspss(nn,2+itr,1) ! Tracer load
           ENDDO
         ENDIF
 
-        ! ... Set idetr to 1 - (default value) 
-        idetr(nn) = 1.; 
+        ! ... Set idetr to 1 - (default value)
+        idetr(nn) = 1.;
 
       ! ************* Water Pumped inflows *****************
-      CASE (0) 
-	  
+      CASE (0)
+
         PRINT *, '***************** ERROR *****************'
         PRINT *, 'Water pumped inflow still NOT incorporated'
         PRINT *, '***************** ERROR *****************'
 	    STOP
 
       ! ******** Plume oxygenation models *******************
-      CASE (1:) 
-	    
-        ! Make sure that, at least, one tracer is simulated 
-        ! which corresponds to oxygen 
+      CASE (1:)
+
+        ! Make sure that, at least, one tracer is simulated
+        ! which corresponds to oxygen
         IF (ntr < 1) THEN
           PRINT *, '***************** ERROR *****************'
           PRINT *, 'No. of tracers should be > 1 to simulate '
           PRINT *, 'the addition of oxygen through the plumes'
           PRINT *, '***************** ERROR *****************'
-          STOP         
+          STOP
         ENDIF
 
         ! Read how water is detrained at west face
@@ -8212,7 +8214,7 @@ SUBROUTINE PointSourceSinkInput
         ! Read how water is detrained at east face
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) vNpss(nn)
         IF (ios /= 0) CALL input_error ( ios, 51 )
- 
+
         ! Read how water is detrained at south face
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) vSpss(nn)
         IF (ios /= 0) CALL input_error ( ios, 51 )
@@ -8220,7 +8222,7 @@ SUBROUTINE PointSourceSinkInput
         ! Read flow threshold - to determine when it works and when not
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) qthrs(nn)
         IF (ios /= 0) CALL input_error ( ios, 51 )
-      
+
         ! Read how water velocity at detrainment cell is calculated
         READ (UNIT=i52, FMT='(A)', IOSTAT=ios) commentline
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) idetr(nn)
@@ -8241,15 +8243,15 @@ SUBROUTINE PointSourceSinkInput
         ! Read atmospheric pressure (Pascals)
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) patm
         IF (ios /= 0) CALL input_error ( ios, 51 )
-  
+
         ! Read constant sediment oxygen demand
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) k4sod
         IF (ios /= 0) CALL input_error ( ios, 51 )
 
-        ! Read frequency of update 
+        ! Read frequency of update
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) pdt(nn)
         IF (ios /= 0) CALL input_error ( ios, 51 )
-        
+
         ! Read data array
         READ (UNIT=i52, FMT='(A)', IOSTAT=ios) commentline
         DO j = 1, nptspss
@@ -8258,12 +8260,12 @@ SUBROUTINE PointSourceSinkInput
            IF (ios /= 0) CALL input_error ( ios, 51 )
         END DO
 
-        ! ... Assign values to forcing variables 
+        ! ... Assign values to forcing variables
         !     (ntr should be >= 1 otherwise the model issues an error message)
-        flpss (nn) = varspss(nn,1,1) ! Flow rate 
+        flpss (nn) = varspss(nn,1,1) ! Flow rate
         scpss (nn) = varspss(nn,2,1) ! Active scalar concentration (temp.) - Not used here
-        DO itr = 1, ntr              ! Tracer loads - 
-          trpss(nn,itr) = varspss(nn,2+itr,1) ! Tracer load 
+        DO itr = 1, ntr              ! Tracer loads -
+          trpss(nn,itr) = varspss(nn,2+itr,1) ! Tracer load
         ENDDO
 
         ! ... Calculate diffuser length & set kdetr to default values
@@ -8274,7 +8276,7 @@ SUBROUTINE PointSourceSinkInput
             ncdev    = ncdev + 1
           ENDIF
         ENDDO
-        dfL(nn) = ncdev * idx 
+        dfL(nn) = ncdev * idx
 
      END SELECT
 
@@ -8289,16 +8291,16 @@ END SUBROUTINE PointSourceSinkInput
 SUBROUTINE PointSourceSinkForcing (nn)
 !************************************************************************
 !
-!  Purpose: To assign values of flow, temperature and tracer loads 
+!  Purpose: To assign values of flow, temperature and tracer loads
 !           in sources and sinks devices
 !
 !------------------------------------------------------------------------
 
    !.....Local variables.....
-   INTEGER, INTENT(IN) :: nn 
+   INTEGER, INTENT(IN) :: nn
    REAL    :: dthrs_pss
    INTEGER :: i, j, k, l, itr
- 
+
    ! ... Time (hrs) between consecutive records in files
    dthrs_pss = dtsecpss/3600.
 
@@ -8317,7 +8319,7 @@ END SUBROUTINE PointSourceSinkForcing
 SUBROUTINE PointSourceSinkSolver
 !***********************************************************************
 !
-!  Purpose: Interface between si3d and other models requiring 
+!  Purpose: Interface between si3d and other models requiring
 !           sources and sinks (including VT-plume model).
 !
 !  Revisions:
@@ -8336,10 +8338,10 @@ SUBROUTINE PointSourceSinkSolver
    REAL(8) :: elevt, qwt, tplumt, comgpt, tplum0, comgp0, qscfm, frconot
    REAL(8), DIMENSION (1:km1) :: zamb, Tamb, DOamb ! B.C. for plume model
    REAL(8), DIMENSION (1:km1) :: qwd               ! Outflow rate for plume
-   LOGICAL, SAVE :: DiffON 
+   LOGICAL, SAVE :: DiffON
 
    ! ... Return if no points sources/sinks are specified
-   IF (iopss <= 0) RETURN 
+   IF (iopss <= 0) RETURN
 
    ! ... Define Qpss, Tpss, & Rpss for columns in each device
    DO nn = 1, npssdev
@@ -8347,7 +8349,7 @@ SUBROUTINE PointSourceSinkSolver
      SELECT CASE (ptype(nn))
 
      ! ************ Section Boundary Conditions ***********************
-     CASE (-2) 
+     CASE (-2)
 
        ! ... Only do computations when there is flow
        IF (ABS(flpss(nn)) < qthrs(nn)) CYCLE
@@ -8355,36 +8357,36 @@ SUBROUTINE PointSourceSinkSolver
        ! ... Only determine boundary conditions on leapfrog iterations
        IF( (n > 1) .AND. (istep > 1)) CYCLE
 
-       ! ... Interpolate forcing variables (flpss, scpss, trpss) 
-       !     to present time using time series input - 
+       ! ... Interpolate forcing variables (flpss, scpss, trpss)
+       !     to present time using time series input -
        CALL PointSourceSinkForcing (nn)
 
        ! ... Find total volume of cells holding boundary conditions
        areatot = 0.0
-       DO inn = 1, iopss  
-         IF (iodev(inn) .NE. nn) CYCLE  
+       DO inn = 1, iopss
+         IF (iodev(inn) .NE. nn) CYCLE
          ! ... Define i,j,l indexes
-         i = ipss(inn); 
-         j = jpss(inn); 
+         i = ipss(inn);
+         j = jpss(inn);
          l = ij2l(i,j);
-         ! ... Define top and bottom cells & no. of layers 	
+         ! ... Define top and bottom cells & no. of layers
          !     The diffuser is set to be one cell above the bottom
          k1s = k1z(i,j) ;
          kms = kmz(i,j) ;
          DO k = k1s, kms
-           areatot = areatot + hp(k,l) 
+           areatot = areatot + hp(k,l)
          ENDDO
        ENDDO
-     
+
 	   ! ... Determine flow rate, temp. and tracer for each cell
 	   !     Inflow rate is pressumed uniform in space
-       DO inn = 1, iopss  
+       DO inn = 1, iopss
 
-         IF (iodev(inn) .NE. nn) CYCLE 
+         IF (iodev(inn) .NE. nn) CYCLE
 
          ! ... Define i,j,l indexes
-         i = ipss(inn); 
-         j = jpss(inn); 
+         i = ipss(inn);
+         j = jpss(inn);
          l = ij2l(i,j);
 
          ! ... Define k- indexes
@@ -8392,24 +8394,24 @@ SUBROUTINE PointSourceSinkSolver
          kms = kmz(i,j) ;
 
          ! ... Initialize (also done in subroutine init)
-		 Qpss(:,inn  ) = 0.0; 
-		 Tpss(:,inn  ) = 0.0; 
-		 Rpss(:,inn,:) = 0.0; 
+		 Qpss(:,inn  ) = 0.0;
+		 Tpss(:,inn  ) = 0.0;
+		 Rpss(:,inn,:) = 0.0;
          ! ... Loop over cells in the water column
          DO k = k1s, kms
-           Qpss(k,inn) = flpss(nn) * hp(k,l) / areatot 
+           Qpss(k,inn) = flpss(nn) * hp(k,l) / areatot
            IF (scpss(nn)<0.0 .OR. flpss(nn)<=0.0) THEN
              Tpss(k,inn) = salp (k,l)
-           ELSE 
+           ELSE
              Tpss(k,inn) = scpss(nn )
            ENDIF
            IF (ntr > 0) THEN
-             DO itr = 1, ntr 
-               IF (trpss(nn,itr)<0.0 .OR. flpss(nn)<=0.0) THEN 
+             DO itr = 1, ntr
+               IF (trpss(nn,itr)<0.0 .OR. flpss(nn)<=0.0) THEN
                  Rpss(k,inn,itr) = tracerpp(k,l,itr)
                ELSE
                  Rpss(k,inn,itr) = trpss(nn,itr)
-               ENDIF 
+               ENDIF
              ENDDO
            ENDIF
          ENDDO
@@ -8417,7 +8419,7 @@ SUBROUTINE PointSourceSinkSolver
 
 
      ! ************ Bottom cell Boundary Conditions  ********************
-     CASE (-1) 
+     CASE (-1)
 
        ! ... Only do computations when there is flow
        IF (ABS(flpss(nn)) < qthrs(nn)) CYCLE
@@ -8426,124 +8428,124 @@ SUBROUTINE PointSourceSinkSolver
        IF( (n > 1) .AND. (istep > 1)) CYCLE
 
        ! ... Interpolate forcing variables (flpss, scpss, trpss) for each device
-       !     to present time,  using time series input - 
+       !     to present time,  using time series input -
        CALL PointSourceSinkForcing (nn)
-      
-       DO inn = 1, iopss  ! Loop over water columns in device 
 
-         IF (iodev(inn) .NE. nn) CYCLE 
+       DO inn = 1, iopss  ! Loop over water columns in device
+
+         IF (iodev(inn) .NE. nn) CYCLE
 
          ! ... Define i,j,l indexes
-         i = ipss(inn); 
-         j = jpss(inn); 
+         i = ipss(inn);
+         j = jpss(inn);
          l = ij2l(i,j);
 
          ! ... Define k- indexes
          kms = kmz(i,j) ;
 
          ! ... Initialize (also done in subroutine init)
-         Qpss(:,inn  ) = 0.0; 
-         Tpss(:,inn  ) = 0.0; 
-         Rpss(:,inn,:) = 0.0; 
+         Qpss(:,inn  ) = 0.0;
+         Tpss(:,inn  ) = 0.0;
+         Rpss(:,inn,:) = 0.0;
          ! ... Set values of vars. at bottom cell
          Qpss(kms,inn  ) = flpss(nn)
          IF (scpss(nn)<0.0 .OR. flpss(nn)<=0.0) THEN
            Tpss(kms,inn) = salp (kms,l)
-         ELSE 
+         ELSE
            Tpss(kms,inn) = scpss(nn   )
          ENDIF
          IF (ntr > 0) THEN
-           DO itr = 1, ntr 
-             IF (trpss(nn,itr)<0.0 .OR. flpss(nn) <= 0.0) THEN 
+           DO itr = 1, ntr
+             IF (trpss(nn,itr)<0.0 .OR. flpss(nn) <= 0.0) THEN
                Rpss(kms,inn,itr) = tracerpp(kms,l,itr)
              ELSE
                Rpss(kms,inn,itr) = trpss(nn,itr)
-             ENDIF 
+             ENDIF
            ENDDO
          ENDIF
        ENDDO ! Loop over columns in device
-   
+
 
      ! ************ Water pumped inflow ****************************
-     CASE (0) 
+     CASE (0)
 
         PRINT *, '***************** ERROR *****************'
         PRINT *, 'Water pumped inflow still NOT incorporated'
         PRINT *, '***************** ERROR *****************'
 	    STOP
 
-      
+
      ! ************ Oxygen-gas diffuser ****************************
      CASE (1:)
 
 
        ! ... Calculate en-detrainment flows induced by diffuser
        IF (ABS(flpss(nn)) < qthrs(nn)) THEN  ! Diffuser OFF
-         DiffON = .FALSE.  
-         DO inn = 1, iopss  
-           IF (iodev(inn) .NE. nn) CYCLE 
+         DiffON = .FALSE.
+         DO inn = 1, iopss
+           IF (iodev(inn) .NE. nn) CYCLE
            Qpss (inn,:) = 0.0E0
            kdetr(inn  ) = km1
          ENDDO
-       ELSE                                  ! Update diffuser FLOWS          
-         IF & 
+       ELSE                                  ! Update diffuser FLOWS
+         IF &
          ( (DiffON == .FALSE.)       .OR.  & ! Diffuser is TURNED ON
          (  istep  ==  1            .AND.  & ! Update on first iterations
          (MOD(n,MAX(pdt(nn),1))==0))) THEN   ! Update every pdt time steps
 
            DiffON = .TRUE.                     ! Diffuser remains ON
-           DO inn = 1, iopss  ! Loop over columns in device         
-             IF (iodev(inn) .NE. nn) CYCLE 
-          
+           DO inn = 1, iopss  ! Loop over columns in device
+             IF (iodev(inn) .NE. nn) CYCLE
+
              ! ... Define i,j,l indexes
-             i = ipss(inn); 
-             j = jpss(inn); 
+             i = ipss(inn);
+             j = jpss(inn);
              l = ij2l(i,j);
 
              ! ... Define k- indexes
              k1s = k1z(i,j) ;
              kms = kmz(i,j) ;
              nwl = kms-k1s+1;
-                                         
+
              ! ... Interpolate forcing variables (flpss, scpss, trpss) for each device
-             !     to present time,  using time series input - 
+             !     to present time,  using time series input -
              CALL PointSourceSinkForcing (nn)
-         
+
              ! ... Define ambient temperatures
              Tamb(k1s:kms) = salpp(k1s:kms,l)
              Tamb(kms+1  ) = Tamb(kms);
              Tamb(1      ) = Tamb(k1s);
-          
+
              ! ... Define DO concentrations
              DOamb(k1s:kms) = tracerpp(k1s:kms,l,ntr)
              DOamb(kms+1  ) = DOamb(kms);
              DOamb(1      ) = DOamb(k1s);
-          
+
              ! ... Depths for cells in plume column from datum
              zamb(k1s  ) = hp(k1s,l)/2.
              DO k = k1s+1, kms
                zamb(k) = zamb(k-1) + (hp(k-1,l)+hp(k,l))/2.
              END DO
              zamb(kms+1) =  zamb(kms)+hp(kms,l)
-             zamb(1    ) = -zamb(k1s) 
+             zamb(1    ) = -zamb(k1s)
 
              ! ... Inputs for plume model
              dfLgth  = dfL(nn)         ;       ! Length of diffuser
-             rjulday = doy             ;       ! Julian day (arbitrary) 
+             rjulday = doy             ;       ! Julian day (arbitrary)
              wselev  = 0.0000          ;       ! Elevation of free surface
              ksrc    = kms-1           ;       ! Layer No. where diffuser is located
-             dfelev  = -zamb(ksrc)     ;       ! Elevation of diffuser  
+             dfelev  = -zamb(ksrc)     ;       ! Elevation of diffuser
              hcell   = ddz             ;       ! Pressumed constant - thickess of cells
              qwd     = 0.0E0           ;       ! Initialize qwd
-             qscfm   = flpss(nn)       ;       ! Air flow rate 
+             qscfm   = flpss(nn)       ;       ! Air flow rate
              frconot = 0.21            ;       ! Fraction of O2 in air (not used?)
-             lambnot = lambda(nn)      ;       ! Half-width 
+             lambnot = lambda(nn)      ;       ! Half-width
              diamm   = diammb(nn)      ;       ! Initial bubble diameter
              IF (ptype(nn) <= 2) THEN
                plmdim = 1 ! Linear Plume
-             ELSE 
+             ELSE
                plmdim = 2 ! Circular Plume
-             ENDIF 
+             ENDIF
 
              ! ... Run plume model
              CALL lineplu_v1(iyr,rjulday,wselev,dfelev,kms,dfLgth, &
@@ -8554,41 +8556,41 @@ SUBROUTINE PointSourceSinkSolver
                                Tamb (1:kms),                       &
                                DOamb(1:kms),                       &
                                elevt, qwt , tplumt, comgpt,        &
-                               qwd(1:ksrc), ktop) 
+                               qwd(1:ksrc), ktop)
 
-             ! ....Detrainment cell - save it for later 
+             ! ....Detrainment cell - save it for later
              kdetr(inn) = ktop
 
              ! ... Define flow at cells
-             Qpss(:,inn)   = 0.0; 
+             Qpss(:,inn)   = 0.0;
 
-             ! ... Define flow at entrainment cells 
-             DO k = ktop+1,ksrc  
-                Qpss(k,inn) = -qwd(k)*dy/dfLgth 
+             ! ... Define flow at entrainment cells
+             DO k = ktop+1,ksrc
+                Qpss(k,inn) = -qwd(k)*dy/dfLgth
              ENDDO
-    
+
              ! ... Define flow at detrainment cell to force volume conservation
-             Qpss(ktop,inn) = -SUM(Qpss(ktop+1:ksrc,inn)); 
+             Qpss(ktop,inn) = -SUM(Qpss(ktop+1:ksrc,inn));
 
              PRINT *, '****************************************************'
-             PRINT *, '----OUTPUT FROM PLUME ROUTINES----------------------' 
-             PRINT *, '****************************************************'  
+             PRINT *, '----OUTPUT FROM PLUME ROUTINES----------------------'
+             PRINT *, '****************************************************'
              PRINT *, 'Results of Plume Model elev', elevt, ktop
              PRINT *, 'Resutls of Plume Model qwt ', qwt
              PRINT *, 'Results of Plume Model T&O ', tplumt, comgpt
              PRINT *, '****************************************************'
            ENDDO
-         ENDIF 
+         ENDIF
        ENDIF
 
-       ! ... Define temperature of entrained and detrained water in plume 
-       !     based on existing values of Qpss & temperatures  
-       DO inn = 1, iopss  ! Loop over columns in device         
-         IF (iodev(inn) .NE. nn) CYCLE 
-         
+       ! ... Define temperature of entrained and detrained water in plume
+       !     based on existing values of Qpss & temperatures
+       DO inn = 1, iopss  ! Loop over columns in device
+         IF (iodev(inn) .NE. nn) CYCLE
+
          ! ... Define i,j,l indexes
-         i = ipss(inn); 
-         j = jpss(inn); 
+         i = ipss(inn);
+         j = jpss(inn);
          l = ij2l(i,j);
 
          ! ... Define k- indexes
@@ -8596,7 +8598,7 @@ SUBROUTINE PointSourceSinkSolver
          kms = kmz(i,j) ;
          nwl = kms-k1s+1;
          Tpss(:,inn) = salpp(:,l)
-         k = kdetr(inn); 
+         k = kdetr(inn);
          IF (k < kms) THEN
            Tsource = 0.0 ! FJRPlumes
            DO kk = k+1,kms
@@ -8608,28 +8610,28 @@ SUBROUTINE PointSourceSinkSolver
          ENDIF
          Tpss(k,inn) = Tsource
 
-         ! ... Define tracer concentrations in entrained & detrained water 
-         !     in the plume (assumes dx = dy) based on existing values of 
+         ! ... Define tracer concentrations in entrained & detrained water
+         !     in the plume (assumes dx = dy) based on existing values of
          !     Qpss, tracer concs. and location of detrainment cell
          IF (ntr > 0) THEN
            DO itr = 1, ntr
-             Rpss(:,inn,itr) = tracerpp(:,l,itr) 
-             k = kdetr(inn); 
+             Rpss(:,inn,itr) = tracerpp(:,l,itr)
+             k = kdetr(inn);
              IF (k < kms) THEN
-               Rsource = 0.0 
-               DO kk = k+1,kms  
+               Rsource = 0.0
+               DO kk = k+1,kms
                  Rsource  = Rsource + tracerpp(kk,l,itr) * Qpss(kk,inn)
-               ENDDO  
+               ENDDO
                Rsource = Rsource/SUM(Qpss(k+1:kms,inn))+  &
                          trpss(nn,itr)*dy/dfL(nn)/Qpss(k,inn)
              ELSE
                Rsource = trpss(nn,itr)*dy/dfL(nn)/Qpss(k,inn)
-             ENDIF  
-             Rpss(k,inn,itr) = Rsource  
+             ENDIF
+             Rpss(k,inn,itr) = Rsource
            ENDDO
          ENDIF
        ENDDO
-          
+
      END SELECT
 
    ENDDO

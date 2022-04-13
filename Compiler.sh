@@ -14,8 +14,8 @@
 SHELL=$!/bin/sh
 
 export FORTRAN_COMPILER=IFORT
-export SI3DDIR=/home/sv/GitHub/si3d
-export GOTMDIR=/home/sv/GitHub/gotm
+export SI3DDIR=/mnt/c/Users/SV/Documents/GitHub/si3d
+export GOTMDIR=/mnt/c/Users/SV/Documents/GitHub/gotm
 export MODDIR=$GOTMDIR/modules
 export INCDIR=$GOTMDIR/include
 export BINDIR=$GOTMDIR/bin
@@ -40,9 +40,7 @@ if $IFSI3D
 then
 	cd $SI3DDIR
 	make all
-	#rm *.o
-	cd $MODDIR
-	rm si3d*
+	rm *.o
 else
 	cd $SI3DDIR
 	make si3d
